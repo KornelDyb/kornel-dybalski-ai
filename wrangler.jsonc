@@ -4,6 +4,8 @@
   "name": "kornel-dybalski",
   "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
+  // Nie kasuj zmiennych ustawionych w panelu Cloudflare przy każdym wdrożeniu.
+  "keep_vars": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
