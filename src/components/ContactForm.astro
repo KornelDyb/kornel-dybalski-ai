@@ -72,6 +72,12 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
               </span>
             </label>
             <p id="e-consent" class={error} data-error-for="consent"></p>
+            <p class="mt-4 text-[0.8rem] leading-snug text-ink-soft">
+              Administratorem danych jest {SITE.name}. Dane z formularza wykorzystam tylko do odpowiedzi
+              na zgłoszenie i umówienia rozmowy, przechowuję je do 12 miesięcy od ostatniego kontaktu.
+              Masz prawo do wglądu, poprawienia i usunięcia danych.
+              Więcej w <a class="link-ink text-ink" href="/polityka-prywatnosci">polityce prywatności</a>.
+            </p>
           </div>
 
           <div class="sm:col-span-2">
@@ -87,7 +93,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
 </section>
 
 <script>
-  import { validate, isBot, buildPayload } from '../lib/form.js';
+  import { validate, isBot } from '../lib/form.js';
 
   const form = document.getElementById('contact-form') as HTMLFormElement;
 
@@ -129,8 +135,9 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     });
   });
 
-  // Adres webhooka Make pochodzi ze zmiennej środowiskowej (plik .env lokalnie, ustawienia Netlify na produkcji).
-  const WEBHOOK_URL = import.meta.env.PUBLIC_MAKE_WEBHOOK_URL;
+  // Formularz wysyła dane do własnej funkcji na Netlify (/api/lead), a dopiero ona do Make.
+  // Dzięki temu adresu webhooka nie widać w kodzie strony.
+  const ENDPOINT = '/api/lead';
   const CONTACT_EMAIL = form.dataset.email!;
   const status = document.getElementById('form-status')!;
   const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
@@ -188,18 +195,22 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     );
   }
 
-  async function send(payload: object) {
-    if (!WEBHOOK_URL) throw new Error('Brak PUBLIC_MAKE_WEBHOOK_URL');
+  class ValidationError extends Error {
+    constructor(public errors: Record<string, string>) { super('validation'); }
+  }
+
+  async function send(data: object) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      const res = await fetch(WEBHOOK_URL, {
+      const res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(data),
         signal: controller.signal,
       });
-      if (!res.ok) throw new Error(`Make odpowiedział ${res.status}`);
+      if (res.status === 422) throw new ValidationError((await res.json()).errors ?? {});
+      if (!res.ok) throw new Error(`Serwer odpowiedział ${res.status}`);
     } finally {
       clearTimeout(timeout);
     }
@@ -217,12 +228,18 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     setStatus('sending');
     try {
       // Botowi udajemy sukces, ale niczego nie wysyłamy.
-      if (!isBot(data)) await send(buildPayload(data));
+      if (!isBot(data)) await send(data);
       form.reset();
       touched = false;
       setStatus('success');
+      (window as any).umami?.track('formularz-wyslany');
       showReceipt(data.name.trim(), data.company.trim());
     } catch (err) {
+      if (err instanceof ValidationError) {
+        setStatus('idle');
+        showErrors(err.errors);
+        return;
+      }
       console.error(err);
       setStatus('error');
     }

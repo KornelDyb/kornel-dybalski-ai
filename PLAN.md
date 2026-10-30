@@ -138,10 +138,19 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | Commit | Zapisany punkt w historii projektu z opisem, co się zmieniło |
 | JSON | Prosty format danych, w którym strona wysyła zgłoszenie do Make |
 | Payload | Paczka danych wysyłana w jednym zgłoszeniu |
+| Funkcja serwerowa (Netlify Function) | Mały program na serwerze Netlify, który odbiera formularz, zanim dane pójdą dalej |
+| Rate limit | Limit zgłoszeń z jednego adresu w danym czasie, chroni przed zasypaniem spamem |
+| Nagłówki bezpieczeństwa | Instrukcje dla przeglądarki, co strona może wczytywać i czy można ją osadzać na innych stronach |
+| Open Graph (og:image) | Obrazek i opis, które pokazują się przy udostępnieniu linku na LinkedIn czy Facebooku |
+| Dane strukturalne (JSON-LD) | Opis strony w języku zrozumiałym dla Google: kto, co oferuje, gdzie |
 
 ## Stan prac i ustalenia z budowy
 
 **Zrobione w kodzie:** zadania 2, 3, 4, 5 i 9 oraz projekt Astro z zadania 1. Brakuje repozytorium na GitHubie i podpięcia Netlify (wymaga Twojego konta).
+
+**Zmiana z budowy:** formularz nie wysyła danych prosto do Make. Wysyła je do funkcji na Netlify (`/api/lead`, plik `netlify/functions/lead.mjs`), która sprawdza je drugi raz, odsiewa boty, ogranicza liczbę zgłoszeń (5 na minutę z jednego IP) i dopiero przekazuje do Make. Adres webhooka jest w zmiennej `MAKE_WEBHOOK_URL` (tylko na serwerze, nie widać go w kodzie strony). Instrukcja konfiguracji Make: `docs/make-krok-po-kroku.md`.
+
+**Narzędzie automatyzacji:** na start Make (darmowy plan). Możliwe przeniesienie do n8n, gdy przepływ będzie działał; funkcja `/api/lead` wysyła zwykły JSON, więc zmiana to tylko nowy adres w `MAKE_WEBHOOK_URL`.
 
 **Dane, które formularz wysyła do Make (JSON):**
 
@@ -167,6 +176,9 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 - Czasy w sekcji Współpraca i FAQ (tydzień, 1 do 4 tygodni) to propozycja, popraw, jeśli pracujesz inaczej.
 - Polityka prywatności napisana dla Kornela jako osoby prywatnej; do przejrzenia przez prawnika, gdy ustalisz formę działalności.
 - Zdjęcie i link do LinkedIn wzięte z Twojej strony KornelDyb.github.io.
+- Regulamin: szkic w `docs/regulamin-szkic.md`, do decyzji z prawnikiem (nieopublikowany).
+- Statystyki: po założeniu konta w Umami Cloud ustaw `PUBLIC_UMAMI_WEBSITE_ID` na Netlify. Zdarzenia: cta-naglowek, personalizacja, kalkulator-uzyty, cta-kalkulator, cta-kupon, formularz-wyslany.
+- Przy zmianie domeny: zmień `site` w `astro.config.mjs` i adres w `public/robots.txt`.
 
 **Decyzje techniczne z budowy:**
 

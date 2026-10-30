@@ -6,5 +6,7 @@ export default defineConfig({
   site: 'https://kornel-dybalski.netlify.app',
   vite: {
     plugins: [tailwindcss()],
+    // Nic nie jest wklejane bezpośrednio w HTML (skrypty, czcionki), żeby nagłówek CSP mógł być ścisły.
+    build: { assetsInlineLimit: 0 },
   },
 });

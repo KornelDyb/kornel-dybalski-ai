@@ -4,16 +4,19 @@ const areas = [
     name: 'Sprzedaż',
     text: 'Każde zapytanie trafia do jednego miejsca, a handlowiec wie, do kogo zadzwonić najpierw.',
     example: 'Zgłoszenie z formularza w minutę ląduje w CRM, a klient dostaje odpowiedź z linkiem do kalendarza.',
+    flow: ['Formularz', 'CRM', 'Mail z terminem'],
   },
   {
     name: 'Marketing',
     text: 'Kontakt z klientami dzieje się regularnie, nawet gdy nie masz na niego czasu.',
     example: 'Po zakończonej usłudze klient dostaje prośbę o opinię, a po trzech miesiącach przypomnienie o przeglądzie.',
+    flow: ['Koniec usługi', 'Prośba o opinię', 'Przegląd'],
   },
   {
     name: 'Obsługa klienta',
     text: 'Powtarzalne pytania dostają szybką odpowiedź, a trudne sprawy trafiają do właściwej osoby.',
     example: 'AI czyta maile, odpowiada na pytania o godziny i ceny, a reklamacje przekazuje Tobie.',
+    flow: ['Mail klienta', 'AI odpowiada', 'Reszta do Ciebie'],
   },
 ];
 ---
@@ -32,10 +35,17 @@ const areas = [
           <div class="relative z-10 grid gap-3 py-8 md:grid-cols-[minmax(0,14rem)_1fr_1fr] md:items-baseline md:gap-10 md:py-10">
             <h3 class="text-[clamp(2rem,4vw,3rem)] transition-colors duration-300">{a.name}</h3>
             <p class="text-lg transition-colors duration-300">{a.text}</p>
-            <p class="example text-ink-soft transition-colors duration-300">
-              <span class="mb-1 block font-mono text-[0.72rem] font-bold tracking-[0.1em] text-stamp uppercase">Na przykład</span>
-              {a.example}
-            </p>
+            <div class="min-w-0">
+              <ol class="flow flex flex-wrap items-center gap-y-2" aria-label="Przykładowy przepływ">
+                {a.flow.map((step, i) => (
+                  <li class="flex items-center">
+                    {i > 0 && <span class="link-line mx-1.5 h-0 w-4 border-t-2 border-dashed border-ink/30" aria-hidden="true"></span>}
+                    <span class="chip rounded-md border border-ink/20 bg-paper px-2.5 py-1 font-mono text-[0.7rem] font-bold tracking-[0.04em] whitespace-nowrap text-ink uppercase" style={`--d:${i * 0.45}s`}>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <p class="example mt-3 text-ink-soft transition-colors duration-300">{a.example}</p>
+            </div>
           </div>
         </li>
       ))}
@@ -58,6 +68,12 @@ const areas = [
     .area:hover::before { clip-path: inset(0 0 0 0 round 0.75rem); }
     .area:hover h3, .area:hover p { color: var(--color-paper); }
     .area:hover .example { color: var(--color-cobalt-soft); }
-    .area:hover .example span { color: var(--color-paper); }
+    .area:hover .link-line { border-color: rgb(205 209 250 / 0.6); }
+    /* Po najechaniu bileciki zapalają się po kolei, jak kolejne kroki automatu. */
+    .area:hover .chip { animation: chip-on 1.8s var(--ease-out-expo) infinite; animation-delay: var(--d); }
+  }
+  @keyframes chip-on {
+    0%, 100% { background: var(--color-paper); color: var(--color-ink); transform: none; }
+    15%, 45% { background: var(--color-stamp); color: var(--color-paper); border-color: transparent; transform: translateY(-2px); }
   }
 </style>

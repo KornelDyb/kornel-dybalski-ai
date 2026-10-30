@@ -7,7 +7,8 @@ Strona osobista z formularzem, który przez Make trafia do HubSpot. Plan i decyz
 ```bash
 npm install
 cp .env.example .env   # wklej adres webhooka z Make
-npm run dev            # strona pod http://localhost:4321
+npm run dev            # strona pod http://localhost:4321 (bez funkcji /api/lead)
+npx netlify dev        # strona razem z funkcją /api/lead, do testu formularza
 npm test               # testy walidacji formularza
 npm run build          # gotowa strona w folderze dist/
 ```
@@ -24,4 +25,5 @@ npm run build          # gotowa strona w folderze dist/
 ## Netlify
 
 Build: `npm run build`, folder: `dist` (ustawione w `netlify.toml`).
-W Site configuration > Environment variables dodaj `PUBLIC_MAKE_WEBHOOK_URL`, potem zrób nowy deploy.
+W Site configuration > Environment variables dodaj `MAKE_WEBHOOK_URL` (i opcjonalnie `PUBLIC_UMAMI_WEBSITE_ID`), potem zrób nowy deploy.
+Funkcja formularza: `netlify/functions/lead.mjs` (logika w `src/lib/lead-handler.js`). Konfiguracja Make: `docs/make-krok-po-kroku.md`.

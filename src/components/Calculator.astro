@@ -61,7 +61,7 @@ const sliders = [
         <div class="row text-[1rem] font-bold"><span>wartość Twojego czasu</span><span class="lead" aria-hidden="true"></span><span data-r="money">4 160 zł</span></div>
         <div class="rule"></div>
         <div class="flex flex-wrap items-center justify-between gap-5 pt-2">
-          <a href="#kontakt" class="btn font-sans text-base">Odzyskaj te godziny</a>
+          <a href="#kontakt" class="btn font-sans text-base" data-umami-event="cta-kalkulator">Odzyskaj te godziny</a>
           <span class="stamp text-[1rem]" data-r="stamp">Do odzyskania</span>
         </div>
         <p class="mt-5 font-sans text-[0.8rem] leading-snug text-ink-soft">
@@ -157,6 +157,11 @@ const sliders = [
     animateHours(res.monthly);
   }
 
+  // Statystyki: liczymy tylko pierwsze użycie kalkulatora, bez żadnych wartości.
+  let tracked = false;
+  form.addEventListener('input', () => {
+    if (!tracked) { tracked = true; (window as any).umami?.track('kalkulator-uzyty'); }
+  });
   form.addEventListener('input', update);
   update();
 </script>

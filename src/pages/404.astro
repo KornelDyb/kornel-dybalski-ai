@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../lib/site.js';
+---
+<Layout title={`Nie ma takiej strony | ${SITE.name}`} description="Ta strona nie istnieje." noindex>
+  <SiteHeader home={false} />
+  <main id="main" class="wrap grid min-h-[70vh] place-items-center py-20">
+    <div class="receipt-shadow w-full max-w-[24rem] rotate-[-1.5deg]">
+      <div class="receipt text-[0.875rem]">
+        <p class="caps text-center font-bold">Błąd 404</p>
+        <p class="caps text-center text-[0.72rem] text-ink-soft">paragon zwrotu</p>
+        <div class="rule"></div>
+        <div class="row"><span>Szukana strona</span><span class="lead" aria-hidden="true"></span><span>brak</span></div>
+        <div class="row"><span>Twoja strata</span><span class="lead" aria-hidden="true"></span><span>0 zł</span></div>
+        <div class="rule-double"></div>
+        <p class="font-display text-[2.4rem] leading-none font-bold tracking-tight">Tej strony tu nie ma</p>
+        <p class="mt-3 font-sans text-[0.95rem] text-ink-soft">Mogła zostać przeniesiona albo w adresie jest literówka.</p>
+        <div class="mt-6 flex items-center justify-between gap-4">
+          <a href="/" class="btn font-sans text-base">Strona główna</a>
+          <span class="stamp text-[1rem]">Zwrot</span>
+        </div>
+      </div>
+    </div>
+  </main>
+  <SiteFooter />
+</Layout>

@@ -13,7 +13,7 @@ Strona jest przejrzystym rachunkiem. Każda obietnica to pozycja z czasem albo c
 | paper-shade | #e4e4dc | sekcje przerywnikowe (usługi, FAQ) |
 | ink / ink-soft | #10132b / #484d68 | druk i tekst drugorzędny na papierze |
 | rule | #c9c9c0 | kropkowane linie prowadzące |
-| stamp | #e8481a | jedyny akcent: pieczątki, numery pozycji, zaznaczenie tekstu, obrys fokusu. Tylko na papierze. |
+| stamp | #b8360e | jedyny akcent: pieczątki, numery pozycji, zaznaczenie tekstu, obrys fokusu. Tylko na papierze. |
 
 Strategia: Committed. Kobalt niesie 40-50% powierzchni, papier resztę, pomarańcz występuje wyłącznie jako tusz pieczątki.
 
@@ -34,6 +34,7 @@ Strategia: Committed. Kobalt niesie 40-50% powierzchni, papier resztę, pomarań
 - Kalkulator (sekcja na kobalcie): suwaki z pomarańczowym uchwytem w papierowej obwódce, paragon z wynikiem; na telefonie przyklejony pasek z wynikiem nad suwakami. Logika w `src/lib/calc.js` z testami.
 - Personalizacja w nagłówku: pole „Sprawdź na swojej firmie” drukuje paragon z nazwą firmy odwiedzającego i wpisuje ją do formularza.
 - `.tear-t` / `.tear-b`: postrzępiona krawędź papieru na styku kobaltowych sekcji (ząbki w kolorze sekcji).
+- Bileciki przepływu w „Co robię”: po najechaniu zapalają się po kolei (pomarańcz), pokazując kroki automatu.
 - Taśma z kasy pod nagłówkiem (Ticker): przesuwa się, zatrzymuje pod kursorem, przy ograniczonym ruchu stoi.
 
 ## Ruch
