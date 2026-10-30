@@ -30,7 +30,7 @@ Kliknij linię za webhookiem → **Set up a filter**: nazwa `Nie bot`, warunek `
 ## 4. Maile (zadanie 8)
 1. Plus → **Gmail** → **Send an email** (połącz konto Google; przy koncie @gmail.com Make może poprosić o własnego klienta OAuth w Google Cloud, instrukcja jest w oknie łączenia).
    - To: `email`, Subject: `Kornel, odpowiedź na Twoje zgłoszenie`
-   - Treść (po ludzku, krótko):
+   - Treść: szablon HTML w `docs/email-do-klienta.html` (temat: `{{name}}, wybierz termin rozmowy`). Wcześniejsza wersja tekstowa:
      > Cześć {{name}},
      >
      > dzięki za wiadomość. Wybierz termin 30-minutowej rozmowy, który Ci pasuje: [link do harmonogramu spotkań].
