@@ -1,0 +1,131 @@
+---
+import { SITE } from '../lib/site.js';
+import { COMPANY_SIZES } from '../lib/form.js';
+
+const field = 'mt-2 block w-full rounded-sm border border-line bg-white px-3.5 py-3 text-ink placeholder:text-muted/60 focus:border-navy focus:outline-none aria-[invalid=true]:border-error';
+const label = 'block text-sm font-semibold text-navy';
+const error = 'mt-1.5 text-sm text-error empty:hidden';
+---
+<section id="kontakt" class="section">
+  <div class="wrap grid gap-12 md:grid-cols-[1fr_1.4fr] md:gap-20">
+    <div>
+      <p class="eyebrow">Bezpłatna rozmowa</p>
+      <h2 class="section-title mt-4">Opowiedz, co chcesz usprawnić</h2>
+      <p class="mt-5 text-muted">
+        Po wysłaniu formularza dostaniesz maila z linkiem do mojego kalendarza.
+        Sam wybierasz termin, a rozmowa trwa około 30 minut.
+      </p>
+      <p class="mt-5 text-muted">
+        Wolisz napisać od razu? <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+    </div>
+
+    <form id="contact-form" class="relative grid gap-5 sm:grid-cols-2" novalidate>
+      <div>
+        <label for="f-name" class={label}>Imię</label>
+        <input id="f-name" name="name" type="text" autocomplete="given-name" required class={field} aria-describedby="e-name" />
+        <p id="e-name" class={error} data-error-for="name"></p>
+      </div>
+      <div>
+        <label for="f-email" class={label}>E-mail</label>
+        <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required class={field} aria-describedby="e-email" />
+        <p id="e-email" class={error} data-error-for="email"></p>
+      </div>
+      <div>
+        <label for="f-company" class={label}>Nazwa firmy</label>
+        <input id="f-company" name="company" type="text" autocomplete="organization" required class={field} aria-describedby="e-company" />
+        <p id="e-company" class={error} data-error-for="company"></p>
+      </div>
+      <div>
+        <label for="f-size" class={label}>Wielkość firmy</label>
+        <select id="f-size" name="size" required class={field} aria-describedby="e-size">
+          <option value="">Wybierz</option>
+          {COMPANY_SIZES.map((size) => <option value={size}>{size === 'ponad 50' ? 'ponad 50 osób' : `${size} osób`}</option>)}
+        </select>
+        <p id="e-size" class={error} data-error-for="size"></p>
+      </div>
+      <div class="sm:col-span-2">
+        <label for="f-message" class={label}>Co chcesz usprawnić?</label>
+        <textarea id="f-message" name="message" rows="5" required class={field} aria-describedby="e-message" placeholder="Na przykład: odpisujemy na zapytania po kilku dniach, bo nikt nie pilnuje skrzynki."></textarea>
+        <p id="e-message" class={error} data-error-for="message"></p>
+      </div>
+
+      <!-- Pole-pułapka: ukryte przed ludźmi i czytnikami ekranu. Wypełniają je tylko boty. -->
+      <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+        <label for="f-website">Strona internetowa</label>
+        <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="flex items-start gap-3 text-sm text-muted">
+          <input name="consent" type="checkbox" required class="mt-1 size-4 shrink-0 accent-navy" aria-describedby="e-consent" />
+          <span>
+            Zgadzam się na przetwarzanie moich danych w celu odpowiedzi na zgłoszenie i umówienia rozmowy.
+            Szczegóły w <a class="link" href="/polityka-prywatnosci" target="_blank">polityce prywatności</a>.
+          </span>
+        </label>
+        <p id="e-consent" class={error} data-error-for="consent"></p>
+      </div>
+
+      <div class="sm:col-span-2">
+        <button type="submit" class="btn w-full sm:w-auto">{SITE.cta}</button>
+        <div id="form-status" class="mt-5 empty:hidden" role="status" aria-live="polite"></div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  import { validate, isBot } from '../lib/form.js';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+
+  function readForm() {
+    const fd = new FormData(form);
+    return {
+      name: String(fd.get('name') ?? ''),
+      email: String(fd.get('email') ?? ''),
+      company: String(fd.get('company') ?? ''),
+      size: String(fd.get('size') ?? ''),
+      message: String(fd.get('message') ?? ''),
+      consent: fd.get('consent') === 'on',
+      website: String(fd.get('website') ?? ''),
+    };
+  }
+
+  function showErrors(errors: Record<string, string>) {
+    form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((el) => {
+      const name = el.dataset.errorFor!;
+      el.textContent = errors[name] ?? '';
+      const input = form.elements.namedItem(name) as HTMLElement | null;
+      input?.setAttribute('aria-invalid', errors[name] ? 'true' : 'false');
+    });
+    const first = Object.keys(errors)[0];
+    if (first) (form.elements.namedItem(first) as HTMLElement | null)?.focus();
+  }
+
+  // Po pierwszej próbie wysyłki błędy znikają na bieżąco, gdy pole zostanie poprawione.
+  let touched = false;
+  form.addEventListener('input', () => {
+    if (!touched) return;
+    const errors = validate(readForm());
+    form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((el) => {
+      const name = el.dataset.errorFor!;
+      if (!errors[name] && el.textContent) {
+        el.textContent = '';
+        (form.elements.namedItem(name) as HTMLElement | null)?.setAttribute('aria-invalid', 'false');
+      }
+    });
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    touched = true;
+    const data = readForm();
+    const errors = validate(data);
+    showErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    if (isBot(data)) return;
+    // Wysyłka do Make dochodzi w zadaniu 9.
+  });
+</script>
