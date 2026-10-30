@@ -7,8 +7,8 @@ const steps = [
   { name: 'Wdrożenie', when: '1 do 4 tygodni', price: `od ${SITE.priceFrom}`, text: 'Buduję, testuję na Twoich danych i uczę zespół. Po starcie jestem w kontakcie.' },
 ];
 ---
-<section id="wspolpraca" class="section">
-  <div class="wrap grid gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
+<section id="wspolpraca" class="section bg-paper-shade">
+  <div class="wrap grid grid-cols-[minmax(0,1fr)] gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
     <div class="min-w-0">
       <h2 class="h-section text-ink">Trzy kroki i&nbsp;wiesz dokładnie, za co płacisz</h2>
       <p class="mt-6 max-w-[30rem] text-lg text-ink-soft">
@@ -20,7 +20,7 @@ const steps = [
       <div class="receipt text-[0.875rem] sm:p-8 sm:pb-12">
         <div class="row caps text-[0.72rem] text-ink-soft"><span>Poz.</span><span class="ml-3">Usługa</span><span>Czas / cena</span></div>
         <div class="rule"></div>
-        <ol class="divide-y divide-dashed divide-ink/20">
+        <ol class="scroll-print divide-y divide-dashed divide-ink/20">
           {steps.map((s, i) => (
             <li class="py-4">
               <div class="row text-[1rem] font-bold">

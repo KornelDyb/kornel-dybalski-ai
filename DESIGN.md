@@ -31,11 +31,15 @@ Strategia: Committed. Kobalt niesie 40-50% powierzchni, papier resztę, pomarań
 - `.btn` / `.btn-paper`: klawisz kasy, twarda krawędź 3px pod spodem i miękki cień; wciska się przy kliknięciu.
 - Kupon (Proof): papier z wyciętą perforacją po bokach i przerywaną ramką.
 - Formularz to blankiet zgłoszenia na papierze; po wysłaniu zamienia się w paragon z licznikiem „Czekasz”.
+- Kalkulator (sekcja na kobalcie): suwaki z pomarańczowym uchwytem w papierowej obwódce, paragon z wynikiem; na telefonie przyklejony pasek z wynikiem nad suwakami. Logika w `src/lib/calc.js` z testami.
+- Personalizacja w nagłówku: pole „Sprawdź na swojej firmie” drukuje paragon z nazwą firmy odwiedzającego i wpisuje ją do formularza.
+- `.tear-t` / `.tear-b`: postrzępiona krawędź papieru na styku kobaltowych sekcji (ząbki w kolorze sekcji).
+- Taśma z kasy pod nagłówkiem (Ticker): przesuwa się, zatrzymuje pod kursorem, przy ograniczonym ruchu stoi.
 
 ## Ruch
 
 - Jeden autorski moment: druk paragonu w nagłówku (papier wysuwa się skokowo, steps(12), linie pojawiają się po kolei, licznik dobiega do 00:42, pieczątka uderza). Przycisk „Wydrukuj jeszcze raz”.
-- Drugorzędne: wiersze usług zalewają się kobaltem pod kursorem (clip-path), paragony grozy prostują się przy najechaniu, pieczątka w „O mnie” uderza przy wejściu w kadr, plus FAQ obraca się w krzyżyk.
+- Drugorzędne: paragon we „Współpracy” drukuje się w miarę przewijania (animation-timeline: view(), tylko tam, gdzie przeglądarka to obsługuje), wiersze usług zalewają się kobaltem pod kursorem (clip-path), paragony grozy prostują się przy najechaniu, pieczątka w „O mnie” uderza przy wejściu w kadr, plus FAQ obraca się w krzyżyk.
 - Bez JS i przy prefers-reduced-motion wszystko jest widoczne od razu.
 
 ## Powierzchnie przeglądarki

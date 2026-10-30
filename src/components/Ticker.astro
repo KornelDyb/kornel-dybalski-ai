@@ -1,0 +1,28 @@
+---
+const items = [
+  'Odpowiedź na zgłoszenie w minutę',
+  'Klienci w jednym CRM, nie w pięciu Excelach',
+  'Raporty, które robią się same',
+  'Przypomnienia, o których nikt nie musi pamiętać',
+  'Zero ręcznego przepisywania',
+  'Pierwsza rozmowa 0 zł',
+];
+---
+<div class="ticker overflow-hidden border-b-2 border-dashed border-ink/20 bg-paper py-5" aria-label="Co zyskujesz">
+  <ul class="track flex w-max gap-10 font-mono text-[0.8rem] font-bold tracking-[0.1em] text-ink uppercase">
+    {[...items, ...items].map((item, i) => (
+      <li class="flex items-center gap-10 whitespace-nowrap" aria-hidden={i >= items.length ? 'true' : undefined}>
+        {item}<span class="size-1.5 rounded-full bg-stamp" aria-hidden="true"></span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .track { animation: tape 45s linear infinite; }
+  .ticker:hover .track { animation-play-state: paused; }
+  @keyframes tape { to { transform: translateX(calc(-50% - 1.25rem)); } }
+  @media (prefers-reduced-motion: reduce) {
+    .track { animation: none; flex-wrap: wrap; width: auto; padding-inline: 1.25rem; }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+import { SITE } from '../lib/site.js';
+
+const sliders = [
+  { id: 'inquiries', label: 'Zapytania od klientów tygodniowo', min: 5, max: 150, step: 5, value: 30, unit: '' },
+  { id: 'minutes', label: 'Minuty na obsługę jednego zapytania', min: 2, max: 40, step: 1, value: 10, unit: 'min' },
+  { id: 'reportHours', label: 'Godziny tygodniowo na przepisywanie i raporty', min: 0, max: 20, step: 1, value: 3, unit: 'h' },
+  { id: 'rate', label: 'Ile kosztuje godzina Twojej pracy', min: 30, max: 400, step: 10, value: 120, unit: 'zł' },
+];
+---
+<section id="kalkulator" class="tear-t tear-b relative bg-cobalt text-paper">
+  <div class="wrap section grid grid-cols-[minmax(0,1fr)] gap-14 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-20">
+    <div class="min-w-0">
+      <h2 class="h-section text-paper">A&nbsp;ile to kosztuje Ciebie?</h2>
+      <p class="mt-6 max-w-[32rem] text-lg text-cobalt-soft">
+        Przesuń suwaki tak, jak wygląda Twój tydzień. Paragon policzy, ile czasu
+        i pieniędzy zjada praca, którą może robić automat.
+      </p>
+      <div class="sticky top-[4.75rem] z-10 mt-8 flex items-baseline justify-between gap-3 rounded-lg bg-paper px-4 py-3 text-ink shadow-[0_12px_24px_-12px_rgb(4_8_60/0.7)] lg:hidden" aria-hidden="true">
+        <span class="font-mono text-[0.72rem] font-bold tracking-[0.08em] uppercase">Tracisz</span>
+        <span class="font-display text-2xl font-bold tracking-tight tabular-nums"><span data-r2="hours">35</span> h / mies.</span>
+        <span class="font-mono text-sm font-bold whitespace-nowrap" data-r2="money">4 160 zł</span>
+      </div>
+      <form id="calc" class="mt-8 space-y-8 lg:mt-10" onsubmit="return false">
+        {sliders.map((s) => (
+          <div>
+            <div class="flex items-baseline justify-between gap-4">
+              <label for={`c-${s.id}`} class="text-[0.98rem] font-medium">{s.label}</label>
+              <output for={`c-${s.id}`} class="shrink-0 font-mono text-lg font-bold whitespace-nowrap tabular-nums" data-out={s.id}>{s.value}{s.unit && ` ${s.unit}`}</output>
+            </div>
+            <input
+              id={`c-${s.id}`}
+              name={s.id}
+              type="range"
+              min={s.min}
+              max={s.max}
+              step={s.step}
+              value={s.value}
+              data-unit={s.unit}
+              class="range mt-3 w-full"
+            />
+          </div>
+        ))}
+      </form>
+    </div>
+
+    <div class="receipt-shadow min-w-0 lg:rotate-[1.5deg]">
+      <div class="receipt relative text-[0.875rem] sm:p-8 sm:pb-12" aria-live="polite">
+        <p class="caps text-center font-bold">Twój paragon grozy</p>
+        <p class="caps text-center text-[0.72rem] text-ink-soft">wyliczony z Twoich danych</p>
+        <div class="rule"></div>
+        <div class="row"><span>Obsługa zapytań</span><span class="lead" aria-hidden="true"></span><span data-r="inq">5,0 h/tydz.</span></div>
+        <div class="row"><span>Przepisywanie i raporty</span><span class="lead" aria-hidden="true"></span><span data-r="rep">3,0 h/tydz.</span></div>
+        <div class="row"><span>Tygodni w miesiącu</span><span class="lead" aria-hidden="true"></span><span>× 4,33</span></div>
+        <div class="rule-double"></div>
+        <p class="caps text-[0.75rem] text-ink-soft">Co miesiąc tracisz</p>
+        <p class="font-display text-[clamp(3.4rem,8vw,5.2rem)] leading-[0.95] font-bold tracking-[-0.04em] text-ink tabular-nums">
+          <span data-r="hours">35</span><span class="text-[0.45em] tracking-normal"> h</span>
+        </p>
+        <div class="row mt-2 text-[1rem] font-bold"><span>czyli dni roboczych</span><span class="lead" aria-hidden="true"></span><span data-r="days">4,3</span></div>
+        <div class="row text-[1rem] font-bold"><span>wartość Twojego czasu</span><span class="lead" aria-hidden="true"></span><span data-r="money">4 160 zł</span></div>
+        <div class="rule"></div>
+        <div class="flex flex-wrap items-center justify-between gap-5 pt-2">
+          <a href="#kontakt" class="btn font-sans text-base">Odzyskaj te godziny</a>
+          <span class="stamp text-[1rem]" data-r="stamp">Do odzyskania</span>
+        </div>
+        <p class="mt-5 font-sans text-[0.8rem] leading-snug text-ink-soft">
+          Wynik to szacunek z Twoich danych, nie obietnica. Na rozmowie sprawdzimy, ile z tego realnie przejmie automat.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2.25rem;
+    background: transparent;
+    cursor: pointer;
+    --p: 50%;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--color-paper) var(--p), rgb(205 209 250 / 0.3) var(--p));
+  }
+  .range::-moz-range-track { height: 6px; border-radius: 999px; background: rgb(205 209 250 / 0.3); }
+  .range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--color-paper); }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: calc(3px - 0.8rem);
+    border-radius: 50%;
+    background: var(--color-stamp);
+    border: 4px solid var(--color-paper);
+    box-shadow: 0 4px 12px rgb(4 8 60 / 0.5);
+    transition: transform 150ms var(--ease-out-expo);
+  }
+  .range::-moz-range-thumb {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    background: var(--color-stamp);
+    border: 4px solid var(--color-paper);
+    box-shadow: 0 4px 12px rgb(4 8 60 / 0.5);
+  }
+  .range:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .range:focus-visible { outline-offset: 6px; }
+</style>
+
+<script>
+  import { lostTime } from '../lib/calc.js';
+
+  const form = document.getElementById('calc') as HTMLFormElement;
+  const inputs = form.querySelectorAll<HTMLInputElement>('input[type=range]');
+  const r = (k: string) => document.querySelector(`[data-r=${k}]`) as HTMLElement;
+  const fmt1 = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const fmt0 = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let shown = 0;
+  let frame = 0;
+  function animateHours(target: number) {
+    cancelAnimationFrame(frame);
+    if (reduce) { shown = target; r('hours').textContent = fmt0.format(target); return; }
+    const from = shown;
+    const start = performance.now();
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / 450);
+      shown = from + (target - from) * (1 - Math.pow(1 - p, 3));
+      r('hours').textContent = fmt0.format(shown);
+      if (p < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+  }
+
+  function update() {
+    const v: Record<string, number> = {};
+    inputs.forEach((el) => {
+      v[el.name] = Number(el.value);
+      const pct = ((Number(el.value) - Number(el.min)) / (Number(el.max) - Number(el.min))) * 100;
+      el.style.setProperty('--p', `${pct}%`);
+      const out = form.querySelector(`[data-out=${el.name}]`) as HTMLElement;
+      out.textContent = el.dataset.unit ? `${el.value} ${el.dataset.unit}` : el.value;
+    });
+    const res = lostTime(v as any);
+    r('inq').textContent = `${fmt1.format((v.inquiries * v.minutes) / 60)} h/tydz.`;
+    r('rep').textContent = `${fmt1.format(v.reportHours)} h/tydz.`;
+    r('days').textContent = fmt1.format(res.days);
+    const money = `${fmt0.format(Math.round(res.money / 10) * 10)} zł`;
+    r('money').textContent = money;
+    (document.querySelector('[data-r2=money]') as HTMLElement).textContent = money;
+    (document.querySelector('[data-r2=hours]') as HTMLElement).textContent = fmt0.format(res.monthly);
+    animateHours(res.monthly);
+  }
+
+  form.addEventListener('input', update);
+  update();
+</script>
