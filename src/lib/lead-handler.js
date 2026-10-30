@@ -1,4 +1,4 @@
-// Serwerowa obsługa formularza (funkcja Cloudflare Pages /api/lead, plik functions/api/lead.js).
+// Serwerowa obsługa formularza (Cloudflare Worker, /api/lead, plik worker/index.js).
 // Adres webhooka Make zna tylko serwer, więc nie da się go podejrzeć w kodzie strony.
 import { validate, isBot, buildPayload } from './form.js';
 

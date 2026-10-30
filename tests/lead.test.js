@@ -58,15 +58,23 @@ test('Make nie działa albo brak adresu: 502 i 500', async () => {
   assert.equal((await handleLead(post(good), { ...opts(fakeFetch()), webhookUrl: '' })).status, 500);
 });
 
-test('funkcja Cloudflare bierze adres webhooka z env', async () => {
-  const { onRequest } = await import('../functions/api/lead.js');
+test('worker: /api/lead idzie do Make, reszta do plików strony z noindex na workers.dev', async () => {
+  const { default: worker } = await import('../worker/index.js');
   const original = globalThis.fetch;
   const calls = [];
   globalThis.fetch = async (url) => { calls.push(url); return new Response('Accepted'); };
+  const env = {
+    MAKE_WEBHOOK_URL: 'https://hook.eu2.make.com/z',
+    ASSETS: { fetch: async () => new Response('<html>', { headers: { 'content-type': 'text/html' } }) },
+  };
   try {
-    const res = await onRequest({ request: post(good), env: { MAKE_WEBHOOK_URL: 'https://hook.eu2.make.com/z' } });
-    assert.equal(res.status, 200);
+    const api = await worker.fetch(post(good), env);
+    assert.equal(api.status, 200);
     assert.deepEqual(calls, ['https://hook.eu2.make.com/z']);
+    const test = await worker.fetch(new Request('https://kornel-dybalski.abc.workers.dev/'), env);
+    assert.equal(test.headers.get('x-robots-tag'), 'noindex');
+    const prod = await worker.fetch(new Request('https://kornel-dybalski.pl/'), env);
+    assert.equal(prod.headers.get('x-robots-tag'), null);
   } finally {
     globalThis.fetch = original;
   }

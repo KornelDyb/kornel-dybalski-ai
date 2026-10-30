@@ -67,7 +67,7 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | --- | --- | --- | --- |
 | Strona | Astro + Tailwind CSS | szybka statyczna strona, tutoriale jako pliki Markdown | 0 zł |
 | Kod | repozytorium GitHub | historia zmian, automatyczne wdrożenia | 0 zł |
-| Hosting | Cloudflare Pages | zmiana na GitHubie = nowa wersja strony, bez limitu transferu | 0 zł |
+| Hosting | Cloudflare Workers (pliki strony + funkcja formularza) | zmiana na GitHubie = nowa wersja strony, bez limitu transferu | 0 zł |
 | Automatyzacja | Make, plan Free | 1000 kredytów/mies., ok. 150 zgłoszeń | 0 zł |
 | CRM | HubSpot Free | kontakty i transakcje, gotowe moduły w Make | 0 zł |
 | Terminy | Google Calendar, strona rezerwacji | klient sam wybiera godzinę | 0 zł |
@@ -84,7 +84,7 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 - Automatyczny mail brzmi jak robot → krótki tekst pisany Twoim językiem, bez sformułowań typowych dla AI.
 - RODO → polityka prywatności na osobnej podstronie, zgoda wymagana w formularzu.
 - Brak opinii → dowodem jest sama strona i oferta dla pierwszych 3 firm.
-- Adres pages.dev → domena kupiona przed promocją.
+- Adres workers.dev → domena kupiona przed promocją.
 
 **Założenia do sprawdzenia:**
 
@@ -101,12 +101,12 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | Astro zamiast czystego HTML | Tutoriale jako pliki Markdown, wygląd przez skill projektowy |
 | Make + HubSpot + Gmail + Google Calendar | Darmowe, popularne, gotowe połączenia |
 | Ceny „od X zł”, gwarancja zwrotu | Odsiewa osoby bez budżetu, zdejmuje ryzyko z klienta |
-| Hosting: Cloudflare Pages zamiast Netlify | Darmowy plan bez limitu transferu i z 500 wdrożeniami miesięcznie; na Netlify po wyczerpaniu 300 kredytów strona się wyłącza. Adres testowy pages.dev, potem własna domena |
+| Hosting: Cloudflare Workers zamiast Netlify | Darmowy plan bez limitu transferu i z 500 wdrożeniami miesięcznie; na Netlify po wyczerpaniu 300 kredytów strona się wyłącza. Adres testowy workers.dev, potem własna domena. Workers zamiast Pages, bo tak prowadzi nowy kreator Cloudflare |
 | Make na start, n8n później | Make jest darmowy; funkcja /api/lead wysyła zwykły JSON, więc zmiana to tylko nowy adres webhooka |
 
 ## Zadania MVP
 
-- [ ] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Cloudflare Pages (gotowe, gdy pod adresem pages.dev widać stronę).
+- [ ] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Cloudflare Workers (gotowe, gdy pod adresem workers.dev widać stronę).
 - [x] 2\. Wygląd: kolory, czcionki, układ w kierunku Konsultant (gotowe, gdy nagłówek wygląda jak w szkicu A na telefonie i komputerze).
 - [x] 3\. Treść sekcji 1-7 (gotowe, gdy wszystkie sekcje mają prawdziwy tekst i zdjęcie).
 - [x] 4\. Formularz z walidacją i polem-pułapką, na razie bez wysyłki (gotowe, gdy puste pola i zły mail pokazują błąd).
@@ -140,7 +140,7 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | Commit | Zapisany punkt w historii projektu z opisem, co się zmieniło |
 | JSON | Prosty format danych, w którym strona wysyła zgłoszenie do Make |
 | Payload | Paczka danych wysyłana w jednym zgłoszeniu |
-| Funkcja serwerowa (Pages Function) | Mały program na serwerze Cloudflare, który odbiera formularz, zanim dane pójdą dalej |
+| Funkcja serwerowa (Worker) | Mały program na serwerze Cloudflare, który odbiera formularz, zanim dane pójdą dalej |
 | Rate limit | Limit zgłoszeń z jednego adresu w danym czasie, chroni przed zasypaniem spamem |
 | Nagłówki bezpieczeństwa | Instrukcje dla przeglądarki, co strona może wczytywać i czy można ją osadzać na innych stronach |
 | Open Graph (og:image) | Obrazek i opis, które pokazują się przy udostępnieniu linku na LinkedIn czy Facebooku |
@@ -148,9 +148,9 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 
 ## Stan prac i ustalenia z budowy
 
-**Zrobione w kodzie:** zadania 2, 3, 4, 5 i 9 oraz projekt Astro z zadania 1. Brakuje repozytorium na GitHubie i podpięcia Cloudflare Pages (wymaga Twojego konta).
+**Zrobione w kodzie:** zadania 2, 3, 4, 5 i 9 oraz projekt Astro z zadania 1. Brakuje repozytorium na GitHubie i podpięcia Cloudflare (wymaga Twojego konta).
 
-**Zmiana z budowy:** formularz nie wysyła danych prosto do Make. Wysyła je do funkcji na Cloudflare (`/api/lead`, plik `functions/api/lead.js`), która sprawdza je drugi raz, odsiewa boty i dopiero przekazuje do Make. Limit zgłoszeń z jednego IP dodamy regułą Rate limiting w Cloudflare po podpięciu własnej domeny (na adresie pages.dev takiej reguły nie da się ustawić). Adres webhooka jest w zmiennej `MAKE_WEBHOOK_URL` (tylko na serwerze, nie widać go w kodzie strony). Instrukcja konfiguracji Make: `docs/make-krok-po-kroku.md`.
+**Zmiana z budowy:** formularz nie wysyła danych prosto do Make. Wysyła je do Workera na Cloudflare (`/api/lead`, plik `worker/index.js`), która sprawdza je drugi raz, odsiewa boty i dopiero przekazuje do Make. Limit zgłoszeń z jednego IP dodamy regułą Rate limiting w Cloudflare po podpięciu własnej domeny (na adresie workers.dev takiej reguły nie da się ustawić). Adres webhooka jest w zmiennej `MAKE_WEBHOOK_URL` (tylko na serwerze, nie widać go w kodzie strony). Instrukcja konfiguracji Make: `docs/make-krok-po-kroku.md`.
 
 **Narzędzie automatyzacji:** na start Make (darmowy plan). Możliwe przeniesienie do n8n, gdy przepływ będzie działał; funkcja `/api/lead` wysyła zwykły JSON, więc zmiana to tylko nowy adres w `MAKE_WEBHOOK_URL`.
 
@@ -179,7 +179,7 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 - Polityka prywatności napisana dla Kornela jako osoby prywatnej; do przejrzenia przez prawnika, gdy ustalisz formę działalności.
 - Zdjęcie i link do LinkedIn wzięte z Twojej strony KornelDyb.github.io.
 - Regulamin: szkic w `docs/regulamin-szkic.md`, do decyzji z prawnikiem (nieopublikowany).
-- Statystyki: po założeniu konta w Umami Cloud ustaw `PUBLIC_UMAMI_WEBSITE_ID` w Cloudflare (zmienna Text). Zdarzenia: cta-naglowek, personalizacja, kalkulator-uzyty, cta-kalkulator, cta-kupon, formularz-wyslany.
+- Statystyki: po założeniu konta w Umami Cloud ustaw `PUBLIC_UMAMI_WEBSITE_ID` w Cloudflare (Settings > Build > Build variables). Zdarzenia: cta-naglowek, personalizacja, kalkulator-uzyty, cta-kalkulator, cta-kupon, formularz-wyslany.
 - Przy zmianie domeny: zmień `site` w `astro.config.mjs` i adres w `public/robots.txt`.
 
 **Decyzje techniczne z budowy:**
