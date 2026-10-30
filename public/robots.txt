@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kornel-dybalski.pages.dev/sitemap.xml
+Sitemap: https://kornel-dybalski.korneldybalski.workers.dev/sitemap.xml
