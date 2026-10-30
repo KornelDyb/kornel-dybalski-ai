@@ -2,76 +2,87 @@
 import { SITE } from '../lib/site.js';
 import { COMPANY_SIZES } from '../lib/form.js';
 
-const field = 'mt-2 block w-full rounded-sm border border-line bg-white px-3.5 py-3 text-ink placeholder:text-muted/60 focus:border-navy focus:outline-none aria-[invalid=true]:border-error';
-const label = 'block text-sm font-semibold text-navy';
-const error = 'mt-1.5 text-sm text-error empty:hidden';
+const field = 'mt-2 block w-full rounded-md border-2 border-ink/15 bg-white/70 px-3.5 py-3 text-ink placeholder:text-ink-soft/70 transition-colors hover:border-ink/30 focus:border-cobalt focus:bg-white focus:outline-none aria-[invalid=true]:border-error';
+const label = 'block font-mono text-[0.72rem] font-bold tracking-[0.1em] text-ink uppercase';
+const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
 ---
-<section id="kontakt" class="section">
-  <div class="wrap grid gap-12 md:grid-cols-[1fr_1.4fr] md:gap-20">
-    <div>
-      <p class="eyebrow">Bezpłatna rozmowa</p>
-      <h2 class="section-title mt-4">Opowiedz, co chcesz usprawnić</h2>
-      <p class="mt-5 text-muted">
-        Po wysłaniu formularza dostaniesz maila z linkiem do mojego kalendarza.
-        Sam wybierasz termin, a rozmowa trwa około 30 minut.
+<section id="kontakt" class="relative overflow-hidden bg-cobalt text-paper">
+  <div class="wrap section grid gap-14 lg:grid-cols-[1fr_1.35fr] lg:gap-20">
+    <div class="min-w-0 lg:sticky lg:top-28 lg:self-start">
+      <h2 class="h-section text-paper">Opowiedz, co chcesz usprawnić</h2>
+      <p class="mt-7 max-w-[30rem] text-lg text-cobalt-soft">
+        Po wysłaniu dostaniesz maila z linkiem do mojego kalendarza. Sam wybierasz
+        termin, a rozmowa trwa około 30 minut. Zmierz, ile czekałeś.
       </p>
-      <p class="mt-5 text-muted">
-        Wolisz napisać od razu? <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <p class="mt-6 text-cobalt-soft">
+        Wolisz napisać od razu?<br />
+        <a class="font-semibold text-paper underline decoration-2 underline-offset-[0.3em]" href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </p>
     </div>
 
-    <form id="contact-form" class="relative grid gap-5 sm:grid-cols-2" data-email={SITE.email} novalidate>
-      <div>
-        <label for="f-name" class={label}>Imię</label>
-        <input id="f-name" name="name" type="text" autocomplete="given-name" required class={field} aria-describedby="e-name" />
-        <p id="e-name" class={error} data-error-for="name"></p>
-      </div>
-      <div>
-        <label for="f-email" class={label}>E-mail</label>
-        <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required class={field} aria-describedby="e-email" />
-        <p id="e-email" class={error} data-error-for="email"></p>
-      </div>
-      <div>
-        <label for="f-company" class={label}>Nazwa firmy</label>
-        <input id="f-company" name="company" type="text" autocomplete="organization" required class={field} aria-describedby="e-company" />
-        <p id="e-company" class={error} data-error-for="company"></p>
-      </div>
-      <div>
-        <label for="f-size" class={label}>Wielkość firmy</label>
-        <select id="f-size" name="size" required class={field} aria-describedby="e-size">
-          <option value="">Wybierz</option>
-          {COMPANY_SIZES.map((size) => <option value={size}>{size === 'ponad 50' ? 'ponad 50 osób' : `${size} osób`}</option>)}
-        </select>
-        <p id="e-size" class={error} data-error-for="size"></p>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="f-message" class={label}>Co chcesz usprawnić?</label>
-        <textarea id="f-message" name="message" rows="5" required class={field} aria-describedby="e-message" placeholder="Na przykład: odpisujemy na zapytania po kilku dniach, bo nikt nie pilnuje skrzynki."></textarea>
-        <p id="e-message" class={error} data-error-for="message"></p>
-      </div>
+    <div class="receipt-shadow min-w-0">
+      <form id="contact-form" class="receipt relative font-sans text-base sm:p-9 sm:pb-14" data-email={SITE.email} novalidate>
+        <div class="row font-mono text-[0.72rem] font-bold tracking-[0.12em] text-ink-soft uppercase">
+          <span>Zgłoszenie</span><span>bezpłatna rozmowa</span>
+        </div>
+        <div class="rule"></div>
 
-      <!-- Pole-pułapka: ukryte przed ludźmi i czytnikami ekranu. Wypełniają je tylko boty. -->
-      <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
-        <label for="f-website">Strona internetowa</label>
-        <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-      </div>
+        <div id="form-fields" class="grid gap-5 pt-3 sm:grid-cols-2">
+          <div>
+            <label for="f-name" class={label}>Imię</label>
+            <input id="f-name" name="name" type="text" autocomplete="given-name" required class={field} aria-describedby="e-name" />
+            <p id="e-name" class={error} data-error-for="name"></p>
+          </div>
+          <div>
+            <label for="f-email" class={label}>E-mail</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required class={field} aria-describedby="e-email" />
+            <p id="e-email" class={error} data-error-for="email"></p>
+          </div>
+          <div>
+            <label for="f-company" class={label}>Nazwa firmy</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization" required class={field} aria-describedby="e-company" />
+            <p id="e-company" class={error} data-error-for="company"></p>
+          </div>
+          <div>
+            <label for="f-size" class={label}>Wielkość firmy</label>
+            <select id="f-size" name="size" required class={field} aria-describedby="e-size">
+              <option value="">Wybierz</option>
+              {COMPANY_SIZES.map((size) => <option value={size}>{size === 'ponad 50' ? 'ponad 50 osób' : `${size} osób`}</option>)}
+            </select>
+            <p id="e-size" class={error} data-error-for="size"></p>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="f-message" class={label}>Co chcesz usprawnić?</label>
+            <textarea id="f-message" name="message" rows="4" required class={field} aria-describedby="e-message" placeholder="Na przykład: odpisujemy na zapytania po kilku dniach, bo nikt nie pilnuje skrzynki."></textarea>
+            <p id="e-message" class={error} data-error-for="message"></p>
+          </div>
 
-      <div class="sm:col-span-2">
-        <label class="flex items-start gap-3 text-sm text-muted">
-          <input name="consent" type="checkbox" required class="mt-1 size-4 shrink-0 accent-navy" aria-describedby="e-consent" />
-          <span>
-            Zgadzam się na przetwarzanie moich danych w celu odpowiedzi na zgłoszenie i umówienia rozmowy.
-            Szczegóły w <a class="link" href="/polityka-prywatnosci" target="_blank">polityce prywatności</a>.
-          </span>
-        </label>
-        <p id="e-consent" class={error} data-error-for="consent"></p>
-      </div>
+          <!-- Pole-pułapka: ukryte przed ludźmi i czytnikami ekranu. Wypełniają je tylko boty. -->
+          <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+            <label for="f-website">Strona internetowa</label>
+            <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
 
-      <div class="sm:col-span-2">
-        <button type="submit" class="btn w-full sm:w-auto">{SITE.cta}</button>
-        <div id="form-status" class="mt-5 empty:hidden focus:outline-none" tabindex="-1" role="status" aria-live="polite"></div>
-      </div>
-    </form>
+          <div class="sm:col-span-2">
+            <label class="flex cursor-pointer items-start gap-3 text-sm text-ink-soft">
+              <input name="consent" type="checkbox" required class="mt-0.5 size-[1.15rem] shrink-0 accent-cobalt" aria-describedby="e-consent" />
+              <span>
+                Zgadzam się na przetwarzanie moich danych w celu odpowiedzi na zgłoszenie i umówienia rozmowy.
+                Szczegóły w <a class="link-ink text-ink" href="/polityka-prywatnosci" target="_blank">polityce prywatności</a>.
+              </span>
+            </label>
+            <p id="e-consent" class={error} data-error-for="consent"></p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <div class="rule"></div>
+            <button type="submit" class="btn mt-3 w-full text-lg">{SITE.cta}</button>
+          </div>
+        </div>
+
+        <div id="form-status" class="empty:hidden focus:outline-none" tabindex="-1" role="status" aria-live="polite"></div>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -130,22 +141,51 @@ const error = 'mt-1.5 text-sm text-error empty:hidden';
     button.textContent = kind === 'sending' ? 'Wysyłam...' : buttonLabel;
     form.setAttribute('aria-busy', String(kind === 'sending'));
 
-    if (kind === 'success') {
+    if (kind === 'error') {
       status.innerHTML = `
-        <div class="border-l-2 border-success bg-white px-5 py-4">
-          <p class="font-serif text-xl text-navy">Dzięki!</p>
-          <p class="mt-1 text-muted">Sprawdź skrzynkę, za chwilę dostaniesz link do wyboru terminu.</p>
-        </div>`;
-    } else if (kind === 'error') {
-      status.innerHTML = `
-        <div class="border-l-2 border-error bg-white px-5 py-4">
+        <div class="mt-5 rounded-md border-2 border-error/40 bg-white px-5 py-4">
           <p class="font-semibold text-error">Nie udało się wysłać formularza.</p>
-          <p class="mt-1 text-muted">Spróbuj jeszcze raz za chwilę albo napisz bezpośrednio na
-            <a class="link" href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>.</p>
+          <p class="mt-1 text-ink-soft">Spróbuj jeszcze raz za chwilę albo napisz bezpośrednio na
+            <a class="link-ink text-ink" href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>.</p>
         </div>`;
-    } else {
+    } else if (kind !== 'success') {
       status.innerHTML = '';
     }
+  }
+
+  // Po wysłaniu blankiet zamienia się w paragon z licznikiem: klient widzi, ile czeka na maila.
+  let waitTimer: number | undefined;
+  function showReceipt(name: string, company: string) {
+    const fields = document.getElementById('form-fields')!;
+    const now = new Date();
+    const hhmm = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    status.innerHTML = `
+      <div class="font-mono text-[0.8125rem] leading-[1.8]">
+        <div class="row"><span>Od</span><span data-fill="who"></span></div>
+        <div class="row"><span>Wysłano</span><span>${hhmm}</span></div>
+        <div class="rule"></div>
+        <div class="row"><span>00:00</span><span>Formularz wysłany</span><span class="lead"></span><span class="font-bold">OK</span></div>
+        <div class="row"><span>w toku</span><span>Mail z terminami</span><span class="lead"></span><span class="font-bold text-cobalt">w drodze</span></div>
+        <div class="rule-double"></div>
+        <div class="row text-[1rem] font-bold"><span class="uppercase tracking-[0.06em]">Czekasz</span><span class="lead"></span><span data-fill="wait">00:00</span></div>
+      </div>
+      <p class="mt-6 font-display text-[2rem] leading-none font-bold tracking-tight text-ink">Dzięki!</p>
+      <p class="mt-2 text-ink-soft">Sprawdź skrzynkę, za chwilę dostaniesz link do wyboru terminu.</p>
+      <div class="mt-5"><span class="stamp text-[1.1rem]">Przyjęte</span></div>`;
+    (status.querySelector('[data-fill=who]') as HTMLElement).textContent = `${name}, ${company}`;
+    fields.hidden = true;
+    const waitEl = status.querySelector('[data-fill=wait]') as HTMLElement;
+    const start = Date.now();
+    clearInterval(waitTimer);
+    waitTimer = window.setInterval(() => {
+      const s = Math.floor((Date.now() - start) / 1000);
+      waitEl.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+      if (s >= 600) clearInterval(waitTimer);
+    }, 1000);
+    status.firstElementChild?.animate(
+      [{ opacity: 0, transform: 'translateY(-12px)', filter: 'blur(2px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }],
+      { duration: 500, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+    );
   }
 
   async function send(payload: object) {
@@ -181,6 +221,7 @@ const error = 'mt-1.5 text-sm text-error empty:hidden';
       form.reset();
       touched = false;
       setStatus('success');
+      showReceipt(data.name.trim(), data.company.trim());
     } catch (err) {
       console.error(err);
       setStatus('error');

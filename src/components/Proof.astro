@@ -1,24 +1,41 @@
 ---
 import { SITE } from '../lib/site.js';
 ---
-<section class="bg-navy text-white">
-  <div class="wrap grid gap-10 py-20 md:grid-cols-[1.3fr_1fr] md:items-center md:gap-16 md:py-24">
-    <div>
-      <p class="eyebrow text-[#e3a77c]">Zamiast opinii</p>
-      <h2 class="section-title mt-4 text-white">Wypełnij formularz i zobacz, jak szybko odpowiem</h2>
-      <p class="mt-6 max-w-[34rem] text-white/80">
-        Formularz na tej stronie to moja własna automatyzacja. Twoje zgłoszenie
-        trafia do CRM, a w ciągu kilku minut dostajesz maila z linkiem do wyboru
-        terminu. Dokładnie takie rozwiązania buduję dla klientów.
+<section id="dowod" class="relative overflow-hidden bg-cobalt text-paper">
+  <div class="wrap grid gap-14 py-20 md:py-28 lg:grid-cols-[1.3fr_1fr] lg:items-center lg:gap-20">
+    <div class="min-w-0">
+      <h2 class="h-section text-paper">Wypełnij formularz i&nbsp;zobacz, jak szybko odpowiem</h2>
+      <p class="mt-7 max-w-[36rem] text-lg text-cobalt-soft">
+        Nie mam jeszcze opinii klientów, więc pokazuję robotę. Formularz na tej
+        stronie to moja własna automatyzacja: zgłoszenie trafia do CRM, a Ty w minutę
+        dostajesz maila z linkiem do wyboru terminu. Takie rozwiązania buduję dla klientów.
       </p>
     </div>
-    <div class="border-l-2 border-accent pl-6 md:pl-8">
-      <p class="font-serif text-2xl leading-snug text-white">Oferta dla pierwszych 3 firm</p>
-      <p class="mt-3 text-white/80">
-        Pierwsze trzy wdrożenia robię w niższej cenie. W zamian proszę o szczerą
-        opinię, którą będę mógł tu pokazać.
-      </p>
-      <a href="#kontakt" class="btn btn-light mt-7">{SITE.cta}</a>
+    <div class="coupon relative min-w-0 rotate-[1.5deg] rounded-lg bg-paper p-7 text-ink sm:p-9">
+      <div class="flex items-center justify-between gap-4 font-mono text-[0.72rem] font-bold tracking-[0.12em] text-ink-soft uppercase">
+        <span>Kupon</span><span>ważny dla 3 firm</span>
+      </div>
+      <p class="mt-5 font-display text-[clamp(1.9rem,3.4vw,2.5rem)] leading-none font-bold tracking-tight">Pierwsze trzy wdrożenia taniej</p>
+      <p class="mt-4 text-ink-soft">W zamian proszę o szczerą opinię, którą pokażę na tej stronie.</p>
+      <a href="#kontakt" class="btn mt-7 w-full sm:w-auto">{SITE.cta}</a>
     </div>
   </div>
 </section>
+
+<style>
+  /* Perforacja kuponu: kropki wycięte z papieru po obu bokach i przerywana linia. */
+  .coupon {
+    box-shadow: 0 30px 50px -24px rgb(4 8 60 / 0.6);
+    mask:
+      radial-gradient(circle 7px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle 7px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+  }
+  .coupon::before {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    border: 2px dashed rgb(16 19 43 / 0.28);
+    border-radius: 0.4rem;
+    pointer-events: none;
+  }
+</style>

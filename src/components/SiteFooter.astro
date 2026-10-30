@@ -2,13 +2,13 @@
 import { SITE } from '../lib/site.js';
 const year = new Date().getFullYear();
 ---
-<footer class="border-t border-line">
-  <div class="wrap flex flex-col gap-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-    <p>© {year} {SITE.name}</p>
+<footer class="bg-cobalt-deep text-cobalt-soft">
+  <div class="wrap flex flex-col gap-5 py-10 text-sm sm:flex-row sm:items-center sm:justify-between">
+    <p><span class="font-display text-base font-bold text-paper">{SITE.name}</span> · AI consulting · © {year}</p>
     <nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label="Stopka">
-      <a class="hover:text-navy" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-      <a class="hover:text-navy" href={SITE.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-      <a class="hover:text-navy" href="/polityka-prywatnosci">Polityka prywatności</a>
+      <a class="hover:text-paper" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <a class="hover:text-paper" href={SITE.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+      <a class="hover:text-paper" href="/polityka-prywatnosci">Polityka prywatności</a>
     </nav>
   </div>
 </footer>

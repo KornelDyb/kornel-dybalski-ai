@@ -1,105 +1,173 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/newsreader';
-@import '@fontsource-variable/instrument-sans';
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/onest';
+@import '@fontsource-variable/jetbrains-mono';
 
-/* Kierunek "Konsultant": jasne chłodne tło, głęboki granat, jeden ciepły akcent. */
+/* Świat "Paragon": kobaltowe pola, termiczny papier, czarny druk, pomarańczowa pieczątka. */
 @theme {
-  --color-paper: #f4f6f9;
-  --color-surface: #ffffff;
-  --color-ink: #0e1a2b;
-  --color-navy: #142a4c;
-  --color-navy-deep: #0d1d36;
-  --color-muted: #566275;
-  --color-line: #d9dfe7;
-  --color-accent: #c0703a;
-  --color-error: #a8322b;
-  --color-success: #2f6b4f;
+  --color-cobalt: #1e2cc0;
+  --color-cobalt-deep: #121c86;
+  --color-cobalt-soft: #cdd1fa;
+  --color-paper: #f3f3ee;
+  --color-paper-shade: #e4e4dc;
+  --color-ink: #10132b;
+  --color-ink-soft: #484d68;
+  --color-rule: #c9c9c0;
+  --color-stamp: #e8481a;
+  --color-error: #b3261e;
+  --color-ok: #1f7a4d;
 
-  --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
+  --font-sans: 'Onest Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+    scrollbar-color: var(--color-cobalt) var(--color-paper);
   }
   body {
     background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 1.0625rem;
-    line-height: 1.65;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    caret-color: var(--color-cobalt);
+  }
+  ::selection {
+    background: var(--color-stamp);
+    color: var(--color-paper);
   }
   h1, h2, h3 {
-    font-family: var(--font-serif);
-    color: var(--color-navy);
-    font-weight: 450;
-    line-height: 1.12;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
     text-wrap: balance;
+    font-variation-settings: 'wdth' 90;
   }
   p { text-wrap: pretty; }
+  a { text-underline-offset: 0.22em; }
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 3px solid var(--color-stamp);
     outline-offset: 3px;
+    border-radius: 2px;
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    *, *::before, *::after { transition: none !important; animation: none !important; }
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
   }
 }
 
 @layer components {
   .wrap {
     width: 100%;
-    max-width: 72rem;
+    max-width: 76rem;
     margin-inline: auto;
-    padding-inline: 1.25rem;
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
   }
   @media (min-width: 768px) {
-    .wrap { padding-inline: 2rem; }
+    .wrap {
+      padding-left: max(2.5rem, env(safe-area-inset-left, 0px));
+      padding-right: max(2.5rem, env(safe-area-inset-right, 0px));
+    }
   }
-  .eyebrow {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-accent);
+
+  .section { padding-block: 5rem; }
+  @media (min-width: 768px) { .section { padding-block: 8rem; } }
+
+  .h-section {
+    font-size: clamp(2.25rem, 5.2vw, 4rem);
+    max-width: 18ch;
   }
+
+  /* Przyciski: papier na kobalcie, kobalt na papierze. Wciskają się jak klawisz kasy. */
   .btn {
+    --btn-bg: var(--color-cobalt);
+    --btn-fg: var(--color-paper);
+    --btn-edge: var(--color-cobalt-deep);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    min-height: 3rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.25rem;
-    background: var(--color-navy);
-    color: #fff;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: 0.5rem;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     font-weight: 600;
     text-decoration: none;
-    transition: background-color 150ms ease;
+    box-shadow: 0 3px 0 0 var(--btn-edge), 0 10px 24px -10px rgb(16 19 43 / 0.5);
+    transition: transform 160ms var(--ease-out-expo), box-shadow 160ms var(--ease-out-expo), background-color 160ms;
   }
-  .btn:hover { background: var(--color-navy-deep); }
-  .btn-light {
-    background: #fff;
-    color: var(--color-navy);
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 0 0 var(--btn-edge), 0 14px 28px -10px rgb(16 19 43 / 0.55); }
+  .btn:active { transform: translateY(3px); box-shadow: 0 0 0 0 var(--btn-edge), 0 4px 10px -6px rgb(16 19 43 / 0.5); }
+  .btn:disabled { opacity: 0.7; cursor: progress; transform: none; }
+  .btn-paper {
+    --btn-bg: var(--color-paper);
+    --btn-fg: var(--color-cobalt);
+    --btn-edge: #b9bccf;
   }
-  .btn-light:hover { background: var(--color-paper); }
-  .link {
-    color: var(--color-navy);
+  .btn .arrow { transition: transform 200ms var(--ease-out-expo); }
+  .btn:hover .arrow { transform: translateX(3px); }
+
+  /* Papier termiczny z ząbkowaną dolną krawędzią. Cień daje wrapper (.receipt-shadow), bo maska go ucina. */
+  .receipt {
+    --tooth: 9px;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    font-variant-numeric: tabular-nums;
+    padding: 1.4rem 1.4rem calc(1.4rem + var(--tooth));
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+  }
+  .receipt-shadow { filter: drop-shadow(0 18px 28px rgb(8 12 70 / 0.35)) drop-shadow(0 2px 3px rgb(8 12 70 / 0.2)); }
+  .receipt .row { display: flex; align-items: baseline; gap: 0.5rem; }
+  .receipt .row > :last-child { margin-left: auto; text-align: right; }
+  .receipt .lead {
+    flex: 1;
+    min-width: 1rem;
+    border-bottom: 1.5px dotted var(--color-rule);
+    transform: translateY(-0.3em);
+  }
+  .receipt .rule { border-top: 1.5px dashed var(--color-ink); opacity: 0.35; margin-block: 0.6rem; }
+  .receipt .rule-double { border-top: 3px double var(--color-ink); margin-block: 0.7rem; }
+  .receipt .caps { text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* Pieczątka: obrys, lekko obrócona, z nierównym tuszem. */
+  .stamp {
+    display: inline-block;
+    padding: 0.35em 0.7em;
+    border: 3px solid currentColor;
+    border-radius: 0.4rem;
+    color: var(--color-stamp);
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+    transform: rotate(-7deg);
+    mix-blend-mode: multiply;
+  }
+
+  .link-ink {
+    color: inherit;
     text-decoration: underline;
-    text-underline-offset: 0.2em;
-    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: var(--color-stamp);
+    transition: text-decoration-thickness 150ms;
   }
-  .section { padding-block: 4.5rem; }
-  @media (min-width: 768px) {
-    .section { padding-block: 6.5rem; }
-  }
-  .section-title {
-    font-size: clamp(2rem, 4vw, 2.75rem);
-    max-width: 22ch;
-  }
+  .link-ink:hover { text-decoration-thickness: 3px; }
 }

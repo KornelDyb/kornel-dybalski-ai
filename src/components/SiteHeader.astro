@@ -2,19 +2,32 @@
 import { SITE } from '../lib/site.js';
 const { home = true } = Astro.props;
 ---
-<header class="sticky top-0 z-40 border-b border-line/70 bg-paper/90 backdrop-blur">
+<header class="site-header sticky z-40 bg-cobalt text-paper">
   <div class="wrap flex h-16 items-center justify-between gap-4">
-    <a href="/" class="font-serif text-xl text-navy no-underline">{SITE.name}</a>
-    {home && (
-      <nav class="flex items-center gap-6 text-[0.95rem]" aria-label="Główna">
-        <a href="#co-robie" class="hidden text-muted hover:text-navy md:inline">Co robię</a>
-        <a href="#wspolpraca" class="hidden text-muted hover:text-navy md:inline">Współpraca</a>
-        <a href="#faq" class="hidden text-muted hover:text-navy md:inline">FAQ</a>
-        <a href="#kontakt" class="btn min-h-10 px-4 py-2 text-sm">
+    <a href="/" class="font-display text-[1.35rem] font-bold tracking-tight text-paper no-underline">{SITE.name}</a>
+    {home ? (
+      <nav class="flex items-center gap-7 text-[0.95rem]" aria-label="Główna">
+        <a href="#co-robie" class="hidden text-cobalt-soft transition-colors hover:text-paper md:inline">Co robię</a>
+        <a href="#wspolpraca" class="hidden text-cobalt-soft transition-colors hover:text-paper md:inline">Współpraca</a>
+        <a href="#faq" class="hidden text-cobalt-soft transition-colors hover:text-paper md:inline">FAQ</a>
+        <a href="#kontakt" class="btn btn-paper min-h-10 px-4 py-2 text-sm">
           <span class="sm:hidden">Umów rozmowę</span>
           <span class="hidden sm:inline">{SITE.cta}</span>
         </a>
       </nav>
+    ) : (
+      <a href="/" class="text-sm text-cobalt-soft hover:text-paper">Wróć na stronę główną</a>
     )}
   </div>
 </header>
+
+<style>
+  .site-header { top: env(safe-area-inset-top, 0px); transition: box-shadow 200ms; }
+  :global(.scrolled) .site-header { box-shadow: 0 10px 30px -18px rgb(4 8 60 / 0.8); }
+</style>
+
+<script>
+  const onScroll = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>

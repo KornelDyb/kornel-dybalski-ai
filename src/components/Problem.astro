@@ -1,31 +1,76 @@
 ---
-const items = [
+// "Paragony grozy": trzy znane sytuacje rozpisane jak rachunek. Czasy są przykładowe.
+const receipts = [
   {
-    title: 'Zapytanie czeka dwa dni na odpowiedź',
-    text: 'Klient napisał w poniedziałek. W środę, kiedy znajdziesz chwilę, ma już ofertę od konkurencji.',
+    title: 'Zapytanie od klienta',
+    rows: [
+      ['pon 10:12', 'Mail od klienta'],
+      ['śr 16:40', 'Twoja odpowiedź'],
+    ],
+    total: ['Czekał', '2 dni'],
+    verdict: 'Wybrał konkurencję',
+    text: 'Klient napisał w poniedziałek. Zanim znalazłeś chwilę, miał już ofertę od kogoś innego.',
+    tilt: '-2deg',
   },
   {
-    title: 'Klienci są w Excelu, mailach i w głowie',
-    text: 'Każdy w zespole prowadzi swoją listę. Nikt nie wie, komu obiecano telefon i kto czeka na wycenę.',
+    title: 'Lista klientów',
+    rows: [
+      ['1', 'Excel handlowca'],
+      ['2', 'Skrzynka szefa'],
+      ['3', 'Notes w aucie'],
+    ],
+    total: ['Wersje prawdy', '3'],
+    verdict: 'Nikt nie wie, kto dzwoni',
+    text: 'Każdy prowadzi swoją listę. Nikt nie wie, komu obiecano telefon i kto czeka na wycenę.',
+    tilt: '1.5deg',
   },
   {
-    title: 'Raporty zamiast sprzedaży',
-    text: 'Piątkowe popołudnie schodzi na przepisywanie liczb z jednego miejsca w drugie. Co tydzień to samo.',
+    title: 'Piątkowy raport',
+    rows: [
+      ['0:40', 'Eksport z systemu'],
+      ['1:30', 'Przepisywanie'],
+      ['0:50', 'Wykres na poniedziałek'],
+    ],
+    total: ['Co tydzień', '3 h'],
+    verdict: 'Zamiast sprzedaży',
+    text: 'Piątkowe popołudnie schodzi na przepisywanie liczb z jednego miejsca w drugie.',
+    tilt: '-1deg',
   },
 ];
 ---
-<section class="section border-t border-line bg-surface">
+<section class="section relative overflow-hidden">
   <div class="wrap">
-    <p class="eyebrow">Brzmi znajomo?</p>
-    <h2 class="section-title mt-4">Firma rośnie, a Ty coraz częściej przepisujesz, przypominasz i gonisz</h2>
-    <ol class="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
-      {items.map((item, i) => (
-        <li class="border-t border-navy pt-6">
-          <span class="font-serif text-4xl text-accent" aria-hidden="true">0{i + 1}</span>
-          <h3 class="mt-3 text-2xl">{item.title}</h3>
-          <p class="mt-3 text-muted">{item.text}</p>
+    <h2 class="h-section text-ink">Firma rośnie, a&nbsp;Ty coraz częściej przepisujesz, przypominasz i&nbsp;gonisz</h2>
+    <p class="mt-6 max-w-[38rem] text-lg text-ink-soft">Trzy paragony grozy, które zna prawie każda mała firma usługowa.</p>
+    <ul class="mt-16 grid gap-14 md:grid-cols-3 md:gap-8 lg:gap-12">
+      {receipts.map((r) => (
+        <li class="flex min-w-0 flex-col">
+          <div class="tilt receipt-shadow" style={`--tilt:${r.tilt}`}>
+            <div class="receipt relative">
+              <p class="caps text-center font-bold">Paragon grozy</p>
+              <p class="text-center text-[0.72rem] text-ink-soft caps">{r.title}</p>
+              <div class="rule"></div>
+              {r.rows.map(([a, b]) => (
+                <div class="row"><span class="text-ink-soft">{a}</span><span>{b}</span></div>
+              ))}
+              <div class="rule-double"></div>
+              <div class="row text-[0.95rem] font-bold"><span class="caps">{r.total[0]}</span><span class="lead" aria-hidden="true"></span><span>{r.total[1]}</span></div>
+              <div class="mt-4 text-center">
+                <span class="stamp text-[0.95rem]">{r.verdict}</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-7 text-ink-soft">{r.text}</p>
         </li>
       ))}
-    </ol>
+    </ul>
   </div>
 </section>
+
+<style>
+  .tilt {
+    transform: rotate(var(--tilt));
+    transition: transform 500ms var(--ease-out-expo);
+  }
+  .tilt:hover { transform: rotate(0deg) translateY(-6px); }
+</style>

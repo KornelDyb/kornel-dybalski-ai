@@ -2,35 +2,54 @@
 import { SITE } from '../lib/site.js';
 ---
 <section id="o-mnie" class="section">
-  <div class="wrap grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center md:gap-20">
-    <img
-      src="/profile.webp"
-      alt="Kornel Dybalski"
-      width="540"
-      height="575"
-      loading="lazy"
-      class="mx-auto aspect-[540/575] w-full max-w-[20rem] bg-line object-cover md:max-w-none"
-    />
-    <div>
-      <p class="eyebrow">O mnie</p>
-      <h2 class="section-title mt-4">Znam sprzedaż od strony CRM, nie z prezentacji</h2>
-      <div class="mt-6 space-y-4 text-muted">
+  <div class="wrap grid gap-14 md:grid-cols-[0.9fr_1.3fr] md:items-center md:gap-20">
+    <figure class="relative mx-auto w-full max-w-[22rem] md:max-w-none">
+      <img
+        src="/profile.webp"
+        alt="Kornel Dybalski"
+        width="540"
+        height="575"
+        loading="lazy"
+        class="aspect-[540/575] w-full rounded-2xl bg-paper-shade object-cover shadow-[0_30px_50px_-28px_rgb(16_19_43/0.55)]"
+      />
+      <span class="stamp about-stamp absolute -right-2 bottom-8 bg-paper text-[1.1rem] mix-blend-normal shadow-[0_8px_20px_-8px_rgb(16_19_43/0.5)] md:-right-6">CRM<br />od środka</span>
+    </figure>
+    <div class="min-w-0">
+      <h2 class="h-section text-ink">Znam sprzedaż od strony CRM, nie z&nbsp;prezentacji</h2>
+      <div class="mt-7 max-w-[36rem] space-y-4 text-lg text-ink-soft">
         <p>
           Jestem Kornel. Rozwijałem CRM dla działu sprzedaży, w którym pracowało
-          200 do 300 handlowców. Widziałem z bliska, ile czasu zjada ręczne
-          przepisywanie danych i ile klientów ginie między jednym mailem a drugim.
+          od 200 do 300 handlowców. Widziałem z bliska, ile czasu zjada ręczne
+          przepisywanie danych i ilu klientów ginie między jednym mailem a drugim.
         </p>
+        <p>Sam też budowałem zasięgi w internecie, więc wiem, jak wygląda marketing robiony po godzinach.</p>
         <p>
-          Sam też budowałem zasięgi w internecie, więc wiem, jak wygląda
-          marketing, kiedy robisz go po godzinach.
-        </p>
-        <p>
-          Dziś łączę te dwa światy z AI. Pomagam małym firmom usługowym
-          zautomatyzować to, co powtarzalne, żeby właściciel i zespół mieli czas
-          na klientów.
+          Dziś łączę te dwa światy z AI i pomagam małym firmom usługowym
+          zautomatyzować to, co powtarzalne. Właściciel i zespół mają wtedy czas na klientów.
         </p>
       </div>
-      <a href={SITE.linkedin} class="link mt-6 inline-block" target="_blank" rel="noopener">Mój profil na LinkedIn</a>
+      <a href={SITE.linkedin} class="link-ink mt-8 inline-block font-semibold text-ink" target="_blank" rel="noopener">Mój profil na LinkedIn</a>
     </div>
   </div>
 </section>
+
+<script>
+  // Pieczątka uderza, gdy zdjęcie wjedzie w kadr. Stan spoczynkowy jest widoczny.
+  const stamp = document.querySelector<HTMLElement>('.about-stamp');
+  if (stamp && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        stamp.animate(
+          [
+            { transform: 'rotate(-16deg) scale(1.8)', opacity: 0.2, filter: 'blur(3px)' },
+            { transform: 'rotate(-6deg) scale(0.95)', opacity: 1, filter: 'blur(0)', offset: 0.7 },
+            { transform: 'rotate(-7deg) scale(1)', opacity: 1 },
+          ],
+          { duration: 520, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+        );
+        io.disconnect();
+      }
+    }, { threshold: 0.6 });
+    io.observe(stamp);
+  }
+</script>

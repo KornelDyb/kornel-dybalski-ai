@@ -1,33 +1,138 @@
 ---
 import { SITE } from '../lib/site.js';
+
+// Przykładowy przebieg jednego zgłoszenia: tak działa formularz na tej stronie.
+const steps = [
+  { t: '00:00', label: 'Formularz wysłany' },
+  { t: '00:01', label: 'Filtr antyspamowy' },
+  { t: '00:04', label: 'Kontakt w CRM' },
+  { t: '00:05', label: 'Szansa „Nowy lead”' },
+  { t: '00:41', label: 'Mail z terminami' },
+  { t: '00:42', label: 'Powiadomienie dla mnie' },
+];
 ---
-<section class="relative overflow-hidden">
-  <div class="wrap grid items-center gap-12 pt-12 pb-16 md:grid-cols-[1.25fr_1fr] md:gap-16 md:pt-20 md:pb-24">
-    <div>
-      <p class="eyebrow">{SITE.name} · AI consulting</p>
-      <h1 class="mt-5 text-[2.6rem] sm:text-5xl lg:text-[4rem]">
+<section class="hero relative overflow-hidden bg-cobalt text-paper">
+  <div class="wrap grid items-start gap-14 pt-10 pb-20 md:pt-16 lg:grid-cols-[1.2fr_1fr] lg:gap-10 lg:pt-20 lg:pb-28">
+    <div class="min-w-0 lg:pt-10">
+      <h1 class="text-[clamp(2.9rem,8.2vw,5.9rem)] text-paper">
         Pokażę Ci, co w&nbsp;Twojej firmie może robić AI
       </h1>
-      <p class="mt-6 max-w-[34rem] text-lg text-muted">
+      <p class="mt-7 max-w-[34rem] text-lg text-cobalt-soft md:text-xl">
         Automatyzuję sprzedaż i obsługę klienta w małych firmach usługowych.
-        Zapytania dostają odpowiedź w kilka minut, klienci nie giną w Excelu,
-        a Ty masz czas na to, co naprawdę zarabia.
+        Zapytania dostają odpowiedź w minutę, a nie po dwóch dniach.
       </p>
-      <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-        <a href="#kontakt" class="btn">{SITE.cta}</a>
-        <span class="text-sm text-muted">30 minut, online, bez zobowiązań</span>
+      <div class="mt-10 flex flex-wrap items-center gap-x-7 gap-y-5">
+        <a href="#kontakt" class="btn btn-paper text-lg">
+          {SITE.cta}
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+        <a href="#dowod" class="font-medium text-paper underline decoration-cobalt-soft/60 decoration-2 underline-offset-[0.3em] hover:decoration-paper">Sprawdź, jak szybko odpowiem</a>
+      </div>
+      <div class="mt-14 flex items-center gap-4">
+        <img src="/profile.webp" alt="" width="540" height="575" class="size-14 rounded-full bg-cobalt-deep object-cover object-top ring-2 ring-paper/80" />
+        <p class="leading-snug">
+          <span class="block font-semibold">{SITE.name}</span>
+          <span class="text-sm text-cobalt-soft">30 minut rozmowy, online, bez zobowiązań</span>
+        </p>
       </div>
     </div>
-    <figure class="relative mx-auto w-full max-w-[22rem] md:max-w-none">
-      <div class="absolute inset-0 translate-x-4 translate-y-4 border border-accent" aria-hidden="true"></div>
-      <img
-        src="/profile.webp"
-        alt="Kornel Dybalski"
-        width="540"
-        height="575"
-        class="relative aspect-[540/575] w-full bg-line object-cover"
-        fetchpriority="high"
-      />
-    </figure>
+
+    <!-- Drukarka paragonów: szczelina, z której wysuwa się przebieg zgłoszenia. -->
+    <div class="printer relative mx-auto w-full max-w-[24rem] lg:mr-0">
+      <div class="printer-head relative z-10 rounded-xl bg-ink px-5 pt-4 pb-5 shadow-[0_24px_40px_-20px_rgb(0_0_0/0.6)]">
+        <div class="flex items-center justify-between font-mono text-[0.7rem] tracking-[0.12em] text-paper/60 uppercase">
+          <span>Kasa nr 1</span>
+          <span class="flex items-center gap-2"><span class="led size-2 rounded-full bg-[#3ddc84]"></span>online</span>
+        </div>
+        <div class="mt-3 h-2 rounded-full bg-black/70 shadow-[inset_0_2px_3px_rgb(0_0_0/0.8)]"></div>
+      </div>
+      <div class="feed relative -mt-3 px-3">
+        <div class="receipt-shadow">
+          <div class="receipt" id="hero-receipt" aria-label="Przykładowy paragon: odpowiedź na zgłoszenie w 42 sekundy">
+            <div class="text-center">
+              <p class="caps font-bold">{SITE.name}</p>
+              <p class="caps text-[0.7rem] text-ink-soft">AI consulting · paragon przykładowy</p>
+            </div>
+            <div class="rule"></div>
+            <div class="row"><span>Zgłoszenie #0142</span><span>pon 09:14</span></div>
+            <div class="rule"></div>
+            <ol>
+              {steps.map((s) => (
+                <li class="row p-line" data-t={s.t}>
+                  <span class="text-ink-soft">{s.t}</span>
+                  <span>{s.label}</span>
+                  <span class="lead" aria-hidden="true"></span>
+                  <span class="font-bold">OK</span>
+                </li>
+              ))}
+            </ol>
+            <div class="rule-double p-line"></div>
+            <div class="row p-line text-[0.95rem] font-bold"><span class="caps">Czas odpowiedzi</span><span class="lead" aria-hidden="true"></span><span id="hero-timer">00:42</span></div>
+            <div class="row p-line"><span>Twoja praca ręczna</span><span class="lead" aria-hidden="true"></span><span>0 min</span></div>
+            <div class="rule p-line"></div>
+            <div class="flex items-center justify-between gap-4 pt-1">
+              <p class="p-line text-[0.72rem] leading-snug text-ink-soft">Tak działa formularz<br />na dole tej strony.</p>
+              <span class="stamp text-[1.05rem]" id="hero-stamp">Odpowiedź<br />w 42 s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="reprint" class="mx-auto mt-6 flex items-center gap-2 font-mono text-xs tracking-[0.1em] text-cobalt-soft uppercase hover:text-paper">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+        Wydrukuj jeszcze raz
+      </button>
+    </div>
   </div>
 </section>
+
+<style>
+  .receipt { position: relative; }
+  .led { box-shadow: 0 0 8px #3ddc84; animation: blink 2.4s infinite; }
+  @keyframes blink { 50% { opacity: 0.35; } }
+
+  /* Druk: linie wysuwają się z papierem. Bez JS paragon jest pełny od razu. */
+  :global(.js) .feed { overflow: hidden; padding-bottom: 3rem; margin-bottom: -3rem; }
+  :global(.js) .printing .receipt-shadow { animation: feed 2.7s steps(12, end) both; }
+  :global(.js) .printing .p-line { animation: ink 0.35s ease-out both; animation-delay: calc(var(--i) * 0.32s + 0.25s); }
+  :global(.js) .printing #hero-stamp { animation: stamp 0.5s var(--ease-out-expo) both; animation-delay: 2.75s; }
+  @keyframes feed { from { transform: translateY(-78%); } }
+  @keyframes ink { from { opacity: 0; filter: blur(2px); } }
+  @keyframes stamp {
+    0% { opacity: 0; transform: rotate(-16deg) scale(1.9); filter: blur(4px); }
+    70% { opacity: 1; transform: rotate(-6deg) scale(0.94); filter: blur(0); }
+    100% { opacity: 1; transform: rotate(-7deg) scale(1); }
+  }
+</style>
+
+<script>
+  const printer = document.querySelector('.printer') as HTMLElement;
+  const lines = printer.querySelectorAll<HTMLElement>('.p-line');
+  const timer = document.getElementById('hero-timer')!;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  lines.forEach((el, i) => el.style.setProperty('--i', String(i)));
+
+  // Licznik czasu odpowiedzi biegnie razem z drukiem i zatrzymuje się na 00:42.
+  function runTimer() {
+    const end = 42;
+    const duration = 2600;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const s = Math.round(end * (1 - Math.pow(1 - p, 3)));
+      timer.textContent = `00:${String(s).padStart(2, '0')}`;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function print() {
+    if (reduce) return;
+    printer.classList.remove('printing');
+    void printer.offsetWidth;
+    printer.classList.add('printing');
+    runTimer();
+  }
+
+  print();
+  document.getElementById('reprint')!.addEventListener('click', print);
+</script>

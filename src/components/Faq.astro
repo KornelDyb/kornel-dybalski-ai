@@ -24,27 +24,25 @@ const faq = [
   },
 ];
 ---
-<section id="faq" class="section border-t border-line bg-surface">
-  <div class="wrap grid gap-10 md:grid-cols-[1fr_1.6fr] md:gap-16">
-    <div>
-      <p class="eyebrow">Pytania</p>
-      <h2 class="section-title mt-4">Zanim napiszesz</h2>
-      <p class="mt-5 text-muted">
-        Nie ma tu odpowiedzi na Twoje pytanie? Napisz na{' '}
-        <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+<section id="faq" class="section bg-paper-shade/60">
+  <div class="wrap grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
+    <div class="min-w-0">
+      <h2 class="h-section text-ink">Zanim napiszesz</h2>
+      <p class="mt-6 text-lg text-ink-soft">
+        Nie ma tu Twojego pytania? Napisz na{' '}
+        <a class="link-ink text-ink" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
       </p>
     </div>
-    <div class="divide-y divide-line border-y border-line">
+    <div class="min-w-0 border-t-2 border-ink">
       {faq.map((item) => (
-        <details class="group py-2">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-4 font-serif text-xl text-navy [&::-webkit-details-marker]:hidden">
+        <details class="group border-b border-ink/25">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-display text-[clamp(1.3rem,2.2vw,1.65rem)] leading-tight font-semibold tracking-tight text-ink transition-colors hover:text-cobalt [&::-webkit-details-marker]:hidden">
             {item.q}
-            <span class="relative size-4 shrink-0" aria-hidden="true">
-              <span class="absolute top-1/2 left-0 h-px w-4 bg-accent"></span>
-              <span class="absolute top-0 left-1/2 h-4 w-px bg-accent transition-transform group-open:scale-y-0"></span>
+            <span class="relative grid size-9 shrink-0 place-items-center rounded-full border-2 border-current transition-transform duration-300 group-open:rotate-45 group-open:bg-cobalt group-open:text-paper" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
             </span>
           </summary>
-          <p class="pb-5 text-muted">{item.a}</p>
+          <p class="max-w-[40rem] pb-7 text-lg text-ink-soft">{item.a}</p>
         </details>
       ))}
     </div>
