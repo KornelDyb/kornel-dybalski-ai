@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../lib/site.js';
+
+// Data ostatniej zmiany. Zmieniaj ją przy każdej zmianie treści polityki.
+const updated = '30 października 2026';
+---
+<Layout title={`Polityka prywatności | ${SITE.name}`} description="Jak przetwarzam dane z formularza kontaktowego.">
+  <SiteHeader home={false} />
+  <main id="main" class="wrap max-w-[46rem] py-14 md:py-20">
+    <p class="eyebrow">Ostatnia zmiana: {updated}</p>
+    <h1 class="mt-4 text-4xl md:text-5xl">Polityka prywatności</h1>
+
+    <div class="prose-policy mt-10 space-y-8 text-muted">
+      <section>
+        <h2>Kto przetwarza Twoje dane</h2>
+        <p>
+          Administratorem danych jest {SITE.name}. W sprawach danych osobowych
+          napisz na <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Jakie dane zbieram i po co</h2>
+        <p>
+          Przez formularz kontaktowy zbieram: imię, adres e-mail, nazwę firmy,
+          wielkość firmy i opis tego, co chcesz usprawnić. Używam ich tylko po to,
+          żeby odpowiedzieć na zgłoszenie, wysłać link do umówienia rozmowy
+          i przygotować się do niej.
+        </p>
+        <p>
+          Podstawą jest Twoja zgoda (art. 6 ust. 1 lit. a RODO) oraz działania
+          przed zawarciem umowy, o które prosisz (art. 6 ust. 1 lit. b RODO).
+          Podanie danych jest dobrowolne, ale bez nich nie mogę odpowiedzieć.
+        </p>
+      </section>
+
+      <section>
+        <h2>Komu przekazuję dane</h2>
+        <p>Korzystam z kilku usług, które przetwarzają dane w moim imieniu:</p>
+        <ul>
+          <li>Make (Celonis) do automatycznego przekazania zgłoszenia,</li>
+          <li>HubSpot jako CRM, w którym zapisuję kontakt,</li>
+          <li>Google (Gmail i Kalendarz) do wysłania odpowiedzi i umówienia rozmowy,</li>
+          <li>Netlify jako hosting strony.</li>
+        </ul>
+        <p>
+          Część tych firm ma siedzibę w USA. Przekazanie danych odbywa się na
+          podstawie standardowych klauzul umownych zatwierdzonych przez Komisję
+          Europejską lub programu EU-US Data Privacy Framework.
+          Nie sprzedaję danych i nie udostępniam ich nikomu innemu.
+        </p>
+      </section>
+
+      <section>
+        <h2>Jak długo przechowuję dane</h2>
+        <p>
+          Do 12 miesięcy od ostatniego kontaktu, chyba że zaczniemy współpracę.
+          Wtedy przez czas jej trwania i tak długo, jak wymagają tego przepisy,
+          na przykład podatkowe. Jeśli wycofasz zgodę, usunę dane wcześniej.
+        </p>
+      </section>
+
+      <section>
+        <h2>Twoje prawa</h2>
+        <p>
+          Masz prawo do dostępu do swoich danych, ich poprawienia, usunięcia,
+          ograniczenia przetwarzania, przeniesienia oraz do wycofania zgody
+          w dowolnym momencie. Wycofanie zgody nie zmienia tego, co zrobiłem
+          wcześniej zgodnie z prawem. Wystarczy mail na adres podany wyżej.
+        </p>
+        <p>
+          Możesz też złożyć skargę do Prezesa Urzędu Ochrony Danych Osobowych
+          (ul. Stawki 2, 00-193 Warszawa).
+        </p>
+      </section>
+
+      <section>
+        <h2>Pliki cookies i statystyki</h2>
+        <p>
+          Strona nie używa plików cookies ani narzędzi do śledzenia. Czcionki
+          są wczytywane z tego samego serwera co strona, więc Twój adres IP nie
+          trafia do zewnętrznych dostawców czcionek.
+        </p>
+      </section>
+    </div>
+
+    <a href="/" class="link mt-12 inline-block">Wróć na stronę główną</a>
+  </main>
+  <SiteFooter />
+</Layout>
+
+<style>
+  .prose-policy :global(h2) {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .prose-policy :global(p + p) {
+    margin-top: 0.75rem;
+  }
+  .prose-policy :global(ul) {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin-block: 0.75rem;
+  }
+</style>
