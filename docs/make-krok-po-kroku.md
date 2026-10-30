@@ -1,6 +1,6 @@
 # Formularz → Make → HubSpot → Gmail: krok po kroku
 
-Formularz wysyła dane do funkcji na Netlify (`/api/lead`), ta sprawdza je jeszcze raz i przekazuje do webhooka Make.
+Formularz wysyła dane do funkcji na Cloudflare (`/api/lead`), ta sprawdza je jeszcze raz i przekazuje do webhooka Make.
 Make dostaje taki JSON:
 
 ```json
@@ -16,7 +16,7 @@ Make dostaje taki JSON:
 ## 1. Webhook (zadanie 6)
 1. Make → **Create a new scenario** → kliknij plus → **Webhooks** → **Custom webhook** → **Add** → nazwa `Formularz strona` → **Save**.
 2. Skopiuj adres webhooka.
-3. Netlify → Twoja strona → **Site configuration → Environment variables → Add a variable**: klucz `MAKE_WEBHOOK_URL`, wartość: skopiowany adres. Potem **Deploys → Trigger deploy**.
+3. Cloudflare → **Workers & Pages** → projekt strony → **Settings → Variables and Secrets → Add**: typ **Secret**, nazwa `MAKE_WEBHOOK_URL`, wartość: skopiowany adres (ustaw dla Production i Preview). Potem **Deployments → Retry deployment** przy ostatnim wdrożeniu, żeby funkcja dostała nowy sekret.
 4. W Make kliknij **Run once**, wyślij formularz na stronie. Make pokaże „Successfully determined”, a struktura danych zostanie zapamiętana. To jest kryterium zadania 6.
 
 ## 2. Filtr na boty

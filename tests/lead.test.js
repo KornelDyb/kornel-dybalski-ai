@@ -57,3 +57,17 @@ test('Make nie działa albo brak adresu: 502 i 500', async () => {
   assert.equal((await handleLead(post(good), opts(fakeFetch(500)))).status, 502);
   assert.equal((await handleLead(post(good), { ...opts(fakeFetch()), webhookUrl: '' })).status, 500);
 });
+
+test('funkcja Cloudflare bierze adres webhooka z env', async () => {
+  const { onRequest } = await import('../functions/api/lead.js');
+  const original = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url) => { calls.push(url); return new Response('Accepted'); };
+  try {
+    const res = await onRequest({ request: post(good), env: { MAKE_WEBHOOK_URL: 'https://hook.eu2.make.com/z' } });
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls, ['https://hook.eu2.make.com/z']);
+  } finally {
+    globalThis.fetch = original;
+  }
+});

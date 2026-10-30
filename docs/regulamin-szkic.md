@@ -39,4 +39,4 @@ Pytania do prawnika:
 - Czy przy stronie z formularzem kontaktowym i kalkulatorem regulamin jest konieczny, czy wystarczy polityka prywatności?
 - Jaka forma działalności (działalność nierejestrowana / JDG) i jakie dane identyfikacyjne muszą być na stronie (art. 5 UŚUDE)?
 - Treść gwarancji zwrotu pieniędzy w umowie z klientem B2B.
-- Umowy powierzenia danych (DPA) z Make, HubSpot, Google, Netlify, a w przyszłości z n8n i Anthropic (Claude), jeśli dane leadów będą przez nie przechodzić.
+- Umowy powierzenia danych (DPA) z Make, HubSpot, Google, Cloudflare, a w przyszłości z n8n i Anthropic (Claude), jeśli dane leadów będą przez nie przechodzić.

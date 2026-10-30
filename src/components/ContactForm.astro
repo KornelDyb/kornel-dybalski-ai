@@ -135,7 +135,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     });
   });
 
-  // Formularz wysyła dane do własnej funkcji na Netlify (/api/lead), a dopiero ona do Make.
+  // Formularz wysyła dane do własnej funkcji na Cloudflare (/api/lead), a dopiero ona do Make.
   // Dzięki temu adresu webhooka nie widać w kodzie strony.
   const ENDPOINT = '/api/lead';
   const CONTACT_EMAIL = form.dataset.email!;

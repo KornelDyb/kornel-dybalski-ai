@@ -67,7 +67,7 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | --- | --- | --- | --- |
 | Strona | Astro + Tailwind CSS | szybka statyczna strona, tutoriale jako pliki Markdown | 0 zł |
 | Kod | repozytorium GitHub | historia zmian, automatyczne wdrożenia | 0 zł |
-| Hosting | Netlify | zmiana na GitHubie = nowa wersja strony | 0 zł |
+| Hosting | Cloudflare Pages | zmiana na GitHubie = nowa wersja strony, bez limitu transferu | 0 zł |
 | Automatyzacja | Make, plan Free | 1000 kredytów/mies., ok. 150 zgłoszeń | 0 zł |
 | CRM | HubSpot Free | kontakty i transakcje, gotowe moduły w Make | 0 zł |
 | Terminy | Google Calendar, strona rezerwacji | klient sam wybiera godzinę | 0 zł |
@@ -84,7 +84,7 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 - Automatyczny mail brzmi jak robot → krótki tekst pisany Twoim językiem, bez sformułowań typowych dla AI.
 - RODO → polityka prywatności na osobnej podstronie, zgoda wymagana w formularzu.
 - Brak opinii → dowodem jest sama strona i oferta dla pierwszych 3 firm.
-- Adres netlify.app → domena kupiona przed promocją.
+- Adres pages.dev → domena kupiona przed promocją.
 
 **Założenia do sprawdzenia:**
 
@@ -101,10 +101,12 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | Astro zamiast czystego HTML | Tutoriale jako pliki Markdown, wygląd przez skill projektowy |
 | Make + HubSpot + Gmail + Google Calendar | Darmowe, popularne, gotowe połączenia |
 | Ceny „od X zł”, gwarancja zwrotu | Odsiewa osoby bez budżetu, zdejmuje ryzyko z klienta |
+| Hosting: Cloudflare Pages zamiast Netlify | Darmowy plan bez limitu transferu i z 500 wdrożeniami miesięcznie; na Netlify po wyczerpaniu 300 kredytów strona się wyłącza. Adres testowy pages.dev, potem własna domena |
+| Make na start, n8n później | Make jest darmowy; funkcja /api/lead wysyła zwykły JSON, więc zmiana to tylko nowy adres webhooka |
 
 ## Zadania MVP
 
-- [ ] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Netlify (gotowe, gdy pod adresem netlify.app widać stronę „Hello”).
+- [ ] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Cloudflare Pages (gotowe, gdy pod adresem pages.dev widać stronę).
 - [x] 2\. Wygląd: kolory, czcionki, układ w kierunku Konsultant (gotowe, gdy nagłówek wygląda jak w szkicu A na telefonie i komputerze).
 - [x] 3\. Treść sekcji 1-7 (gotowe, gdy wszystkie sekcje mają prawdziwy tekst i zdjęcie).
 - [x] 4\. Formularz z walidacją i polem-pułapką, na razie bez wysyłki (gotowe, gdy puste pola i zły mail pokazują błąd).
@@ -133,12 +135,12 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | Repozytorium | Folder z kodem na GitHubie, który pamięta każdą zmianę |
 | Astro | Narzędzie, które z plików projektu robi gotową, szybką stronę |
 | Administrator danych | Osoba lub firma odpowiedzialna za dane osobowe według RODO |
-| Zmienna środowiskowa | Ustawienie trzymane poza kodem (plik .env lokalnie, ustawienia Netlify na serwerze), np. adres webhooka |
+| Zmienna środowiskowa | Ustawienie trzymane poza kodem (plik .env lokalnie, ustawienia Cloudflare na serwerze), np. adres webhooka |
 | Test automatyczny | Mały program, który sprawdza, czy kod działa; uruchamiasz go poleceniem npm test |
 | Commit | Zapisany punkt w historii projektu z opisem, co się zmieniło |
 | JSON | Prosty format danych, w którym strona wysyła zgłoszenie do Make |
 | Payload | Paczka danych wysyłana w jednym zgłoszeniu |
-| Funkcja serwerowa (Netlify Function) | Mały program na serwerze Netlify, który odbiera formularz, zanim dane pójdą dalej |
+| Funkcja serwerowa (Pages Function) | Mały program na serwerze Cloudflare, który odbiera formularz, zanim dane pójdą dalej |
 | Rate limit | Limit zgłoszeń z jednego adresu w danym czasie, chroni przed zasypaniem spamem |
 | Nagłówki bezpieczeństwa | Instrukcje dla przeglądarki, co strona może wczytywać i czy można ją osadzać na innych stronach |
 | Open Graph (og:image) | Obrazek i opis, które pokazują się przy udostępnieniu linku na LinkedIn czy Facebooku |
@@ -146,9 +148,9 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 
 ## Stan prac i ustalenia z budowy
 
-**Zrobione w kodzie:** zadania 2, 3, 4, 5 i 9 oraz projekt Astro z zadania 1. Brakuje repozytorium na GitHubie i podpięcia Netlify (wymaga Twojego konta).
+**Zrobione w kodzie:** zadania 2, 3, 4, 5 i 9 oraz projekt Astro z zadania 1. Brakuje repozytorium na GitHubie i podpięcia Cloudflare Pages (wymaga Twojego konta).
 
-**Zmiana z budowy:** formularz nie wysyła danych prosto do Make. Wysyła je do funkcji na Netlify (`/api/lead`, plik `netlify/functions/lead.mjs`), która sprawdza je drugi raz, odsiewa boty, ogranicza liczbę zgłoszeń (5 na minutę z jednego IP) i dopiero przekazuje do Make. Adres webhooka jest w zmiennej `MAKE_WEBHOOK_URL` (tylko na serwerze, nie widać go w kodzie strony). Instrukcja konfiguracji Make: `docs/make-krok-po-kroku.md`.
+**Zmiana z budowy:** formularz nie wysyła danych prosto do Make. Wysyła je do funkcji na Cloudflare (`/api/lead`, plik `functions/api/lead.js`), która sprawdza je drugi raz, odsiewa boty i dopiero przekazuje do Make. Limit zgłoszeń z jednego IP dodamy regułą Rate limiting w Cloudflare po podpięciu własnej domeny (na adresie pages.dev takiej reguły nie da się ustawić). Adres webhooka jest w zmiennej `MAKE_WEBHOOK_URL` (tylko na serwerze, nie widać go w kodzie strony). Instrukcja konfiguracji Make: `docs/make-krok-po-kroku.md`.
 
 **Narzędzie automatyzacji:** na start Make (darmowy plan). Możliwe przeniesienie do n8n, gdy przepływ będzie działał; funkcja `/api/lead` wysyła zwykły JSON, więc zmiana to tylko nowy adres w `MAKE_WEBHOOK_URL`.
 
@@ -177,7 +179,7 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 - Polityka prywatności napisana dla Kornela jako osoby prywatnej; do przejrzenia przez prawnika, gdy ustalisz formę działalności.
 - Zdjęcie i link do LinkedIn wzięte z Twojej strony KornelDyb.github.io.
 - Regulamin: szkic w `docs/regulamin-szkic.md`, do decyzji z prawnikiem (nieopublikowany).
-- Statystyki: po założeniu konta w Umami Cloud ustaw `PUBLIC_UMAMI_WEBSITE_ID` na Netlify. Zdarzenia: cta-naglowek, personalizacja, kalkulator-uzyty, cta-kalkulator, cta-kupon, formularz-wyslany.
+- Statystyki: po założeniu konta w Umami Cloud ustaw `PUBLIC_UMAMI_WEBSITE_ID` w Cloudflare (zmienna Text). Zdarzenia: cta-naglowek, personalizacja, kalkulator-uzyty, cta-kalkulator, cta-kupon, formularz-wyslany.
 - Przy zmianie domeny: zmień `site` w `astro.config.mjs` i adres w `public/robots.txt`.
 
 **Decyzje techniczne z budowy:**

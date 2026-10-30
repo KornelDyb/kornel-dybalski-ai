@@ -8,7 +8,7 @@ Strona osobista z formularzem, który przez Make trafia do HubSpot. Plan i decyz
 npm install
 cp .env.example .env   # wklej adres webhooka z Make
 npm run dev            # strona pod http://localhost:4321 (bez funkcji /api/lead)
-npx netlify dev        # strona razem z funkcją /api/lead, do testu formularza
+npm run build && npx wrangler pages dev dist   # strona razem z funkcją /api/lead (sekrety w .dev.vars)
 npm test               # testy walidacji formularza
 npm run build          # gotowa strona w folderze dist/
 ```
@@ -22,8 +22,13 @@ npm run build          # gotowa strona w folderze dist/
 - `src/content/tutoriale/` miejsce na tutoriale (później)
 - `public/` zdjęcie i ikony
 
-## Netlify
+## Cloudflare Pages
 
-Build: `npm run build`, folder: `dist` (ustawione w `netlify.toml`).
-W Site configuration > Environment variables dodaj `MAKE_WEBHOOK_URL` (i opcjonalnie `PUBLIC_UMAMI_WEBSITE_ID`), potem zrób nowy deploy.
-Funkcja formularza: `netlify/functions/lead.mjs` (logika w `src/lib/lead-handler.js`). Konfiguracja Make: `docs/make-krok-po-kroku.md`.
+Workers & Pages → Create → Pages → Connect to Git → wybierz repozytorium.
+- Framework preset: Astro, build command: `npm run build`, output: `dist` (Node 22 z pliku `.node-version`).
+- Settings → Variables and Secrets: `MAKE_WEBHOOK_URL` (Secret), opcjonalnie `PUBLIC_UMAMI_WEBSITE_ID` (Text).
+- Gałąź `main` to wersja główna pod `kornel-dybalski.pages.dev`; każda inna gałąź dostaje własny adres podglądu do testów.
+- Adresy *.pages.dev mają nagłówek `noindex` (plik `public/_headers`), więc wersje testowe nie trafią do Google.
+
+Funkcja formularza: `functions/api/lead.js` (logika w `src/lib/lead-handler.js`). Konfiguracja Make: `docs/make-krok-po-kroku.md`.
+Nagłówki bezpieczeństwa i cache: `public/_headers`.
