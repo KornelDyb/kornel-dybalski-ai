@@ -104,15 +104,15 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 
 ## Zadania MVP
 
-- [ ] 1\. Szkielet: projekt Astro, repozytorium GitHub, pierwsza wersja na Netlify (gotowe, gdy pod adresem netlify.app widać stronę „Hello”).
-- [ ] 2\. Wygląd: kolory, czcionki, układ w kierunku Konsultant (gotowe, gdy nagłówek wygląda jak w szkicu A na telefonie i komputerze).
-- [ ] 3\. Treść sekcji 1-7 (gotowe, gdy wszystkie sekcje mają prawdziwy tekst i zdjęcie).
-- [ ] 4\. Formularz z walidacją i polem-pułapką, na razie bez wysyłki (gotowe, gdy puste pola i zły mail pokazują błąd).
-- [ ] 5\. Polityka prywatności i zgoda w formularzu (gotowe, gdy link działa, a bez zgody formularz się nie wysyła).
+- [ ] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Netlify (gotowe, gdy pod adresem netlify.app widać stronę „Hello”).
+- [x] 2\. Wygląd: kolory, czcionki, układ w kierunku Konsultant (gotowe, gdy nagłówek wygląda jak w szkicu A na telefonie i komputerze).
+- [x] 3\. Treść sekcji 1-7 (gotowe, gdy wszystkie sekcje mają prawdziwy tekst i zdjęcie).
+- [x] 4\. Formularz z walidacją i polem-pułapką, na razie bez wysyłki (gotowe, gdy puste pola i zły mail pokazują błąd).
+- [x] 5\. Polityka prywatności i zgoda w formularzu (gotowe, gdy link działa, a bez zgody formularz się nie wysyła).
 - [ ] 6\. Make: webhook odbiera zgłoszenie (gotowe, gdy testowe zgłoszenie widać w historii Make).
 - [ ] 7\. Make: zapis do HubSpot (gotowe, gdy kontakt i transakcja pojawiają się w CRM).
 - [ ] 8\. Make: mail do klienta z linkiem do kalendarza i powiadomienie dla Ciebie (gotowe, gdy oba maile przychodzą w mniej niż 2 minuty).
-- [ ] 9\. Stany formularza: wysyłanie, sukces, błąd (gotowe, gdy każdy ma komunikat).
+- [x] 9\. Stany formularza: wysyłanie, sukces, błąd (gotowe, gdy każdy ma komunikat).
 - [ ] 10\. Test całości z telefonu i komputera, 3 zgłoszenia testowe (gotowe, gdy przepływ działa bez ręcznej pracy).
 - [ ] 11\. Domena i publikacja (później, przed promocją).
 - [ ] 12\. Etap 2: AI ocenia leada w Make (później).
@@ -133,6 +133,45 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 | Repozytorium | Folder z kodem na GitHubie, który pamięta każdą zmianę |
 | Astro | Narzędzie, które z plików projektu robi gotową, szybką stronę |
 | Administrator danych | Osoba lub firma odpowiedzialna za dane osobowe według RODO |
+| Zmienna środowiskowa | Ustawienie trzymane poza kodem (plik .env lokalnie, ustawienia Netlify na serwerze), np. adres webhooka |
+| Test automatyczny | Mały program, który sprawdza, czy kod działa; uruchamiasz go poleceniem npm test |
+| Commit | Zapisany punkt w historii projektu z opisem, co się zmieniło |
+| JSON | Prosty format danych, w którym strona wysyła zgłoszenie do Make |
+| Payload | Paczka danych wysyłana w jednym zgłoszeniu |
+
+## Stan prac i ustalenia z budowy
+
+**Zrobione w kodzie:** zadania 2, 3, 4, 5 i 9 oraz projekt Astro z zadania 1. Brakuje repozytorium na GitHubie i podpięcia Netlify (wymaga Twojego konta).
+
+**Dane, które formularz wysyła do Make (JSON):**
+
+```json
+{
+  "name": "Anna",
+  "email": "anna@firma.pl",
+  "company": "Firma Sp. z o.o.",
+  "size": "5-20",
+  "message": "Chcę szybciej odpisywać na zapytania.",
+  "consent": true,
+  "honeypot": "",
+  "source": "strona-formularz",
+  "submitted_at": "2026-10-30T12:00:00.000Z"
+}
+```
+
+Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `honeypot` jest pusty. Strona i tak nie wysyła zgłoszeń od botów, ale filtr chroni przed kimś, kto wyśle dane prosto na adres webhooka.
+
+**Do uzupełnienia przed publikacją:**
+
+- Kwota w FAQ: „od X zł”, zmienia się w `src/lib/site.js` (pole `priceFrom`).
+- Czasy w sekcji Współpraca i FAQ (tydzień, 1 do 4 tygodni) to propozycja, popraw, jeśli pracujesz inaczej.
+- Polityka prywatności napisana dla Kornela jako osoby prywatnej; do przejrzenia przez prawnika, gdy ustalisz formę działalności.
+- Zdjęcie i link do LinkedIn wzięte z Twojej strony KornelDyb.github.io.
+
+**Decyzje techniczne z budowy:**
+
+- Czcionki Newsreader i Instrument Sans hostowane razem ze stroną (paczki Fontsource), a nie z Google Fonts: adres IP odwiedzających nie trafia do Google, więc polityka prywatności jest prostsza.
+- Walidacja formularza w osobnym pliku `src/lib/form.js` z testami (`npm test`).
 
 ## Prompt dla Claude Code
 
