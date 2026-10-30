@@ -1,0 +1,170 @@
+# PRD: Strona Kornel Dybalski, AI consulting
+
+Oct 30, 2026 · @Kornel
+
+## Podsumowanie i cel
+
+Osobista strona Kornela Dybalskiego o AI consultingu dla małych firm usługowych, z jednym celem: umówienie bezpłatnej rozmowy. Formularz na stronie jest jednocześnie pierwszym projektem do portfolio: zgłoszenie trafia przez Make do CRM, klient dostaje w minutę odpowiedź z linkiem do kalendarza, a Kornel powiadomienie. Później dochodzi sekcja tutoriali jako źródło ruchu i ocena leadów przez AI.
+
+**Dla kogo:** właściciele małych firm usługowych (5-50 osób).
+
+**Oferta:** AI consulting, czyli automatyzacje sprzedaży, marketingu i obsługi klienta. Pierwsze 3 wdrożenia w niższej cenie w zamian za opinię.
+
+**Kryteria sukcesu (3 miesiące):**
+
+- Strona działa pod własną domeną, formularz przechodzi cały przepływ bez ręcznej pracy.
+- Odpowiedź do klienta przychodzi w mniej niż 2 minuty od wysłania formularza.
+- Pierwsze umówione rozmowy z formularza.
+- Projekt opisany jako case study na LinkedIn.
+
+## Strona: sekcje i formularz
+
+Jedna strona, jeden cel (przycisk „Umów bezpłatną rozmowę”), plus podstrona polityki prywatności.
+
+| Sekcja | Zadanie | Treść |
+| --- | --- | --- |
+| 1. Nagłówek | Powiedzieć, co robię i dla kogo | „Pokażę Ci, co w Twojej firmie może robić AI”, podtytuł o automatyzacjach sprzedaży i obsługi klienta, przycisk CTA, zdjęcie |
+| 2. Problem | Klient ma się rozpoznać | 3 sytuacje: odpowiedzi na zapytania po 2 dniach, klienci w Excelu, raporty zamiast sprzedaży |
+| 3. Co robię | Pokazać zakres | Sprzedaż, marketing, obsługa klienta, każdy z jednym przykładem automatyzacji |
+| 4. Współpraca | Zdjąć strach przed nieznanym | 3 kroki: rozmowa, plan, wdrożenie |
+| 5. Dowód | Zastąpić brak opinii | „Wypełnij formularz i zobacz, jak szybko odpowiem”, oferta dla pierwszych 3 firm |
+| 6. O mnie | Zbudować zaufanie | CRM od środka, budowanie zasięgów w internecie, teraz AI; zdjęcie |
+| 7. FAQ | Odpowiedzieć na obawy | Cena, czas, „czy muszę znać się na technologii”, co dzieje się z danymi |
+| 8. Formularz | Zebrać kontakt | Pola poniżej |
+
+**Pola formularza:** imię, e-mail, nazwa firmy, wielkość firmy (lista: 1-4, 5-20, 21-50, ponad 50), „Co chcesz usprawnić?” (pole tekstowe), zgoda na przetwarzanie danych z linkiem do polityki prywatności (wymagana), ukryte pole-pułapka na boty.
+
+**Po wysłaniu:** komunikat na stronie „Dzięki! Sprawdź skrzynkę, za chwilę dostaniesz link do wyboru terminu.” Przy błędzie: komunikat z prośbą o ponowienie i adresem e-mail do kontaktu.
+
+## Przepływ leada
+
+Cały przepływ dzieje się automatycznie, w mniej niż 2 minuty:
+
+1. Klient wysyła formularz na stronie. Strona wysyła dane pod adres webhooka w Make.
+2. Make odrzuca zgłoszenie, jeśli pole-pułapka jest wypełnione (bot).
+3. Make zapisuje kontakt i transakcję w HubSpot (etap „Nowy lead”).
+4. Make wysyła klientowi maila z Twojego Gmaila: krótko, po ludzku, z imieniem i linkiem do strony rezerwacji w Google Calendar.
+5. Make wysyła Ci powiadomienie: kto, z jakiej firmy, co chce usprawnić.
+6. Klient sam wybiera termin w kalendarzu, rozmowa ląduje w Twoim kalendarzu.
+
+**Etap 2 (później):** między krokiem 2 a 3 AI ocenia leada (gorący, ciepły, zimny) na podstawie wielkości firmy i opisu, a ocena trafia do HubSpota i powiadomienia.
+
+## Wygląd
+
+Kierunek **Konsultant**: spokojny, budzący zaufanie, z klasą. Właściciel firmy ma poczuć, że rozmawia z doradcą, któremu może powierzyć procesy.
+
+- **Kolory:** jasne, chłodne tło, głęboki granat jako kolor główny (przyciski, nagłówki), jeden ciepły akcent używany oszczędnie.
+- **Typografia:** szeryfowe nagłówki (klasa, doradztwo), bezszeryfowy tekst (czytelność).
+- **Zdjęcie:** Twoje zdjęcie w nagłówku i w sekcji „O mnie”.
+- **Zasady:** dużo światła, krótkie akapity, jeden przycisk CTA powtarzany w kilku miejscach, działa na telefonie, tryb ciemny opcjonalnie.
+- **Unikamy:** wyglądu szablonu, gradientów fiolet-niebieski, ikon emoji, kart z cieniem wszędzie.
+
+## Technologia i koszty
+
+Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
+
+| Element | Wybór | Dlaczego | Koszt |
+| --- | --- | --- | --- |
+| Strona | Astro + Tailwind CSS | szybka statyczna strona, tutoriale jako pliki Markdown | 0 zł |
+| Kod | repozytorium GitHub | historia zmian, automatyczne wdrożenia | 0 zł |
+| Hosting | Netlify | zmiana na GitHubie = nowa wersja strony | 0 zł |
+| Automatyzacja | Make, plan Free | 1000 kredytów/mies., ok. 150 zgłoszeń | 0 zł |
+| CRM | HubSpot Free | kontakty i transakcje, gotowe moduły w Make | 0 zł |
+| Terminy | Google Calendar, strona rezerwacji | klient sam wybiera godzinę | 0 zł |
+| Maile | Gmail | odpowiedź od Ciebie, nie z no-reply | 0 zł |
+| Domena | np. .pl | profesjonalny adres | ok. 50 zł/rok, później |
+
+Źródło limitu Make: [Jetadmin, Make pricing](https://www.jetadmin.io/blog/make-pricing/).
+
+## Ryzyka, założenia i decyzje
+
+**Ryzyka i jak je ograniczamy:**
+
+- Spam w formularzu (adres webhooka jest widoczny w kodzie) → pole-pułapka, walidacja maila, filtr w Make.
+- Automatyczny mail brzmi jak robot → krótki tekst pisany Twoim językiem, bez sformułowań typowych dla AI.
+- RODO → polityka prywatności na osobnej podstronie, zgoda wymagana w formularzu.
+- Brak opinii → dowodem jest sama strona i oferta dla pierwszych 3 firm.
+- Adres netlify.app → domena kupiona przed promocją.
+
+**Założenia do sprawdzenia:**
+
+- Administratorem danych na start jest Kornel jako osoba prywatna; forma działalności do ustalenia przed pierwszą fakturą (do konsultacji z księgowym lub prawnikiem).
+- Darmowy plan Make uruchamia scenariusz z webhooka od razu; sprawdzić przy zadaniu 6.
+- Ceny usług na stronie jako „od X zł”; kwoty do ustalenia przed publikacją.
+
+| Decyzja | Dlaczego |
+| --- | --- |
+| AI consulting jako oferta | Wybór Kornela; nisza zawęzi się po pierwszych rozmowach |
+| Cel strony: bezpłatna rozmowa | Kornel lubi rozmowy, w usługach B2B to one sprzedają |
+| Marka: imię i nazwisko | Na start ludzie kupują od człowieka |
+| Kierunek wizualny A, Konsultant | Wybór Kornela; zaufanie i spokój |
+| Astro zamiast czystego HTML | Tutoriale jako pliki Markdown, wygląd przez skill projektowy |
+| Make + HubSpot + Gmail + Google Calendar | Darmowe, popularne, gotowe połączenia |
+| Ceny „od X zł”, gwarancja zwrotu | Odsiewa osoby bez budżetu, zdejmuje ryzyko z klienta |
+
+## Zadania MVP
+
+- [ ] 1\. Szkielet: projekt Astro, repozytorium GitHub, pierwsza wersja na Netlify (gotowe, gdy pod adresem netlify.app widać stronę „Hello”).
+- [ ] 2\. Wygląd: kolory, czcionki, układ w kierunku Konsultant (gotowe, gdy nagłówek wygląda jak w szkicu A na telefonie i komputerze).
+- [ ] 3\. Treść sekcji 1-7 (gotowe, gdy wszystkie sekcje mają prawdziwy tekst i zdjęcie).
+- [ ] 4\. Formularz z walidacją i polem-pułapką, na razie bez wysyłki (gotowe, gdy puste pola i zły mail pokazują błąd).
+- [ ] 5\. Polityka prywatności i zgoda w formularzu (gotowe, gdy link działa, a bez zgody formularz się nie wysyła).
+- [ ] 6\. Make: webhook odbiera zgłoszenie (gotowe, gdy testowe zgłoszenie widać w historii Make).
+- [ ] 7\. Make: zapis do HubSpot (gotowe, gdy kontakt i transakcja pojawiają się w CRM).
+- [ ] 8\. Make: mail do klienta z linkiem do kalendarza i powiadomienie dla Ciebie (gotowe, gdy oba maile przychodzą w mniej niż 2 minuty).
+- [ ] 9\. Stany formularza: wysyłanie, sukces, błąd (gotowe, gdy każdy ma komunikat).
+- [ ] 10\. Test całości z telefonu i komputera, 3 zgłoszenia testowe (gotowe, gdy przepływ działa bez ręcznej pracy).
+- [ ] 11\. Domena i publikacja (później, przed promocją).
+- [ ] 12\. Etap 2: AI ocenia leada w Make (później).
+
+## Słowniczek
+
+| Pojęcie | Po ludzku |
+| --- | --- |
+| CTA | Przycisk lub zachęta do jednej konkretnej akcji, tu „Umów bezpłatną rozmowę” |
+| Lead | Osoba, która zostawiła kontakt i może zostać klientem |
+| Usługa w pudełku | Usługa ze stałą nazwą, zakresem i ceną, sprzedawana jak produkt |
+| Make | Narzędzie, które łączy aplikacje: „gdy przyjdzie X, zrób Y i Z” |
+| Webhook | Adres, pod który strona wysyła dane z formularza, żeby Make je odebrał |
+| Honeypot (pole-pułapka) | Pole niewidoczne dla ludzi; jeśli jest wypełnione, wysłał to bot |
+| CRM | Lista klientów z historią kontaktu i etapem sprzedaży |
+| Hosting | Komputer w internecie, na którym leży strona |
+| Domena | Adres strony, np. kornel-dybalski.pl |
+| Repozytorium | Folder z kodem na GitHubie, który pamięta każdą zmianę |
+| Astro | Narzędzie, które z plików projektu robi gotową, szybką stronę |
+| Administrator danych | Osoba lub firma odpowiedzialna za dane osobowe według RODO |
+
+## Prompt dla Claude Code
+
+Przed startem: wyeksportuj ten dokument jako Markdown i zapisz w pustym folderze projektu jako `PLAN.md`. Potem otwórz ten folder w Claude Code i wklej:
+
+```text
+Budujemy moją stronę osobistą: Kornel Dybalski, AI consulting dla małych firm usługowych. Pełny plan jest w PLAN.md, przeczytaj go najpierw w całości.
+
+Kontekst o mnie: uczę się, kod bywa dla mnie trudny. Przy każdym kroku wyjaśniaj prostym językiem, co robisz i dlaczego, a nowe pojęcia dopisuj do słowniczka w PLAN.md.
+
+Stack: Astro + Tailwind CSS, repozytorium GitHub, hosting Netlify. Formularz wysyła dane (fetch, JSON) na adres webhooka Make zapisany w zmiennej środowiskowej PUBLIC_MAKE_WEBHOOK_URL, nigdy wpisany na sztywno w kod.
+
+Struktura:
+- src/pages/index.astro (strona główna, 8 sekcji z PLAN.md)
+- src/pages/polityka-prywatnosci.astro
+- src/components/ (jedna sekcja = jeden komponent, plus ContactForm)
+- src/content/tutoriale/ (na później, kolekcja Markdown)
+- public/ (zdjęcie, favicon)
+
+Wygląd: kierunek Konsultant z PLAN.md. Przed pisaniem UI użyj skilla do projektowania frontendu (np. frontend-design), jeśli jest dostępny. Strona ma wyglądać na zaprojektowaną, nie jak szablon. Musi działać na telefonie.
+
+Teksty: po polsku, krótko, po ludzku, bez myślników typu em dash i bez sformułowań typowych dla AI.
+
+Zasady pracy:
+- Użyj skilla feature-builder, jeśli jest dostępny: najpierw test lub kryterium sprawdzenia, potem kod, dalej tylko gdy działa.
+- Małe commity, jeden na zadanie z listy w PLAN.md, z czytelnym opisem po polsku.
+- Pytaj przed dużymi zmianami i przed instalacją nowych pakietów.
+- Nie wpisuj żadnych kluczy ani adresów webhooka do kodu; używaj pliku .env i dodaj go do .gitignore.
+
+Zasada konsultacji: gdy zadanie dotyka założenia do sprawdzenia albo pojawia się decyzja, której nie ma w PLAN.md, zatrzymaj się, wyjaśnij ją prostym językiem, daj 2-3 warianty z rekomendacją i zapisz mój wybór w PLAN.md.
+
+Kroki w Make, HubSpot i Google Calendar wykonuję sam w przeglądarce. Przy zadaniach 6-8 prowadź mnie krok po kroku: co kliknąć i co wpisać.
+
+Zacznij od zadania nr 1 z PLAN.md.
+```
