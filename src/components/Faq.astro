@@ -1,0 +1,52 @@
+---
+import { SITE } from '../lib/site.js';
+
+const faq = [
+  {
+    q: 'Ile to kosztuje?',
+    a: `Rozmowa jest bezpłatna. Wdrożenia zaczynają się od ${SITE.priceFrom}, a dokładną cenę znasz, zanim cokolwiek zaczniemy. Jeśli rozwiązanie nie będzie działać tak, jak ustaliliśmy, oddam pieniądze.`,
+  },
+  {
+    q: 'Ile to trwa?',
+    a: 'Prosta automatyzacja, na przykład odpowiedź na zapytania z formularza, to zwykle tydzień. Większe wdrożenia trwają do miesiąca. Termin ustalamy w planie.',
+  },
+  {
+    q: 'Czy muszę znać się na technologii?',
+    a: 'Nie. Ty znasz swoją firmę i klientów, ja zajmuję się techniką. Wszystko tłumaczę po ludzku, a po wdrożeniu pokazuję zespołowi, jak z tego korzystać.',
+  },
+  {
+    q: 'Co dzieje się z danymi moich klientów?',
+    a: 'Dane zostają w narzędziach, z których korzystasz, albo w takich, które razem wybierzemy. Korzystam tylko z usług zgodnych z RODO i niczego nie udostępniam dalej.',
+  },
+  {
+    q: 'A jeśli moja firma jest za mała?',
+    a: 'Najlepiej sprawdzić to na rozmowie. Często właśnie w firmach od 5 do 20 osób jedna automatyzacja oszczędza najwięcej, bo każdy robi tam kilka rzeczy naraz.',
+  },
+];
+---
+<section id="faq" class="section border-t border-line bg-surface">
+  <div class="wrap grid gap-10 md:grid-cols-[1fr_1.6fr] md:gap-16">
+    <div>
+      <p class="eyebrow">Pytania</p>
+      <h2 class="section-title mt-4">Zanim napiszesz</h2>
+      <p class="mt-5 text-muted">
+        Nie ma tu odpowiedzi na Twoje pytanie? Napisz na
+        <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    </div>
+    <div class="divide-y divide-line border-y border-line">
+      {faq.map((item) => (
+        <details class="group py-2">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-4 font-serif text-xl text-navy [&::-webkit-details-marker]:hidden">
+            {item.q}
+            <span class="relative size-4 shrink-0" aria-hidden="true">
+              <span class="absolute top-1/2 left-0 h-px w-4 bg-accent"></span>
+              <span class="absolute top-0 left-1/2 h-4 w-px bg-accent transition-transform group-open:scale-y-0"></span>
+            </span>
+          </summary>
+          <p class="pb-5 text-muted">{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

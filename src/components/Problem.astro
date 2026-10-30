@@ -1,0 +1,31 @@
+---
+const items = [
+  {
+    title: 'Zapytanie czeka dwa dni na odpowiedź',
+    text: 'Klient napisał w poniedziałek. W środę, kiedy znajdziesz chwilę, ma już ofertę od konkurencji.',
+  },
+  {
+    title: 'Klienci są w Excelu, mailach i w głowie',
+    text: 'Każdy w zespole prowadzi swoją listę. Nikt nie wie, komu obiecano telefon i kto czeka na wycenę.',
+  },
+  {
+    title: 'Raporty zamiast sprzedaży',
+    text: 'Piątkowe popołudnie schodzi na przepisywanie liczb z jednego miejsca w drugie. Co tydzień to samo.',
+  },
+];
+---
+<section class="section border-t border-line bg-surface">
+  <div class="wrap">
+    <p class="eyebrow">Brzmi znajomo?</p>
+    <h2 class="section-title mt-4">Firma rośnie, a Ty coraz częściej przepisujesz, przypominasz i gonisz</h2>
+    <ol class="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
+      {items.map((item, i) => (
+        <li class="border-t border-navy pt-6">
+          <span class="font-serif text-4xl text-accent" aria-hidden="true">0{i + 1}</span>
+          <h3 class="mt-3 text-2xl">{item.title}</h3>
+          <p class="mt-3 text-muted">{item.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

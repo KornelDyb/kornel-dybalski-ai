@@ -1,0 +1,38 @@
+---
+const steps = [
+  {
+    name: 'Rozmowa',
+    time: '30 minut, bezpłatnie',
+    text: 'Opowiadasz, jak wygląda Twój dzień i co Cię spowalnia. Ja słucham i dopytuję. Bez prezentacji i bez żargonu.',
+  },
+  {
+    name: 'Plan',
+    time: 'kilka dni',
+    text: 'Dostajesz krótki plan: co warto zautomatyzować, ile to kosztuje i ile czasu oszczędzisz. Decydujesz bez presji.',
+  },
+  {
+    name: 'Wdrożenie',
+    time: 'zwykle 1 do 4 tygodni',
+    text: 'Buduję, testuję na Twoich danych i uczę zespół. Po starcie jestem w kontakcie, gdyby coś wymagało poprawki.',
+  },
+];
+---
+<section id="wspolpraca" class="section border-t border-line bg-surface">
+  <div class="wrap">
+    <p class="eyebrow">Jak wygląda współpraca</p>
+    <h2 class="section-title mt-4">Trzy kroki i wiesz dokładnie, za co płacisz</h2>
+    <ol class="mt-14 grid gap-12 md:grid-cols-3 md:gap-10">
+      {steps.map((step, i) => (
+        <li class="relative">
+          <div class="flex items-center gap-4">
+            <span class="grid size-11 shrink-0 place-items-center rounded-full border border-navy font-serif text-xl text-navy">{i + 1}</span>
+            {i < steps.length - 1 && <span class="hidden h-px flex-1 bg-line md:block" aria-hidden="true"></span>}
+          </div>
+          <h3 class="mt-6 text-2xl">{step.name}</h3>
+          <p class="mt-1 text-sm font-semibold text-accent">{step.time}</p>
+          <p class="mt-3 text-muted">{step.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

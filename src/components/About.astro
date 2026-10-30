@@ -1,0 +1,36 @@
+---
+import { SITE } from '../lib/site.js';
+---
+<section id="o-mnie" class="section">
+  <div class="wrap grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center md:gap-20">
+    <img
+      src="/profile.webp"
+      alt="Kornel Dybalski"
+      width="540"
+      height="575"
+      loading="lazy"
+      class="mx-auto aspect-[540/575] w-full max-w-[20rem] bg-line object-cover md:max-w-none"
+    />
+    <div>
+      <p class="eyebrow">O mnie</p>
+      <h2 class="section-title mt-4">Znam sprzedaż od strony CRM, nie z prezentacji</h2>
+      <div class="mt-6 space-y-4 text-muted">
+        <p>
+          Jestem Kornel. Rozwijałem CRM dla działu sprzedaży, w którym pracowało
+          200 do 300 handlowców. Widziałem z bliska, ile czasu zjada ręczne
+          przepisywanie danych i ile klientów ginie między jednym mailem a drugim.
+        </p>
+        <p>
+          Sam też budowałem zasięgi w internecie, więc wiem, jak wygląda
+          marketing, kiedy robisz go po godzinach.
+        </p>
+        <p>
+          Dziś łączę te dwa światy z AI. Pomagam małym firmom usługowym
+          zautomatyzować to, co powtarzalne, żeby właściciel i zespół mieli czas
+          na klientów.
+        </p>
+      </div>
+      <a href={SITE.linkedin} class="link mt-6 inline-block" target="_blank" rel="noopener">Mój profil na LinkedIn</a>
+    </div>
+  </div>
+</section>
