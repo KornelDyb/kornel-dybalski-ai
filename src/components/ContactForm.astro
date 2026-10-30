@@ -160,35 +160,27 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     }
   }
 
-  // Po wysłaniu blankiet zamienia się w paragon z licznikiem: klient widzi, ile czeka na maila.
-  let waitTimer: number | undefined;
-  function showReceipt(name: string, company: string) {
+  // Po wysłaniu blankiet zamienia się w paragon. Pokazuje tylko to, co strona wie na pewno:
+  // ile trwało przyjęcie zgłoszenia przez serwer. Mail wysyła Make zaraz potem (w testach ok. 3 s).
+  function showReceipt(name: string, company: string, elapsedMs: number) {
     const fields = document.getElementById('form-fields')!;
-    const now = new Date();
-    const hhmm = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    const hhmm = new Date().toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    const seconds = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(elapsedMs / 1000);
     status.innerHTML = `
       <div class="font-mono text-[0.8125rem] leading-[1.8]">
         <div class="row"><span>Od</span><span data-fill="who"></span></div>
         <div class="row"><span>Wysłano</span><span>${hhmm}</span></div>
         <div class="rule"></div>
-        <div class="row"><span>00:00</span><span>Formularz wysłany</span><span class="lead"></span><span class="font-bold">OK</span></div>
-        <div class="row"><span>w toku</span><span>Mail z terminami</span><span class="lead"></span><span class="font-bold text-cobalt">w drodze</span></div>
+        <div class="row"><span>Zgłoszenie przyjęte</span><span class="lead"></span><span class="font-bold">OK</span></div>
+        <div class="row"><span>Mail z terminami</span><span class="lead"></span><span class="font-bold text-cobalt">wysłany automatycznie</span></div>
         <div class="rule-double"></div>
-        <div class="row text-[1rem] font-bold"><span class="uppercase tracking-[0.06em]">Czekasz</span><span class="lead"></span><span data-fill="wait">00:00</span></div>
+        <div class="row text-[1rem] font-bold"><span class="uppercase tracking-[0.06em]">Czas przyjęcia</span><span class="lead"></span><span>${seconds} s</span></div>
       </div>
       <p class="mt-6 font-display text-[2rem] leading-none font-bold tracking-tight text-ink">Dzięki!</p>
-      <p class="mt-2 text-ink-soft">Sprawdź skrzynkę, za chwilę dostaniesz link do wyboru terminu.</p>
+      <p class="mt-2 text-ink-soft">Sprawdź skrzynkę, za chwilę dostaniesz link do wyboru terminu. Mail zwykle dochodzi w kilka sekund. Nie widzisz go? Zajrzyj do spamu.</p>
       <div class="mt-5"><span class="stamp text-[1.1rem]">Przyjęte</span></div>`;
     (status.querySelector('[data-fill=who]') as HTMLElement).textContent = `${name}, ${company}`;
     fields.hidden = true;
-    const waitEl = status.querySelector('[data-fill=wait]') as HTMLElement;
-    const start = Date.now();
-    clearInterval(waitTimer);
-    waitTimer = window.setInterval(() => {
-      const s = Math.floor((Date.now() - start) / 1000);
-      waitEl.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-      if (s >= 600) clearInterval(waitTimer);
-    }, 1000);
     status.firstElementChild?.animate(
       [{ opacity: 0, transform: 'translateY(-12px)', filter: 'blur(2px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }],
       { duration: 500, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
@@ -226,6 +218,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     if (Object.keys(errors).length > 0) return;
 
     setStatus('sending');
+    const sentAt = performance.now();
     try {
       // Botowi udajemy sukces, ale niczego nie wysyłamy.
       if (!isBot(data)) await send(data);
@@ -233,7 +226,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
       touched = false;
       setStatus('success');
       (window as any).umami?.track('formularz-wyslany');
-      showReceipt(data.name.trim(), data.company.trim());
+      showReceipt(data.name.trim(), data.company.trim(), performance.now() - sentAt);
     } catch (err) {
       if (err instanceof ValidationError) {
         setStatus('idle');

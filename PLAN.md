@@ -106,14 +106,14 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 
 ## Zadania MVP
 
-- [ ] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Cloudflare Workers (gotowe, gdy pod adresem workers.dev widać stronę).
+- [x] 1\. Szkielet: projekt Astro (gotowe), repozytorium GitHub, pierwsza wersja na Cloudflare Workers (gotowe, gdy pod adresem workers.dev widać stronę).
 - [x] 2\. Wygląd: kolory, czcionki, układ w kierunku Konsultant (gotowe, gdy nagłówek wygląda jak w szkicu A na telefonie i komputerze).
 - [x] 3\. Treść sekcji 1-7 (gotowe, gdy wszystkie sekcje mają prawdziwy tekst i zdjęcie).
 - [x] 4\. Formularz z walidacją i polem-pułapką, na razie bez wysyłki (gotowe, gdy puste pola i zły mail pokazują błąd).
 - [x] 5\. Polityka prywatności i zgoda w formularzu (gotowe, gdy link działa, a bez zgody formularz się nie wysyła).
-- [ ] 6\. Make: webhook odbiera zgłoszenie (gotowe, gdy testowe zgłoszenie widać w historii Make).
-- [ ] 7\. Make: zapis do HubSpot (gotowe, gdy kontakt i transakcja pojawiają się w CRM).
-- [ ] 8\. Make: mail do klienta z linkiem do kalendarza i powiadomienie dla Ciebie (gotowe, gdy oba maile przychodzą w mniej niż 2 minuty).
+- [x] 6\. Make: webhook odbiera zgłoszenie (gotowe, gdy testowe zgłoszenie widać w historii Make).
+- [ ] 7\. Make: zapis do HubSpot (gotowe, gdy kontakt i transakcja pojawiają się w CRM). Kontakt działa; transakcja czeka na uprawnienie crm.objects.deals.write w połączeniu Make–HubSpot.
+- [x] 8\. Make: mail do klienta z linkiem do kalendarza i powiadomienie dla Ciebie (gotowe, gdy oba maile przychodzą w mniej niż 2 minuty).
 - [x] 9\. Stany formularza: wysyłanie, sukces, błąd (gotowe, gdy każdy ma komunikat).
 - [ ] 10\. Test całości z telefonu i komputera, 3 zgłoszenia testowe (gotowe, gdy przepływ działa bez ręcznej pracy).
 - [ ] 11\. Domena i publikacja (później, przed promocją).

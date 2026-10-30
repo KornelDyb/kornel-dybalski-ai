@@ -45,4 +45,5 @@ Kliknij linię za webhookiem → **Set up a filter**: nazwa `Nie bot`, warunek `
 
 ## Po co ta kolejność
 Najpierw zapis w CRM, potem maile: jeśli Gmail kiedyś zawiedzie, kontakt i tak jest w HubSpot i nic nie ginie.
-W planie Free każde zgłoszenie zużywa ok. 6 operacji (webhook, filtr, 2 × HubSpot, 2 × Gmail), czyli ok. 150 zgłoszeń miesięcznie.
+Obecny scenariusz w Make: webhook → filtr → kontakt w HubSpot → mail do klienta → powiadomienie (4 operacje na zgłoszenie, ok. 250 zgłoszeń miesięcznie w planie Free).
+Transakcje (Create a Deal + Create an Association) są na razie wyłączone: połączenie Make–HubSpot nie ma uprawnienia `crm.objects.deals.write`. Po jego dodaniu można je dołożyć na końcu scenariusza, z obsługą błędu „Ignore”, żeby nie blokowały maili.
