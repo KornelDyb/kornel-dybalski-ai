@@ -20,7 +20,7 @@ const error = 'mt-1.5 text-sm text-error empty:hidden';
       </p>
     </div>
 
-    <form id="contact-form" class="relative grid gap-5 sm:grid-cols-2" novalidate>
+    <form id="contact-form" class="relative grid gap-5 sm:grid-cols-2" data-email={SITE.email} novalidate>
       <div>
         <label for="f-name" class={label}>Imię</label>
         <input id="f-name" name="name" type="text" autocomplete="given-name" required class={field} aria-describedby="e-name" />
@@ -69,14 +69,14 @@ const error = 'mt-1.5 text-sm text-error empty:hidden';
 
       <div class="sm:col-span-2">
         <button type="submit" class="btn w-full sm:w-auto">{SITE.cta}</button>
-        <div id="form-status" class="mt-5 empty:hidden" role="status" aria-live="polite"></div>
+        <div id="form-status" class="mt-5 empty:hidden focus:outline-none" tabindex="-1" role="status" aria-live="polite"></div>
       </div>
     </form>
   </div>
 </section>
 
 <script>
-  import { validate, isBot } from '../lib/form.js';
+  import { validate, isBot, buildPayload } from '../lib/form.js';
 
   const form = document.getElementById('contact-form') as HTMLFormElement;
 
@@ -118,14 +118,73 @@ const error = 'mt-1.5 text-sm text-error empty:hidden';
     });
   });
 
-  form.addEventListener('submit', (event) => {
+  // Adres webhooka Make pochodzi ze zmiennej środowiskowej (plik .env lokalnie, ustawienia Netlify na produkcji).
+  const WEBHOOK_URL = import.meta.env.PUBLIC_MAKE_WEBHOOK_URL;
+  const CONTACT_EMAIL = form.dataset.email!;
+  const status = document.getElementById('form-status')!;
+  const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
+  const buttonLabel = button.textContent;
+
+  function setStatus(kind: 'sending' | 'success' | 'error' | 'idle') {
+    button.disabled = kind === 'sending';
+    button.textContent = kind === 'sending' ? 'Wysyłam...' : buttonLabel;
+    form.setAttribute('aria-busy', String(kind === 'sending'));
+
+    if (kind === 'success') {
+      status.innerHTML = `
+        <div class="border-l-2 border-success bg-white px-5 py-4">
+          <p class="font-serif text-xl text-navy">Dzięki!</p>
+          <p class="mt-1 text-muted">Sprawdź skrzynkę, za chwilę dostaniesz link do wyboru terminu.</p>
+        </div>`;
+    } else if (kind === 'error') {
+      status.innerHTML = `
+        <div class="border-l-2 border-error bg-white px-5 py-4">
+          <p class="font-semibold text-error">Nie udało się wysłać formularza.</p>
+          <p class="mt-1 text-muted">Spróbuj jeszcze raz za chwilę albo napisz bezpośrednio na
+            <a class="link" href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>.</p>
+        </div>`;
+    } else {
+      status.innerHTML = '';
+    }
+  }
+
+  async function send(payload: object) {
+    if (!WEBHOOK_URL) throw new Error('Brak PUBLIC_MAKE_WEBHOOK_URL');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`Make odpowiedział ${res.status}`);
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (button.disabled) return;
     touched = true;
     const data = readForm();
     const errors = validate(data);
     showErrors(errors);
     if (Object.keys(errors).length > 0) return;
-    if (isBot(data)) return;
-    // Wysyłka do Make dochodzi w zadaniu 9.
+
+    setStatus('sending');
+    try {
+      // Botowi udajemy sukces, ale niczego nie wysyłamy.
+      if (!isBot(data)) await send(buildPayload(data));
+      form.reset();
+      touched = false;
+      setStatus('success');
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+    }
+    status.focus();
   });
 </script>
