@@ -1,0 +1,20 @@
+---
+import { SITE } from '../lib/site.js';
+const { home = true } = Astro.props;
+---
+<header class="sticky top-0 z-40 border-b border-line/70 bg-paper/90 backdrop-blur">
+  <div class="wrap flex h-16 items-center justify-between gap-4">
+    <a href="/" class="font-serif text-xl text-navy no-underline">{SITE.name}</a>
+    {home && (
+      <nav class="flex items-center gap-6 text-[0.95rem]" aria-label="Główna">
+        <a href="#co-robie" class="hidden text-muted hover:text-navy md:inline">Co robię</a>
+        <a href="#wspolpraca" class="hidden text-muted hover:text-navy md:inline">Współpraca</a>
+        <a href="#faq" class="hidden text-muted hover:text-navy md:inline">FAQ</a>
+        <a href="#kontakt" class="btn min-h-10 px-4 py-2 text-sm">
+          <span class="sm:hidden">Umów rozmowę</span>
+          <span class="hidden sm:inline">{SITE.cta}</span>
+        </a>
+      </nav>
+    )}
+  </div>
+</header>

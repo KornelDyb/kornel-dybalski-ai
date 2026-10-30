@@ -1,6 +1,11 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Hero from '../components/Hero.astro';
 ---
-<html lang="pl">
-  <head><meta charset="utf-8" /><title>Hello</title></head>
-  <body><h1>Hello</h1></body>
-</html>
+<Layout>
+  <SiteHeader />
+  <main id="main">
+    <Hero />
+  </main>
+</Layout>

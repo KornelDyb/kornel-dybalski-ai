@@ -1,0 +1,33 @@
+---
+import { SITE } from '../lib/site.js';
+---
+<section class="relative overflow-hidden">
+  <div class="wrap grid items-center gap-12 pt-12 pb-16 md:grid-cols-[1.25fr_1fr] md:gap-16 md:pt-20 md:pb-24">
+    <div>
+      <p class="eyebrow">{SITE.name} · AI consulting</p>
+      <h1 class="mt-5 text-[2.6rem] sm:text-5xl lg:text-[4rem]">
+        Pokażę Ci, co w&nbsp;Twojej firmie może robić AI
+      </h1>
+      <p class="mt-6 max-w-[34rem] text-lg text-muted">
+        Automatyzuję sprzedaż i obsługę klienta w małych firmach usługowych.
+        Zapytania dostają odpowiedź w kilka minut, klienci nie giną w Excelu,
+        a Ty masz czas na to, co naprawdę zarabia.
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <a href="#kontakt" class="btn">{SITE.cta}</a>
+        <span class="text-sm text-muted">30 minut, online, bez zobowiązań</span>
+      </div>
+    </div>
+    <figure class="relative mx-auto w-full max-w-[22rem] md:max-w-none">
+      <div class="absolute inset-0 translate-x-4 translate-y-4 border border-accent/60" aria-hidden="true"></div>
+      <img
+        src="/profile.webp"
+        alt="Kornel Dybalski"
+        width="540"
+        height="575"
+        class="relative aspect-[540/575] w-full bg-line object-cover"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</section>
