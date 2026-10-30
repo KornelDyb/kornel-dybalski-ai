@@ -20,7 +20,7 @@ export function validate(data) {
   else if (!EMAIL_RE.test(email)) errors.email = 'Ten adres e-mail wygląda na niepełny.';
   if (!company) errors.company = 'Podaj nazwę firmy.';
   if (!COMPANY_SIZES.includes(data.size)) errors.size = 'Wybierz wielkość firmy.';
-  if (message.length < 10) errors.message = 'Napisz w kilku słowach, co chcesz usprawnić.';
+  if (message.length < 10) errors.message = 'Napisz w kilku słowach, co chcesz usprawnić (minimum 10 znaków).';
   if (data.consent !== true) errors.consent = 'Bez tej zgody nie mogę odpowiedzieć na zgłoszenie.';
 
   return errors;
