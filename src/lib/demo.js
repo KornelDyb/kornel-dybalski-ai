@@ -1,7 +1,10 @@
-// Demo na żywo (etap 13): Make wysyła tu zgłoszenie, serwer pyta AI o wstępne pomysły
+// Demo na żywo (etap 13): Make wysyła tu zgłoszenie, serwer pyta AI (domyślnie Claude, opcjonalnie OpenAI) o wstępne pomysły
 // na automatyzację i odsyła gotowego maila oraz punkty do slajdów. Make tylko je wysyła.
+import Anthropic from '@anthropic-ai/sdk';
 import { validate } from './form.js';
 import { SITE } from './site.js';
+
+const DEFAULT_ANTHROPIC_MODEL = 'claude-opus-5-5';
 
 const MAX_BYTES = 10_000;
 
@@ -82,13 +85,34 @@ export function parseIdeas(text) {
   };
 }
 
-async function askOpenAI(lead, env, fetchImpl) {
-  const userContent = [
+const leadText = (lead) =>
+  [
     `Imię: ${lead.name}`,
     `Firma: ${lead.company}`,
     `Wielkość firmy: ${lead.size} osób`,
     `Co chce usprawnić: ${lead.message}`,
   ].join('\n');
+
+// Domyślny dostawca: Claude (Anthropic). Fallback "default" przekazuje zapytanie innemu
+// modelowi, gdyby ten odmówił odpowiedzi z powodów bezpieczeństwa.
+async function askAnthropic(lead, env, fetchImpl) {
+  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, fetch: fetchImpl, maxRetries: 1, timeout: 90_000 });
+  const message = await client.beta.messages.create({
+    model: env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL,
+    max_tokens: 16000,
+    betas: ['server-side-fallback-2026-07-01'],
+    fallbacks: 'default',
+    output_config: { effort: 'medium', format: { type: 'json_schema', schema: IDEAS_SCHEMA } },
+    system: SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: leadText(lead) }],
+  });
+  if (message.stop_reason === 'refusal') throw new Error('Claude odmówił odpowiedzi');
+  const text = message.content.filter((block) => block.type === 'text').map((block) => block.text).join('');
+  return parseIdeas(text);
+}
+
+async function askOpenAI(lead, env, fetchImpl) {
+  const userContent = leadText(lead);
 
   const res = await fetchImpl('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -139,11 +163,14 @@ export async function handleDemo(request, env, fetchImpl = fetch) {
   const errors = validate({ ...lead, consent: true });
   if (Object.keys(errors).length > 0) return json(422, { errors });
 
-  if (!env.OPENAI_API_KEY || !env.OPENAI_MODEL) return json(500, { error: 'config' });
+  const provider = env.AI_PROVIDER || 'anthropic';
+  const configured =
+    provider === 'openai' ? env.OPENAI_API_KEY && env.OPENAI_MODEL : provider === 'anthropic' && env.ANTHROPIC_API_KEY;
+  if (!configured) return json(500, { error: 'config' });
 
   let ai;
   try {
-    ai = await askOpenAI(lead, env, fetchImpl);
+    ai = provider === 'openai' ? await askOpenAI(lead, env, fetchImpl) : await askAnthropic(lead, env, fetchImpl);
   } catch (err) {
     console.error(err);
     return json(502, { error: 'ai' });

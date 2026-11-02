@@ -80,7 +80,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
             <p class="mt-4 text-[0.8rem] leading-snug text-ink-soft">
               Administratorem danych jest {SITE.name}. Dane z formularza wykorzystam tylko do odpowiedzi
               na zgłoszenie i umówienia rozmowy, przechowuję je do 12 miesięcy od ostatniego kontaktu.
-              {SITE.aiDemo && ' Opis z formularza przeanalizuje model AI (OpenAI), żeby przygotować wstępne pomysły.'}{' '}
+              {SITE.aiDemo && ` Opis z formularza przeanalizuje model AI (${SITE.aiVendor}), żeby przygotować wstępne pomysły.`}{' '}
               Masz prawo do wglądu, poprawienia i usunięcia danych.
               Więcej w <a class="link-ink text-ink" href="/polityka-prywatnosci">polityce prywatności</a>.
             </p>

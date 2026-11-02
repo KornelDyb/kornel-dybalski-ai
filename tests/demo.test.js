@@ -17,14 +17,28 @@ const ideas = {
 };
 
 const env = {
-  DEMO_SECRET: 's3cret', OPENAI_API_KEY: 'sk-test', OPENAI_MODEL: 'test-model',
+  DEMO_SECRET: 's3cret', ANTHROPIC_API_KEY: 'sk-ant-test',
   OWNER_EMAIL: 'korneldybalski@gmail.com', DEMO_MODE: 'test',
 };
+const openaiEnv = { ...env, AI_PROVIDER: 'openai', OPENAI_API_KEY: 'sk-test', OPENAI_MODEL: 'test-model' };
 const post = (body, secret = 's3cret') => new Request('https://strona.pl/api/demo', {
   method: 'POST',
   headers: { 'content-type': 'application/json', 'x-demo-secret': secret },
   body: JSON.stringify(body),
 });
+const fakeClaude = (content, { status = 200, stopReason = 'end_turn' } = {}) => {
+  const calls = [];
+  const fn = async (url, init) => {
+    calls.push({ url: String(url), body: JSON.parse(init.body), headers: new Headers(init.headers) });
+    const body = status === 200
+      ? { id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-opus-5-5', stop_reason: stopReason,
+          content: [{ type: 'text', text: JSON.stringify(content) }], usage: { input_tokens: 1, output_tokens: 1 } }
+      : { type: 'error', error: { type: 'api_error', message: 'boom' } };
+    return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+  };
+  fn.calls = calls;
+  return fn;
+};
 const fakeOpenAI = (content, status = 200) => {
   const calls = [];
   const fn = async (url, init) => {
@@ -54,15 +68,15 @@ test('mail: dane klienta są zabezpieczone, jest oznaczenie AI i link do kalenda
   assert.ok(html.includes('Automatyczna odpowiedź'));
 });
 
-test('bez sekretu: 401, nic nie idzie do OpenAI', async () => {
-  const f = fakeOpenAI(ideas);
+test('bez sekretu: 401, nic nie idzie do AI', async () => {
+  const f = fakeClaude(ideas);
   const res = await handleDemo(post(lead, 'zly'), env, f);
   assert.equal(res.status, 401);
   assert.equal(f.calls.length, 0);
 });
 
-test('tryb testowy: mail idzie do właściciela z dopiskiem, dla kogo był', async () => {
-  const f = fakeOpenAI(ideas);
+test('tryb testowy (Claude): mail idzie do właściciela z dopiskiem, dla kogo był', async () => {
+  const f = fakeClaude(ideas);
   const res = await handleDemo(post(lead), env, f);
   assert.equal(res.status, 200);
   const body = await res.json();
@@ -70,20 +84,39 @@ test('tryb testowy: mail idzie do właściciela z dopiskiem, dla kogo był', asy
   assert.ok(body.subject.startsWith('[TEST dla anna@firma.pl]'));
   assert.ok(body.html.includes('Automatyczna odpowiedź'));
   assert.equal(body.slides.length, 1);
+  const call = f.calls[0];
+  assert.ok(call.url.startsWith('https://api.anthropic.com/v1/messages'));
+  assert.equal(call.body.model, 'claude-opus-5-5');
+  assert.equal(call.body.fallbacks, 'default');
+  assert.equal(call.body.output_config.format.type, 'json_schema');
+  assert.ok(`${call.headers.get('x-api-key')} ${call.headers.get('authorization')}`.includes('sk-ant-test'));
+  assert.ok(call.headers.get('anthropic-beta').includes('server-side-fallback-2026-07-01'));
+});
+
+test('Claude: odmowa albo błąd API daje 502', async () => {
+  assert.equal((await handleDemo(post(lead), env, fakeClaude(ideas, { stopReason: 'refusal' }))).status, 502);
+  assert.equal((await handleDemo(post(lead), env, fakeClaude(ideas, { status: 500 }))).status, 502);
+});
+
+test('OpenAI jako opcja: AI_PROVIDER=openai', async () => {
+  const f = fakeOpenAI(ideas);
+  const res = await handleDemo(post(lead), openaiEnv, f);
+  assert.equal(res.status, 200);
   assert.equal(f.calls[0].body.model, 'test-model');
   assert.equal(f.calls[0].auth, 'Bearer sk-test');
 });
 
 test('tryb produkcyjny: mail idzie do klienta', async () => {
-  const res = await handleDemo(post(lead), { ...env, DEMO_MODE: 'live' }, fakeOpenAI(ideas));
+  const res = await handleDemo(post(lead), { ...env, DEMO_MODE: 'live' }, fakeClaude(ideas));
   const body = await res.json();
   assert.equal(body.to, 'anna@firma.pl');
   assert.ok(!body.subject.includes('TEST'));
 });
 
-test('zły lead: 422; błąd OpenAI albo zła odpowiedź: 502; brak klucza: 500', async () => {
-  assert.equal((await handleDemo(post({ ...lead, email: 'zly' }), env, fakeOpenAI(ideas))).status, 422);
-  assert.equal((await handleDemo(post(lead), env, fakeOpenAI(ideas, 500))).status, 502);
-  assert.equal((await handleDemo(post(lead), env, fakeOpenAI({ ideas: [] }))).status, 502);
-  assert.equal((await handleDemo(post(lead), { ...env, OPENAI_API_KEY: '' }, fakeOpenAI(ideas))).status, 500);
+test('zły lead: 422; błąd AI albo zła odpowiedź: 502; brak klucza: 500', async () => {
+  assert.equal((await handleDemo(post({ ...lead, email: 'zly' }), env, fakeClaude(ideas))).status, 422);
+  assert.equal((await handleDemo(post(lead), openaiEnv, fakeOpenAI(ideas, 500))).status, 502);
+  assert.equal((await handleDemo(post(lead), env, fakeClaude({ ideas: [] }))).status, 502);
+  assert.equal((await handleDemo(post(lead), { ...env, ANTHROPIC_API_KEY: '' }, fakeClaude(ideas))).status, 500);
+  assert.equal((await handleDemo(post(lead), { ...openaiEnv, OPENAI_API_KEY: '' }, fakeOpenAI(ideas))).status, 500);
 });

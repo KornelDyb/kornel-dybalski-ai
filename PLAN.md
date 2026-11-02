@@ -190,8 +190,8 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 ## Etap 13: stan budowy
 
 - Zrobione: serwer `/api/demo` z testami, prompt z zasadami (bez cen, bez obietnic wyników, formy neutralne, treść zgłoszenia traktowana jako dane), mail z pomysłami w barwach strony, zmiany na stronie i w polityce prywatności.
-- Dostawca AI na testy: OpenAI (decyzja Kornela, ma doładowane konto). Kod jest przygotowany tak, żeby dostawcę można było później zmienić.
-- Do zrobienia: sekrety w Cloudflare (OPENAI_API_KEY, OPENAI_MODEL, DEMO_SECRET), scenariusz w Make (wywołanie /api/demo po mailu z kalendarzem, wysyłka maila, limit 1 demo na adres na dobę), szablon Google Slides, 10 próbnych zgłoszeń.
+- Dostawca AI: Claude przez API Anthropic (decyzja Kornela), domyślnie Claude Opus 5.5 z automatyczną rezerwą przy odmowie. OpenAI zostaje jako opcja (`AI_PROVIDER=openai`).
+- Do zrobienia: sekrety w Cloudflare (ANTHROPIC_API_KEY, DEMO_SECRET), scenariusz w Make (wywołanie /api/demo po mailu z kalendarzem, wysyłka maila, limit 1 demo na adres na dobę), szablon Google Slides, 10 próbnych zgłoszeń.
 
 ## Prompt dla Claude Code
 

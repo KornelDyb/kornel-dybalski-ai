@@ -8,6 +8,8 @@ export const SITE = {
   calendarUrl: 'https://calendar.app.google/FSSxbaFac2SyKJnNA',
   // Demo na żywo (etap 13): po wysłaniu formularza AI przygotowuje wstępne pomysły.
   aiDemo: true,
+  // Dostawca modelu AI dla demo (pokazywany w klauzuli i polityce prywatności).
+  aiVendor: 'Anthropic (Claude)',
   // DO USTALENIA przed publikacją (PLAN.md, założenia do sprawdzenia).
   priceFrom: 'X zł',
 };
