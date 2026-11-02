@@ -127,7 +127,7 @@ test('Gemini jako opcja: AI_PROVIDER=gemini, klucz w nagłówku, wynik sprawdzan
     calls.push({ url, body: JSON.parse(init.body), key: init.headers['x-goog-api-key'] });
     return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify(content) }] } }] }), { status });
   };
-  const geminiEnv = { ...env, AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g-key', GEMINI_MODEL: 'gemini-test' };
+  const geminiEnv = { ...env, AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g-key', GEMINI_MODEL: 'gemini-test', GEMINI_RETRY_DELAYS: [0, 0] };
   const res = await handleDemo(post(lead), geminiEnv, fakeGemini(ideas));
   assert.equal(res.status, 200);
   assert.ok(calls[0].url.includes('/models/gemini-test:generateContent'));
@@ -153,4 +153,17 @@ test('przyjmuje też pola formularza (tak wysyła Make), znaki specjalne bez pro
   const res = await handleDemo(req, env, f);
   assert.equal(res.status, 200);
   assert.ok(f.calls[0].body.messages[0].content.includes('Cudzysłów " i nowa\nlinia & znak < >'));
+});
+
+test('Gemini: przy 503 ponawia i za drugim razem się udaje', async () => {
+  let n = 0;
+  const flaky = async () => {
+    n++;
+    if (n === 1) return new Response('{"error":{"code":503}}', { status: 503 });
+    return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify(ideas) }] } }] }), { status: 200 });
+  };
+  const geminiEnv = { ...env, AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g', GEMINI_MODEL: 'm', GEMINI_RETRY_DELAYS: [0, 0] };
+  const res = await handleDemo(post(lead), geminiEnv, flaky);
+  assert.equal(res.status, 200);
+  assert.equal(n, 2);
 });

@@ -117,7 +117,22 @@ const JSON_SHAPE = '{"intro": "...", "ideas": [{"title": "...", "problem": "..."
 
 async function askGemini(lead, env, fetchImpl) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.GEMINI_MODEL)}:generateContent`;
-  const res = await fetchImpl(url, {
+  // Darmowy plan bywa przeciążony (503) albo trafia na limit (429): ponów po 2 s i po 5 s.
+  const delays = env.GEMINI_RETRY_DELAYS ?? [2000, 5000];
+  let res;
+  for (let attempt = 0; ; attempt++) {
+    res = await geminiRequest(url, lead, env, fetchImpl);
+    if (![429, 503].includes(res.status) || attempt >= delays.length) break;
+    await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
+  }
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const data = await res.json();
+  const text = (data.candidates?.[0]?.content?.parts ?? []).map((part) => part.text ?? '').join('');
+  return parseIdeas(text);
+}
+
+function geminiRequest(url, lead, env, fetchImpl) {
+  return fetchImpl(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
     body: JSON.stringify({
@@ -125,12 +140,8 @@ async function askGemini(lead, env, fetchImpl) {
       contents: [{ role: 'user', parts: [{ text: leadText(lead) }] }],
       generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 8000 },
     }),
-    signal: AbortSignal.timeout(90_000),
+    signal: AbortSignal.timeout(60_000),
   });
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  const text = (data.candidates?.[0]?.content?.parts ?? []).map((part) => part.text ?? '').join('');
-  return parseIdeas(text);
 }
 
 async function askOpenAI(lead, env, fetchImpl) {
