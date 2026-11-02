@@ -43,8 +43,8 @@ import { SITE } from '../lib/site.js';
       <div class="flex items-center justify-between gap-4 font-mono text-[0.72rem] font-bold tracking-[0.12em] text-ink-soft uppercase">
         <span>Kupon</span><span>ważny dla 3 firm</span>
       </div>
-      <p class="mt-5 font-display text-[clamp(1.9rem,3.4vw,2.5rem)] leading-none font-bold tracking-tight">Pierwsze trzy wdrożenia taniej</p>
-      <p class="mt-4 text-ink-soft">W zamian proszę o szczerą opinię, którą pokażę na tej stronie.</p>
+      <p class="mt-5 font-display text-[clamp(1.9rem,3.4vw,2.5rem)] leading-none font-bold tracking-tight">Pierwsze trzy wdrożenia od&nbsp;{SITE.pilotPrice}</p>
+      <p class="mt-4 text-ink-soft">Zamiast od {SITE.priceFrom}. W zamian proszę o szczerą opinię, którą pokażę na tej stronie.</p>
       <a href="#kontakt" class="btn mt-7 w-full sm:w-auto" data-umami-event="cta-kupon">{SITE.cta}</a>
     </div>
   </div>

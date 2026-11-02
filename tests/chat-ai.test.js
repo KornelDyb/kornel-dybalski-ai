@@ -47,7 +47,8 @@ test('odpowiedź: Claude Haiku, bez myślenia, format JSON, wynik dla przegląda
   assert.equal(body.model, 'claude-haiku-5-5');
   assert.equal(body.thinking.type, 'disabled');
   assert.equal(body.output_config.format.type, 'json_schema');
-  assert.ok(body.system.includes('Nie podawaj żadnych kwot'));
+  assert.ok(body.system.includes('Nie podawaj żadnych innych kwot'));
+  assert.ok(body.system.includes('od 1500 zł') && body.system.includes('od 990 zł'));
 });
 
 test('błędy: brak klucza 503, obca strona 403, zła historia 400, za długa rozmowa 429, błąd AI 502', async () => {

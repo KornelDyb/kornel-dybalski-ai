@@ -13,5 +13,7 @@ export const SITE = {
   // Asystent na stronie (etap 14): 'preview' = odpowiedzi z treści strony, 'ai' = model AI, false = wyłączony.
   chatbot: 'ai',
   // DO USTALENIA przed publikacją (PLAN.md, założenia do sprawdzenia).
-  priceFrom: 'X zł',
+  priceFrom: '1500 zł',
+  // Cena dla pierwszych 3 firm (kupon) w zamian za opinię i case study.
+  pilotPrice: '990 zł',
 };

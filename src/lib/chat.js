@@ -9,7 +9,7 @@ export const CHAT_TOPICS = [
     id: 'cena',
     label: 'Ile to kosztuje?',
     keywords: ['koszt', 'kosztuje', 'cena', 'cen', 'ile to', 'płac', 'drogo', 'budżet', 'zł', 'stawk', 'wycen'],
-    answer: `Pierwsza rozmowa jest bezpłatna. Wdrożenia zaczynają się od ${SITE.priceFrom}, a dokładną cenę znasz, zanim cokolwiek zaczniemy. Jeśli rozwiązanie nie zadziała tak, jak ustaliliście, Kornel oddaje pieniądze.`,
+    answer: `Pierwsza rozmowa jest bezpłatna. Wdrożenia zaczynają się od ${SITE.priceFrom}, a pierwsze trzy firmy płacą od ${SITE.pilotPrice} w zamian za opinię. Dokładną cenę znasz, zanim cokolwiek zaczniemy. Jeśli rozwiązanie nie zadziała tak, jak ustaliliście, Kornel oddaje pieniądze.`,
   },
   {
     id: 'zakres',

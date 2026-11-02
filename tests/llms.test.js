@@ -10,5 +10,6 @@ test('llms.txt: nagłówek, opis, kontakt i linki; bez nieustalonej kwoty', () =
   assert.ok(txt.includes('korneldybalski@gmail.com'));
   assert.ok(txt.includes('Kornel rozwijał CRM'));
   assert.ok(!txt.includes('X zł'));
+  assert.ok(txt.includes('Wdrożenia od 1500 zł') && txt.includes('od 990 zł'));
   assert.ok(!txt.includes('—'), 'bez długich myślników');
 });

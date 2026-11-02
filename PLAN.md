@@ -176,7 +176,7 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 
 **Do uzupełnienia przed publikacją:**
 
-- Kwota w FAQ: „od X zł”, zmienia się w `src/lib/site.js` (pole `priceFrom`).
+- Cena: od 1500 zł, pierwsze 3 wdrożenia od 990 zł (ustalone 2.11.2026). Zmienia się w `src/lib/site.js` (pola `priceFrom` i `pilotPrice`).
 - Czasy w sekcji Współpraca i FAQ (tydzień, 1 do 4 tygodni) to propozycja, popraw, jeśli pracujesz inaczej.
 - Polityka prywatności napisana dla Kornela jako osoby prywatnej; do przejrzenia przez prawnika, gdy ustalisz formę działalności.
 - Zdjęcie i link do LinkedIn wzięte z Twojej strony KornelDyb.github.io.

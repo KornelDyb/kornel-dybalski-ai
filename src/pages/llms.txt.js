@@ -30,7 +30,7 @@ Właściciele małych firm usługowych, na przykład biur rachunkowych, gabinet�
 
 ## Cena
 
-${priceKnown ? `Wdrożenia od ${SITE.priceFrom}. ` : ''}Rozmowa jest bezpłatna. Dokładną cenę klient zna z planu, zanim cokolwiek się zacznie. Jeśli wdrożenie nie działa tak, jak ustalono, ${SITE.name} oddaje pieniądze. Pierwsze 3 wdrożenia są tańsze w zamian za opinię.
+${priceKnown ? `Wdrożenia od ${SITE.priceFrom}. ` : ''}Rozmowa jest bezpłatna. Dokładną cenę klient zna z planu, zanim cokolwiek się zacznie. Jeśli wdrożenie nie działa tak, jak ustalono, ${SITE.name} oddaje pieniądze. Pierwsze 3 wdrożenia ${SITE.pilotPrice ? `od ${SITE.pilotPrice} ` : 'taniej '}w zamian za opinię.
 
 ## Doświadczenie
 
