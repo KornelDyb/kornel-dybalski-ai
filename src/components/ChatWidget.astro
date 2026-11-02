@@ -5,6 +5,8 @@ import { CHAT_GREETING, CHAT_TOPICS } from '../lib/chat.js';
 
 const field = 'mt-1 block w-full rounded-md border-2 border-ink/15 bg-white px-3 py-2 text-[0.95rem] text-ink focus:border-cobalt focus:outline-none aria-[invalid=true]:border-error';
 const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-ink uppercase';
+const isAI = SITE.chatbot === 'ai';
+const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kornela', 'automatycznym asystentem Kornela');
 ---
 <div id="chat" class="chat" data-mode={SITE.chatbot} data-email={SITE.email}>
   <button id="chat-launcher" type="button" class="chat-launcher" aria-expanded="false" aria-controls="chat-panel" data-umami-event="chat-otwarty">
@@ -13,10 +15,10 @@ const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-in
     <span class="launcher-label">Zapytaj asystenta</span>
   </button>
 
-  <section id="chat-panel" class="chat-panel" role="dialog" aria-label="Asystent AI Kornela Dybalskiego" hidden>
+  <section id="chat-panel" class="chat-panel" role="dialog" aria-label={isAI ? 'Asystent AI Kornela Dybalskiego' : 'Asystent Kornela Dybalskiego'} hidden>
     <header class="chat-head">
       <div class="flex items-center justify-between gap-3">
-        <div class="font-mono text-[0.7rem] tracking-[0.12em] text-paper/70 uppercase">Kasa nr 2 · Asystent AI</div>
+        <div class="font-mono text-[0.7rem] tracking-[0.12em] text-paper/70 uppercase">Kasa nr 2 · {isAI ? 'Asystent AI' : 'Asystent'}</div>
         <div class="flex items-center gap-3">
           <span class="flex items-center gap-1.5 font-mono text-[0.68rem] tracking-[0.1em] text-paper/70 uppercase"><span class="led" aria-hidden="true"></span>online</span>
           <button id="chat-close" type="button" class="chat-close" aria-label="Zamknij czat">
@@ -28,8 +30,8 @@ const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-in
     </header>
 
     <div id="chat-log" class="chat-log" aria-live="polite">
-      <p class="disclosure">Odpowiada asystent AI. Może się pomylić, a wiążące ustalenia zapadają na rozmowie z Kornelem.</p>
-      <div class="msg bot"><span class="meta">Asystent</span><p>{CHAT_GREETING}</p></div>
+      <p class="disclosure">{isAI ? 'Odpowiada asystent AI. Może się pomylić, a wiążące ustalenia zapadają na rozmowie z Kornelem.' : 'Automatyczny asystent z odpowiedziami na najczęstsze pytania. Wiążące ustalenia zapadają na rozmowie z Kornelem.'}</p>
+      <div class="msg bot"><span class="meta">Asystent</span><p>{greeting}</p></div>
     </div>
 
     <div id="chat-chips" class="chat-chips">
@@ -227,7 +229,7 @@ const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-in
 </style>
 
 <script>
-  import { CHAT_TOPICS, CHAT_PREVIEW_FALLBACK, summarizeChat } from '../lib/chat.js';
+  import { CHAT_TOPICS, CHAT_PREVIEW_FALLBACK, summarizeChat, matchTopic } from '../lib/chat.js';
   import { validate, isBot } from '../lib/form.js';
 
   const root = document.getElementById('chat')!;
@@ -367,8 +369,17 @@ const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-in
     text.style.height = '';
     addMessage('user', value);
     userMessages.push(value);
-    // Tryb podglądu: bez AI. Tryb "ai" podłączy /api/chat w kolejnym kroku.
-    await botSays(CHAT_PREVIEW_FALLBACK);
+    // Bez AI: pytanie dopasowane po słowach kluczowych do odpowiedzi z treści strony.
+    const topic = matchTopic(value);
+    if (topic?.id === 'kontakt') {
+      await botSays('Jasne. Zostaw kilka danych, a Kornel odezwie się z linkiem do kalendarza.');
+      showLeadSlip();
+    } else if (topic) {
+      chips.querySelector(`[data-topic="${topic.id}"]`)?.remove();
+      await botSays(topic.answer);
+    } else {
+      await botSays(CHAT_PREVIEW_FALLBACK);
+    }
   });
 
   text.addEventListener('keydown', (e) => {
