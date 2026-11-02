@@ -9,7 +9,7 @@ export const SITE = {
   // Demo na żywo (etap 13): po wysłaniu formularza AI przygotowuje wstępne pomysły.
   aiDemo: true,
   // Dostawca modelu AI dla demo (pokazywany w klauzuli i polityce prywatności).
-  aiVendor: 'Claude od Anthropic',
+  aiVendor: 'Gemini od Google',
   // DO USTALENIA przed publikacją (PLAN.md, założenia do sprawdzenia).
   priceFrom: 'X zł',
 };
