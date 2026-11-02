@@ -183,3 +183,12 @@ test('Gemini: gdy pierwszy model jest przeciążony, używa następnego z listy'
   assert.equal(urls.filter((u) => u.includes('/models/pierwszy:')).length, 2);
   assert.ok(urls.at(-1).includes('/models/drugi:'));
 });
+
+test('Claude Haiku (najtańszy): bez parametru fallbacks i bez nagłówka beta', async () => {
+  const f = fakeClaude(ideas);
+  const res = await handleDemo(post(lead), { ...env, ANTHROPIC_MODEL: 'claude-haiku-5-5' }, f);
+  assert.equal(res.status, 200);
+  assert.equal(f.calls[0].body.model, 'claude-haiku-5-5');
+  assert.equal(f.calls[0].body.fallbacks, undefined);
+  assert.ok(!String(f.calls[0].headers.get('anthropic-beta') ?? '').includes('server-side-fallback'));
+});

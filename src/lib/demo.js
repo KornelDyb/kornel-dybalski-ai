@@ -93,19 +93,21 @@ const leadText = (lead) =>
     `Co chce usprawnić: ${lead.message}`,
   ].join('\n');
 
-// Domyślny dostawca: Claude (Anthropic). Fallback "default" przekazuje zapytanie innemu
-// modelowi, gdyby ten odmówił odpowiedzi z powodów bezpieczeństwa.
+// Domyślny dostawca: Claude (Anthropic). Na modelach, które to obsługują (Opus, Sonnet), fallback "default"
+// przekazuje zapytanie innemu modelowi, gdyby ten odmówił odpowiedzi. Haiku nie ma tej opcji, więc jej nie wysyłamy.
 async function askAnthropic(lead, env, fetchImpl) {
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, fetch: fetchImpl, maxRetries: 0, timeout: 100_000 });
-  const message = await client.beta.messages.create({
-    model: env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL,
+  const model = env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL;
+  const params = {
+    model,
     max_tokens: 16000,
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
     output_config: { effort: 'medium', format: { type: 'json_schema', schema: IDEAS_SCHEMA } },
     system: SYSTEM_PROMPT,
     messages: [{ role: 'user', content: leadText(lead) }],
-  });
+  };
+  const message = model.startsWith('claude-haiku')
+    ? await client.messages.create(params)
+    : await client.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' });
   if (message.stop_reason === 'refusal') throw new Error('Claude odmówił odpowiedzi');
   const text = message.content.filter((block) => block.type === 'text').map((block) => block.text).join('');
   return parseIdeas(text);
