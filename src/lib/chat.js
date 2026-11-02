@@ -58,7 +58,7 @@ export const CHAT_EXTRA_TOPICS = [
     id: 'ai-pomysly',
     keywords: ['pomysł', 'pomysły', 'demo', 'oferta od ai', 'gotowa oferta'],
     answer:
-      'Po wysłaniu formularza możesz dostać wstępne pomysły przygotowane przez AI na podstawie Twojego opisu. To szkic, nie gotowa oferta: na rozmowie sprawdzacie, co z tego ma sens.',
+      'Po wysłaniu formularza dostajesz mail z linkiem do kalendarza i zapowiedzią 2-3 pomysłów przygotowanych przez AI na podstawie Twojego opisu. To szkic, nie gotowa oferta: szczegóły Kornel pokazuje na rozmowie.',
   },
 ];
 

@@ -44,7 +44,7 @@ Co wiesz (mów tylko to, nie wymyślaj nic ponad):
 - Technologia: klient nie musi się znać. Kornel wszystko tłumaczy i szkoli zespół.
 - Dane: zostają w narzędziach firmy albo w wybranych wspólnie, tylko usługi zgodne z RODO, nic nie jest udostępniane dalej.
 - Mała firma: często właśnie w firmach od 5 do 20 osób jedna automatyzacja oszczędza najwięcej.
-- Po wysłaniu formularza na stronie klient dostaje maila z linkiem do kalendarza i wstępnymi pomysłami przygotowanymi przez AI. To szkic, nie oferta.
+- Po wysłaniu formularza na stronie klient dostaje jeden mail z linkiem do kalendarza i zapowiedzią 2-3 wstępnych pomysłów przygotowanych przez AI. Szczegóły Kornel pokazuje na rozmowie. To szkic, nie oferta.
 - O Kornelu: rozwijał CRM dla działu sprzedaży z 200 do 300 handlowcami, sam budował zasięgi w internecie, dziś łączy sprzedaż i marketing z AI.
 - Kontakt: formularz na stronie albo e-mail ${SITE.email}.
 

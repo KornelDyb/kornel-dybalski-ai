@@ -6,17 +6,18 @@ import { SITE } from '../lib/site.js';
     <div class="min-w-0">
       {SITE.aiDemo ? (
         <>
-          <h2 class="h-section text-paper">Opisz problem. Za kilka minut dostaniesz pierwsze pomysły</h2>
+          <h2 class="h-section text-paper">Opisz problem. Za chwilę dostaniesz termin i&nbsp;pierwsze pomysły</h2>
           <p class="mt-7 max-w-[36rem] text-lg text-cobalt-soft">
             Nie mam jeszcze opinii klientów, więc pokazuję robotę. Formularz na tej stronie to moja
-            automatyzacja: zgłoszenie trafia do CRM, Ty dostajesz link do kalendarza, a chwilę później
-            maila z 2-3 wstępnymi pomysłami przygotowanymi przez AI na podstawie Twojego opisu.
+            automatyzacja: zgłoszenie trafia do CRM, a Ty dostajesz jeden mail z linkiem do kalendarza
+            i zapowiedzią 2-3 pomysłów, które AI przygotowało na podstawie Twojego opisu. Szczegóły
+            pokazuję na rozmowie.
           </p>
           <ol class="timeline mt-9 max-w-[30rem] font-mono text-[0.8rem] text-paper sm:text-[0.85rem]" aria-label="Co dostaniesz po wysłaniu formularza">
             {[
-              ['kilka sekund', 'Mail z linkiem do kalendarza'],
-              ['kilka minut', 'Wstępne pomysły od AI'],
-              ['30 minut', 'Rozmowa: co z tego ma sens'],
+              ['kilka sekund', 'Zgłoszenie zapisane w CRM'],
+              ['około minuty', 'Mail z terminem i zapowiedzią pomysłów'],
+              ['30 minut', 'Rozmowa: pomysły w szczegółach'],
             ].map(([when, what]) => (
               <li class="flex items-baseline gap-3 py-2.5">
                 <span class="w-[6.25rem] shrink-0 text-cobalt-soft sm:w-[7.5rem]">{when}</span>

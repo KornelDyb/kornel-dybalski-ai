@@ -118,6 +118,8 @@ Na start całość kosztuje 0 zł; domena dochodzi przed promocją strony.
 - [ ] 10\. Test całości z telefonu i komputera, 3 zgłoszenia testowe (gotowe, gdy przepływ działa bez ręcznej pracy).
 - [ ] 11\. Domena i publikacja (później, przed promocją).
 - [ ] 12\. Etap 2: AI ocenia leada w Make (później).
+- [x] 13\. Demo AI: wstępne pomysły na automatyzację po wysłaniu formularza (gotowe: klient dostaje jeden mail z terminem i zapowiedzią pomysłów, Kornel jeden mail z leadem i ściągą).
+- [x] 14\. Asystent na stronie z AI (gotowe: czat odpowiada przez Claude, zbiera kontakt, ma ochronę przed prompt injection i limity).
 
 ## Słowniczek
 
@@ -187,16 +189,21 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 - Czcionki Newsreader i Instrument Sans hostowane razem ze stroną (paczki Fontsource), a nie z Google Fonts: adres IP odwiedzających nie trafia do Google, więc polityka prywatności jest prostsza.
 - Walidacja formularza w osobnym pliku `src/lib/form.js` z testami (`npm test`).
 
-## Etap 13: stan budowy
+## Etap 13: zrobione
 
-- Zrobione: serwer `/api/demo` z testami, prompt z zasadami (bez cen, bez obietnic wyników, formy neutralne, treść zgłoszenia traktowana jako dane), mail z pomysłami w barwach strony, zmiany na stronie i w polityce prywatności.
-- Dostawca AI: Claude przez API Anthropic (decyzja Kornela), domyślnie Claude Opus 5.5 z automatyczną rezerwą przy odmowie. OpenAI zostaje jako opcja (`AI_PROVIDER=openai`).
-- Do zrobienia: sekrety w Cloudflare (ANTHROPIC_API_KEY, DEMO_SECRET), scenariusz w Make (wywołanie /api/demo po mailu z kalendarzem, wysyłka maila, limit 1 demo na adres na dobę), szablon Google Slides, 10 próbnych zgłoszeń.
+- Serwer `/api/demo` (plik `src/lib/demo.js`) pyta Claude'a o wstępne pomysły i sam składa dwa maile. Make tylko je wysyła.
+- Do klienta jeden mail: przycisk „Wybierz termin rozmowy” i 2-3 tytuły pomysłów („Na rozmowie pokażę m.in.”). Szczegóły zostają na rozmowę. Gdy opis jest ogólny („proszę o kontakt”), AI to oznacza i klient dostaje sam termin.
+- Do Kornela jeden mail: dane leada, link do HubSpot i pełna ściąga (pomysły z opisem, pytania na rozmowę, punkty na slajdy). Gdy AI zawiedzie, w tym samym mailu jest informacja o błędzie, a klient i tak dostaje termin.
+- Tryb testowy: dopóki `DEMO_MODE` w Cloudflare nie jest `live`, klient dostaje sam termin, a zapowiedzi widać tylko w mailu do Kornela.
+- Model: `ANTHROPIC_MODEL` w Cloudflare (teraz `claude-haiku-5-5` do testów; na start produkcyjny można zmienić na `claude-opus-5-5`).
+- Zostaje na później: szablon Google Slides z punktów `slides`, limit 1 demo na adres na dobę.
 
-## Etap 14: stan budowy
+## Etap 14: zrobione
 
-- Zrobione: okienko asystenta w stylu strony (`src/components/ChatWidget.astro`), tryb podglądu z odpowiedziami z treści strony (`src/lib/chat.js`), zbieranie kontaktu w czacie tym samym przepływem co formularz, oznaczenie AI. Przełącznik `chatbot` w `src/lib/site.js`.
-- Do zrobienia: serwer `/api/chat` z modelem AI (ten sam przełącznik dostawcy co demo), limity rozmowy, test jakości odpowiedzi.
+- Czat (`src/components/ChatWidget.astro`) wysyła rozmowę do `/api/chat` (`src/lib/chat-ai.js`), odpowiada Claude Haiku 5.5. Gdy AI nie odpowie, czat podaje gotową odpowiedź z treści strony.
+- Czat sam otwiera blankiet kontaktu, gdy rozmówca chce się umówić; kontakt idzie tym samym przepływem co formularz.
+- Ochrona: filtr oczywistych prób prompt injection bez wywołania modelu, ocena nadużycia przez model, przerwa 60 s po blokadzie, koniec rozmowy po 3 blokadach, limit 10 wiadomości na minutę z IP, 12 pytań na rozmowę, 600 znaków na wiadomość, odpowiedź do 400 tokenów.
+- Przełącznik `chatbot` w `src/lib/site.js`: `'ai'`, `'preview'` (bez AI) albo `false`.
 
 ## Prompt dla Claude Code
 
