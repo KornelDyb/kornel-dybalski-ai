@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schemat połączeń</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f7f4;
+    --grid: rgb(222 92 58 / 0.16);
+    --grid-major: rgb(222 92 58 / 0.34);
+    --ink: #151515;
+    --ink-soft: #4a4a46;
+    --live: #0f9d4f;
+    --live-glow: rgb(15 157 79 / 0.35);
+    --panel: #161816;
+    --panel-ink: #e9ece6;
+    --panel-soft: #a9b3a7;
+    --red: #c8442a;
+    --display: 'Archivo', system-ui, sans-serif;
+    --mono: 'Martian Mono', ui-monospace, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; }
+  html { scrollbar-color: var(--ink) var(--paper); }
+  ::selection { background: var(--live); color: #fff; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--display);
+    font-variation-settings: 'wdth' 100;
+    font-size: 17px;
+    line-height: 1.6;
+    caret-color: var(--live);
+    /* Papier milimetrowy: linie co 1 mm, mocniejsze co 5 mm i co 10 mm. */
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+  }
+  a { color: inherit; text-underline-offset: 0.2em; }
+  :focus-visible { outline: 3px solid var(--live); outline-offset: 3px; }
+
+  /* Ramka arkusza z polami współrzędnych, jak na rysunku technicznym. */
+  .sheet {
+    position: relative;
+    margin: 14px;
+    border: 2px solid var(--ink);
+    min-height: calc(100vh - 28px);
+  }
+  .zones-top {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    border-bottom: 1px solid var(--ink);
+    font: 600 10px/1 var(--mono);
+    color: var(--ink-soft);
+  }
+  .zones-top span { padding: 5px 0; text-align: center; border-left: 1px solid var(--ink); }
+  .zones-top span:first-child { border-left: 0; }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 18px clamp(16px, 4vw, 48px);
+    border-bottom: 1px solid var(--ink);
+  }
+  .brand { font-weight: 800; font-variation-settings: 'wdth' 110; letter-spacing: -0.02em; font-size: 1.15rem; text-decoration: none; }
+  .brand small { display: block; font: 400 11px/1.3 var(--mono); color: var(--ink-soft); letter-spacing: 0; }
+  .nav-links { display: flex; gap: 1.6rem; font-size: 0.95rem; }
+  .nav-links a { text-decoration: none; }
+  .nav-links a:hover { text-decoration: underline; }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  .key {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.25rem;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--paper);
+    font: 700 0.98rem/1.2 var(--display);
+    font-variation-settings: 'wdth' 105;
+    text-decoration: none;
+    box-shadow: inset 0 -3px 0 rgb(255 255 255 / 0.12), 0 6px 14px -8px rgb(0 0 0 / 0.6);
+    transition: transform 150ms var(--ease), box-shadow 150ms var(--ease);
+    cursor: pointer;
+  }
+  .key:hover { transform: translateY(-1px); }
+  .key:active { transform: translateY(1px); box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.5); }
+  .key .lamp { width: 9px; height: 9px; border-radius: 50%; background: var(--live); box-shadow: 0 0 8px var(--live); }
+  .key-small { padding: 0.55rem 0.9rem; font-size: 0.88rem; white-space: nowrap; }
+
+  /* Pierwszy ekran: nagłówek po lewej, schemat po prawej, tabliczka rysunkowa w rogu. */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(24px, 4vw, 56px);
+    padding: clamp(28px, 5vw, 64px) clamp(16px, 4vw, 48px) 0;
+    align-items: center;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 5.4vw, 5.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    font-weight: 800;
+    font-variation-settings: 'wdth' 82;
+    max-width: 12ch;
+    text-wrap: balance;
+  }
+  .lede { margin: 1.4rem 0 1.8rem; max-width: 42ch; color: var(--ink-soft); font-size: 1.1rem; }
+  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.4rem; }
+  .hero-actions .note { font: 400 12px/1.5 var(--mono); color: var(--ink-soft); }
+
+  .drawing { position: relative; }
+  .drawing svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .trace { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linejoin: round; }
+  .trace-idle { stroke-dasharray: 5 5; stroke: var(--ink-soft); }
+  .current { fill: none; stroke: var(--live); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px var(--live-glow)); }
+  .sym { fill: var(--paper); stroke: var(--ink); stroke-width: 2.2; }
+  .lbl { font: 600 12px var(--mono); fill: var(--ink); }
+  .lbl-soft { font: 400 11px var(--mono); fill: var(--ink-soft); }
+  .lbl-big { font: 800 15px var(--display); fill: var(--ink); font-variation-settings: 'wdth' 100; }
+  .dot { fill: var(--ink); }
+  .lamp-glass { fill: var(--paper); stroke: var(--ink); stroke-width: 2.2; transition: fill 300ms var(--ease); }
+  .lamp-on .lamp-glass { fill: var(--live); filter: drop-shadow(0 0 10px var(--live)); }
+  .lamp-x { stroke: var(--ink); stroke-width: 2; }
+  .lamp-on .lamp-x { stroke: #fff; }
+  .stamp-t { opacity: 0.25; transition: opacity 300ms; }
+  .lamp-on .stamp-t { opacity: 1; fill: var(--live); }
+  .lever { transition: transform 260ms var(--ease); transform-origin: 214px 240px; transform-box: view-box; }
+  .powered .lever { transform: rotate(14deg); }
+  .relay-coil { transition: fill 300ms; }
+  .powered .relay-coil { fill: rgb(15 157 79 / 0.12); }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.6rem;
+    font: 400 12px/1.5 var(--mono);
+    color: var(--ink-soft);
+  }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 0.8rem 0.45rem 0.45rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper);
+    font: 700 0.9rem/1 var(--display);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .toggle .track { position: relative; width: 44px; height: 24px; border-radius: 999px; background: var(--ink); transition: background 200ms; }
+  .toggle .track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--paper); transition: transform 260ms var(--ease); }
+  .toggle[aria-checked='true'] .track { background: var(--live); }
+  .toggle[aria-checked='true'] .track::after { transform: translateX(20px); }
+  .timer { font: 600 13px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .titleblock {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 0.7fr 0.7fr;
+    margin: clamp(28px, 4vw, 48px) clamp(16px, 4vw, 48px) 0 auto;
+    max-width: 640px;
+    border: 2px solid var(--ink);
+    border-bottom: 0;
+    background: var(--paper);
+    font: 400 11px/1.35 var(--mono);
+  }
+  .titleblock div { padding: 7px 10px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .titleblock div:nth-child(4n) { border-right: 0; }
+  .titleblock b { display: block; font: 700 13px/1.3 var(--display); }
+  .titleblock .wide { grid-column: span 2; }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .titleblock { margin-left: clamp(16px, 4vw, 48px); grid-template-columns: 1fr 1fr; }
+    .titleblock div:nth-child(2n) { border-right: 0; }
+    .titleblock .wide { grid-column: span 2; border-right: 0; }
+  }
+
+  /* Co podłączam: jedna szyna, trzy odgałęzienia. Bez kart. */
+  .bus-section { border-top: 2px solid var(--ink); padding: clamp(40px, 6vw, 80px) clamp(16px, 4vw, 48px); }
+  h2 {
+    margin: 0 0 0.6rem;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    font-variation-settings: 'wdth' 85;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .section-lede { max-width: 52ch; color: var(--ink-soft); margin: 0 0 clamp(32px, 5vw, 56px); }
+  .bus { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 3vw, 40px); padding-top: 44px; }
+  .bus::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--ink); }
+  .bus-label { position: absolute; top: -24px; left: 0; font: 600 11px var(--mono); color: var(--ink-soft); }
+  .branch { position: relative; padding-top: 18px; }
+  .branch::before { content: ''; position: absolute; top: -44px; left: 18px; width: 3px; height: 50px; background: var(--ink); transition: background 250ms; }
+  .branch::after { content: ''; position: absolute; top: -50px; left: 13px; width: 13px; height: 13px; border-radius: 50%; background: var(--ink); transition: background 250ms, box-shadow 250ms; }
+  .branch:hover::before, .branch:focus-within::before { background: var(--live); }
+  .branch:hover::after, .branch:focus-within::after { background: var(--live); box-shadow: 0 0 10px var(--live); }
+  .designator { font: 600 12px var(--mono); color: var(--ink-soft); }
+  .branch h3 { margin: 0.2rem 0 0.5rem; font-size: 1.6rem; letter-spacing: -0.02em; font-variation-settings: 'wdth' 90; line-height: 1.1; }
+  .branch p { margin: 0 0 0.9rem; max-width: 34ch; }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: 400 11.5px var(--mono); }
+  .chain span { padding: 3px 7px; border: 1.5px solid var(--ink); background: var(--paper); }
+  .chain i { width: 14px; height: 2px; background: var(--ink); }
+  @media (max-width: 760px) {
+    .bus { grid-template-columns: 1fr; padding-top: 0; padding-left: 40px; }
+    .bus::before { top: 0; bottom: 0; left: 0; right: auto; width: 3px; height: auto; }
+    .bus-label { display: none; }
+    .branch { padding-top: 0; }
+    .branch::before { top: 14px; left: -40px; width: 34px; height: 3px; }
+    .branch::after { top: 9px; left: -46px; }
+  }
+
+  /* Pulpit: ciemny panel sterowniczy, przycisk umówienia rozmowy. */
+  .panel {
+    margin: 0;
+    padding: clamp(40px, 6vw, 72px) clamp(16px, 4vw, 48px);
+    background: var(--panel);
+    color: var(--panel-ink);
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 2rem;
+    align-items: center;
+  }
+  .panel h2 { color: var(--panel-ink); }
+  .panel p { color: var(--panel-soft); max-width: 46ch; margin: 0; }
+  .push {
+    justify-self: end;
+    display: grid;
+    place-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--panel-ink);
+    font: 400 12px/1.4 var(--mono);
+    text-align: center;
+  }
+  .push .cap {
+    display: grid;
+    place-items: center;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 38%, #22c46c, #0c7a3e 70%);
+    border: 10px solid #2a2d2a;
+    box-shadow: 0 0 0 2px #3b403b, 0 18px 30px -12px rgb(0 0 0 / 0.8), 0 0 40px -6px var(--live-glow);
+    color: #fff;
+    font: 800 1.15rem/1.15 var(--display);
+    font-variation-settings: 'wdth' 88;
+    padding: 1.4rem;
+    transition: transform 150ms var(--ease), box-shadow 150ms var(--ease);
+  }
+  .push:hover .cap { box-shadow: 0 0 0 2px #3b403b, 0 18px 30px -12px rgb(0 0 0 / 0.8), 0 0 60px 0 var(--live-glow); }
+  .push:active .cap { transform: scale(0.97); }
+  @media (max-width: 760px) { .panel { grid-template-columns: 1fr; } .push { justify-self: start; } }
+
+  footer { padding: 18px clamp(16px, 4vw, 48px); font: 400 11px/1.5 var(--mono); color: var(--ink-soft); border-top: 2px solid var(--ink); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="zones-top" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+
+  <nav>
+    <a class="brand" href="#">Kornel Dybalski<small>AI consulting dla małych firm usługowych</small></a>
+    <div class="nav-links"><a href="#">Co podłączam</a><a href="#">Współpraca</a><a href="#">O mnie</a><a href="#">FAQ</a></div>
+    <a class="key key-small" href="#rozmowa"><span class="lamp" aria-hidden="true"></span>Umów rozmowę</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>Podłączę Twoją firmę do&nbsp;AI</h1>
+      <p class="lede">Automatyzuję sprzedaż i obsługę klienta w małych firmach usługowych. Zapytanie dostaje odpowiedź w minutę, a nie po dwóch dniach.</p>
+      <div class="hero-actions">
+        <a class="key" href="#rozmowa"><span class="lamp" aria-hidden="true"></span>Umów bezpłatną rozmowę</a>
+        <span class="note">30 minut, online,<br>bez zobowiązań</span>
+      </div>
+    </div>
+
+    <figure class="drawing" style="margin:0">
+      <svg id="schema" viewBox="0 0 720 480" role="img" aria-labelledby="schema-title">
+        <title id="schema-title">Schemat przykładowy: zgłoszenie z formularza przechodzi przez automat do CRM, maila z terminem i powiadomienia.</title>
+        <!-- przewody -->
+        <path class="trace" d="M62 90 H160 V240" />
+        <path class="trace trace-idle" d="M62 240 H160" />
+        <path class="trace trace-idle" d="M62 390 H160 V240" />
+        <path class="trace" d="M160 240 H200" />
+        <path class="trace" d="M262 240 H300" />
+        <path class="trace" d="M400 240 H460 V90 H544" />
+        <path class="trace" d="M400 240 H544" />
+        <path class="trace" d="M400 240 H460 V390 H544" />
+        <!-- prąd (rysowany skryptem) -->
+        <path class="current" id="c-in" d="M62 90 H160 V240 H214" />
+        <path class="current" id="c-relay" d="M248 240 H300" />
+        <path class="current" id="c-o1" d="M400 240 H460 V90 H544" />
+        <path class="current" id="c-o2" d="M400 240 H544" />
+        <path class="current" id="c-o3" d="M400 240 H460 V390 H544" />
+        <!-- węzły -->
+        <circle class="dot" cx="160" cy="240" r="5" />
+        <circle class="dot" cx="460" cy="240" r="5" />
+        <!-- wejścia -->
+        <g><circle class="sym" cx="52" cy="90" r="10" /><text class="lbl" x="30" y="62">X1</text><text class="lbl-big" x="30" y="128">Formularz</text></g>
+        <g><circle class="sym" cx="52" cy="240" r="10" /><text class="lbl" x="30" y="212">X2</text><text class="lbl-big" x="30" y="278">Mail</text><text class="lbl-soft" x="30" y="296">do podłączenia</text></g>
+        <g><circle class="sym" cx="52" cy="390" r="10" /><text class="lbl" x="30" y="362">X3</text><text class="lbl-big" x="30" y="428">Telefon</text><text class="lbl-soft" x="30" y="446">do podłączenia</text></g>
+        <!-- przełącznik S1 -->
+        <g>
+          <circle class="dot" cx="214" cy="240" r="4" />
+          <circle class="sym" cx="250" cy="240" r="4" />
+          <line class="lever trace" x1="214" y1="240" x2="252" y2="220" />
+          <text class="lbl" x="214" y="206">S1</text>
+        </g>
+        <!-- przekaźnik K1 -->
+        <g>
+          <rect class="sym relay-coil" x="300" y="196" width="100" height="88" rx="2" />
+          <path class="trace" d="M300 284 L400 196" style="stroke-width:1.5" />
+          <text class="lbl" x="300" y="184">K1</text>
+          <text class="lbl-big" x="300" y="312">Automat</text>
+          <text class="lbl-soft" x="300" y="330">Make + AI</text>
+        </g>
+        <!-- wyjścia: lampki -->
+        <g id="h1">
+          <circle class="lamp-glass" cx="560" cy="90" r="16" /><path class="lamp-x" d="M549 79 L571 101 M571 79 L549 101" />
+          <text class="lbl" x="588" y="76">H1</text><text class="lbl-big" x="588" y="96">Kontakt w CRM</text><text class="lbl stamp-t" x="588" y="114">00:04</text>
+        </g>
+        <g id="h2">
+          <circle class="lamp-glass" cx="560" cy="240" r="16" /><path class="lamp-x" d="M549 229 L571 251 M571 229 L549 251" />
+          <text class="lbl" x="588" y="226">H2</text><text class="lbl-big" x="588" y="246">Mail z terminem</text><text class="lbl stamp-t" x="588" y="264">00:41</text>
+        </g>
+        <g id="h3">
+          <circle class="lamp-glass" cx="560" cy="390" r="16" /><path class="lamp-x" d="M549 379 L571 401 M571 379 L549 401" />
+          <text class="lbl" x="588" y="376">H3</text><text class="lbl-big" x="588" y="396">Powiadomienie</text><text class="lbl stamp-t" x="588" y="414">00:42</text>
+        </g>
+      </svg>
+      <figcaption class="switch-row">
+        <button class="toggle" id="power" role="switch" aria-checked="false"><span class="track" aria-hidden="true"></span>Włącz automat</button>
+        <span>Czas odpowiedzi <span class="timer" id="timer">00:00</span><br>Schemat przykładowy</span>
+      </figcaption>
+    </figure>
+  </header>
+
+  <div class="titleblock" aria-label="Tabliczka rysunkowa">
+    <div class="wide">Temat<b>Odpowiedź na zapytanie w minutę</b></div>
+    <div>Rys. nr<b>KD-001</b></div>
+    <div>Arkusz<b>1 / 1</b></div>
+    <div class="wide">Projektował<b>Kornel Dybalski</b></div>
+    <div>Skala<b>1 : 1</b></div>
+    <div>Status<b>Przykład</b></div>
+  </div>
+
+  <section class="bus-section">
+    <h2>Podłączam to, co zjada Ci najwięcej czasu</h2>
+    <p class="section-lede">Nie sprzedaję narzędzi. Sprawdzam, gdzie firma traci godziny, i podłączam automaty do tego, czego już używasz.</p>
+    <div class="bus">
+      <span class="bus-label">Szyna: Twoja firma</span>
+      <article class="branch" tabindex="0">
+        <span class="designator">Obwód 1</span>
+        <h3>Sprzedaż</h3>
+        <p>Każde zapytanie trafia do jednego miejsca, a klient od razu dostaje link do kalendarza.</p>
+        <div class="chain"><span>Formularz</span><i></i><span>CRM</span><i></i><span>Mail z terminem</span></div>
+      </article>
+      <article class="branch" tabindex="0">
+        <span class="designator">Obwód 2</span>
+        <h3>Marketing</h3>
+        <p>Po usłudze klient dostaje prośbę o opinię, a po trzech miesiącach przypomnienie o przeglądzie.</p>
+        <div class="chain"><span>Koniec usługi</span><i></i><span>Opinia</span><i></i><span>Przegląd</span></div>
+      </article>
+      <article class="branch" tabindex="0">
+        <span class="designator">Obwód 3</span>
+        <h3>Obsługa klienta</h3>
+        <p>AI odpowiada na powtarzalne pytania, a reklamacje i trudne sprawy trafiają do Ciebie.</p>
+        <div class="chain"><span>Mail klienta</span><i></i><span>AI odpowiada</span><i></i><span>Reszta do Ciebie</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="rozmowa">
+    <div>
+      <h2>Jeden przycisk i&nbsp;rozmawiamy</h2>
+      <p>30 minut online. Opowiadasz, co Cię spowalnia, a ja pokazuję jedną lub dwie rzeczy, które da się podłączyć od razu. Bez prezentacji i bez zobowiązań.</p>
+    </div>
+    <a class="push" href="#"><span class="cap">Umów bezpłatną rozmowę</span>Odpowiedź z linkiem do kalendarza w minutę</a>
+  </section>
+
+  <footer><span>© Kornel Dybalski · korneldybalski@gmail.com</span><span>Koncepcja graficzna „Schemat połączeń”, wersja do oceny</span></footer>
+</div>
+
+<script>
+  // Przełącznik S1: prąd płynie od formularza przez automat do trzech lampek, licznik dobiega do 00:42.
+  const svg = document.getElementById('schema');
+  const btn = document.getElementById('power');
+  const timer = document.getElementById('timer');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ids = ['c-in', 'c-relay', 'c-o1', 'c-o2', 'c-o3'];
+  const paths = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
+  const lamps = ['h1', 'h2', 'h3'].map((id) => document.getElementById(id));
+  let anims = [];
+  let tick;
+
+  function reset() {
+    anims.forEach((a) => a.cancel());
+    anims = [];
+    clearInterval(tick);
+    for (const p of Object.values(paths)) {
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+    }
+    lamps.forEach((l) => l.classList.remove('lamp-on'));
+    svg.classList.remove('powered');
+    timer.textContent = '00:00';
+  }
+
+  function flow(id, delay, duration) {
+    const p = paths[id];
+    const len = p.getTotalLength();
+    const a = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: reduce ? 1 : duration, delay: reduce ? 0 : delay, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' });
+    anims.push(a);
+    return a.finished.catch(() => {});
+  }
+
+  function powerOn() {
+    reset();
+    svg.classList.add('powered');
+    const start = performance.now();
+    // 3 s animacji odpowiada 42 s prawdziwego przebiegu.
+    tick = setInterval(() => {
+      const s = Math.min(42, Math.round(((performance.now() - start) / 3000) * 42));
+      timer.textContent = `00:${String(s).padStart(2, '0')}`;
+      if (s >= 42) clearInterval(tick);
+    }, 60);
+    flow('c-in', 250, 700);
+    flow('c-relay', 950, 300);
+    flow('c-o1', 1250, 500).then(() => lamps[0].classList.add('lamp-on'));
+    flow('c-o2', 1250, 1500).then(() => lamps[1].classList.add('lamp-on'));
+    flow('c-o3', 1250, 1750).then(() => lamps[2].classList.add('lamp-on'));
+  }
+
+  btn.addEventListener('click', () => {
+    const on = btn.getAttribute('aria-checked') !== 'true';
+    btn.setAttribute('aria-checked', String(on));
+    if (on) powerOn(); else reset();
+  });
+
+  reset();
+  // Przy wejściu automat włącza się sam, raz.
+  setTimeout(() => btn.click(), reduce ? 0 : 700);
+</script>
+</body>
+</html>
