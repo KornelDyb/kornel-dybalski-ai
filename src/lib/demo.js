@@ -1,4 +1,4 @@
-// Demo na żywo (etap 13): Make wysyła tu zgłoszenie, serwer pyta AI (domyślnie Claude, opcjonalnie OpenAI) o wstępne pomysły
+// Demo na żywo (etap 13): Make wysyła tu zgłoszenie, serwer pyta AI (domyślnie Claude, opcjonalnie Gemini lub OpenAI) o wstępne pomysły
 // na automatyzację i odsyła gotowego maila oraz punkty do slajdów. Make tylko je wysyła.
 import Anthropic from '@anthropic-ai/sdk';
 import { validate } from './form.js';
@@ -111,6 +111,28 @@ async function askAnthropic(lead, env, fetchImpl) {
   return parseIdeas(text);
 }
 
+// Google Gemini (darmowy plan na czas testów). Zwraca czysty JSON; kształt opisuje prompt,
+// a parseIdeas sprawdza wynik, zanim cokolwiek pójdzie dalej.
+const JSON_SHAPE = '{"intro": "...", "ideas": [{"title": "...", "problem": "...", "how": "..."}], "questions": ["..."], "slides": [{"title": "...", "bullets": ["..."]}]}';
+
+async function askGemini(lead, env, fetchImpl) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.GEMINI_MODEL)}:generateContent`;
+  const res = await fetchImpl(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\nOdpowiedz wyłącznie obiektem JSON w tym kształcie: ${JSON_SHAPE}` }] },
+      contents: [{ role: 'user', parts: [{ text: leadText(lead) }] }],
+      generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 8000 },
+    }),
+    signal: AbortSignal.timeout(90_000),
+  });
+  if (!res.ok) throw new Error(`Gemini ${res.status}`);
+  const data = await res.json();
+  const text = (data.candidates?.[0]?.content?.parts ?? []).map((part) => part.text ?? '').join('');
+  return parseIdeas(text);
+}
+
 async function askOpenAI(lead, env, fetchImpl) {
   const userContent = leadText(lead);
 
@@ -164,13 +186,17 @@ export async function handleDemo(request, env, fetchImpl = fetch) {
   if (Object.keys(errors).length > 0) return json(422, { errors });
 
   const provider = env.AI_PROVIDER || 'anthropic';
-  const configured =
-    provider === 'openai' ? env.OPENAI_API_KEY && env.OPENAI_MODEL : provider === 'anthropic' && env.ANTHROPIC_API_KEY;
+  const configured = {
+    anthropic: env.ANTHROPIC_API_KEY,
+    gemini: env.GEMINI_API_KEY && env.GEMINI_MODEL,
+    openai: env.OPENAI_API_KEY && env.OPENAI_MODEL,
+  }[provider];
   if (!configured) return json(500, { error: 'config' });
 
   let ai;
   try {
-    ai = provider === 'openai' ? await askOpenAI(lead, env, fetchImpl) : await askAnthropic(lead, env, fetchImpl);
+    const ask = { anthropic: askAnthropic, gemini: askGemini, openai: askOpenAI }[provider];
+    ai = await ask(lead, env, fetchImpl);
   } catch (err) {
     console.error(err);
     return json(502, { error: 'ai' });

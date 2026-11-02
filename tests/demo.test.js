@@ -120,3 +120,24 @@ test('zły lead: 422; błąd AI albo zła odpowiedź: 502; brak klucza: 500', as
   assert.equal((await handleDemo(post(lead), { ...env, ANTHROPIC_API_KEY: '' }, fakeClaude(ideas))).status, 500);
   assert.equal((await handleDemo(post(lead), { ...openaiEnv, OPENAI_API_KEY: '' }, fakeOpenAI(ideas))).status, 500);
 });
+
+test('Gemini jako opcja: AI_PROVIDER=gemini, klucz w nagłówku, wynik sprawdzany', async () => {
+  const calls = [];
+  const fakeGemini = (content, status = 200) => async (url, init) => {
+    calls.push({ url, body: JSON.parse(init.body), key: init.headers['x-goog-api-key'] });
+    return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify(content) }] } }] }), { status });
+  };
+  const geminiEnv = { ...env, AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g-key', GEMINI_MODEL: 'gemini-test' };
+  const res = await handleDemo(post(lead), geminiEnv, fakeGemini(ideas));
+  assert.equal(res.status, 200);
+  assert.ok(calls[0].url.includes('/models/gemini-test:generateContent'));
+  assert.equal(calls[0].key, 'g-key');
+  assert.equal(calls[0].body.generationConfig.responseMimeType, 'application/json');
+  assert.equal((await handleDemo(post(lead), geminiEnv, fakeGemini({ ideas: [] }))).status, 502);
+  assert.equal((await handleDemo(post(lead), geminiEnv, fakeGemini(ideas, 429))).status, 502);
+  assert.equal((await handleDemo(post(lead), { ...geminiEnv, GEMINI_MODEL: '' }, fakeGemini(ideas))).status, 500);
+});
+
+test('nieznany dostawca AI: 500 zamiast cichego błędu', async () => {
+  assert.equal((await handleDemo(post(lead), { ...env, AI_PROVIDER: 'cos' }, fakeClaude(ideas))).status, 500);
+});

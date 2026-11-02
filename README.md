@@ -20,7 +20,7 @@ Adres testowy: https://kornel-dybalski.korneldybalski.workers.dev
 4. Strona pokazuje paragon „Dzięki!” z czasem przyjęcia zgłoszenia.
 
 **Demo na żywo (etap 13, w budowie)**
-- `POST /api/demo` (`src/lib/demo.js`): Make wysyła zgłoszenie z nagłówkiem `X-Demo-Secret`, serwer pyta Claude (oficjalna biblioteka Anthropic, domyślnie Claude Opus 5.5, z automatyczną rezerwą przy odmowie) o 2-3 wstępne pomysły; opcjonalnie OpenAI przez `AI_PROVIDER=openai` i odsyła gotowego maila (z oznaczeniem, że przygotowało go AI) oraz punkty do slajdów.
+- `POST /api/demo` (`src/lib/demo.js`): Make wysyła zgłoszenie z nagłówkiem `X-Demo-Secret`, serwer pyta Claude (oficjalna biblioteka Anthropic, domyślnie Claude Opus 5.5, z automatyczną rezerwą przy odmowie) o 2-3 wstępne pomysły; opcjonalnie Google Gemini (`AI_PROVIDER=gemini`, darmowy plan na testy) lub OpenAI (`AI_PROVIDER=openai`). Przy zmianie dostawcy zmień też `aiVendor` w `src/lib/site.js` (klauzula i polityka prywatności) i odsyła gotowego maila (z oznaczeniem, że przygotowało go AI) oraz punkty do slajdów.
 - Bezpiecznik: dopóki `DEMO_MODE` nie jest `live`, mail z pomysłami trafia tylko do właściciela strony, z dopiskiem, dla kogo był.
 - Na stronie: sekcja „Opisz problem. Za kilka minut dostaniesz pierwsze pomysły”, podpowiedź przy opisie, informacja o AI w klauzuli i polityce prywatności, pytanie w FAQ. Wyłącza się przełącznikiem `aiDemo` w `src/lib/site.js`.
 
