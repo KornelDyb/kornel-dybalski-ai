@@ -175,11 +175,16 @@ export async function handleDemo(request, env, fetchImpl = fetch) {
 
   const raw = await request.text();
   if (raw.length > MAX_BYTES) return json(413, { error: 'too_large' });
+  // Make wysyła pola formularza (sam koduje znaki specjalne z opisu klienta); JSON też działa.
   let lead;
-  try {
-    lead = JSON.parse(raw);
-  } catch {
-    return json(400, { error: 'json' });
+  if ((request.headers.get('content-type') || '').includes('application/x-www-form-urlencoded')) {
+    lead = Object.fromEntries(new URLSearchParams(raw));
+  } else {
+    try {
+      lead = JSON.parse(raw);
+    } catch {
+      return json(400, { error: 'json' });
+    }
   }
   // Make przesyła już sprawdzone zgłoszenie (zgoda była wymagana w formularzu).
   const errors = validate({ ...lead, consent: true });

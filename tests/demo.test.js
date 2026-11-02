@@ -141,3 +141,16 @@ test('Gemini jako opcja: AI_PROVIDER=gemini, klucz w nagłówku, wynik sprawdzan
 test('nieznany dostawca AI: 500 zamiast cichego błędu', async () => {
   assert.equal((await handleDemo(post(lead), { ...env, AI_PROVIDER: 'cos' }, fakeClaude(ideas))).status, 500);
 });
+
+test('przyjmuje też pola formularza (tak wysyła Make), znaki specjalne bez problemu', async () => {
+  const f = fakeClaude(ideas);
+  const form = new URLSearchParams({ ...lead, message: 'Cudzysłów " i nowa\nlinia & znak < > działają.' });
+  const req = new Request('https://strona.pl/api/demo', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', 'x-demo-secret': 's3cret' },
+    body: form.toString(),
+  });
+  const res = await handleDemo(req, env, f);
+  assert.equal(res.status, 200);
+  assert.ok(f.calls[0].body.messages[0].content.includes('Cudzysłów " i nowa\nlinia & znak < >'));
+});
