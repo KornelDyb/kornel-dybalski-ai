@@ -127,7 +127,7 @@ async function askGemini(lead, env, fetchImpl) {
     }),
     signal: AbortSignal.timeout(90_000),
   });
-  if (!res.ok) throw new Error(`Gemini ${res.status}`);
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
   const text = (data.candidates?.[0]?.content?.parts ?? []).map((part) => part.text ?? '').join('');
   return parseIdeas(text);
@@ -150,7 +150,7 @@ async function askOpenAI(lead, env, fetchImpl) {
     }),
     signal: AbortSignal.timeout(90_000),
   });
-  if (!res.ok) throw new Error(`OpenAI ${res.status}`);
+  if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
   return parseIdeas(data.choices?.[0]?.message?.content ?? '');
 }
@@ -204,7 +204,8 @@ export async function handleDemo(request, env, fetchImpl = fetch) {
     ai = await ask(lead, env, fetchImpl);
   } catch (err) {
     console.error(err);
-    return json(502, { error: 'ai' });
+    // Opis przyczyny trafia tylko do Make (adres chroniony hasłem) i do alertu na Gmailu.
+    return json(502, { error: 'ai', provider, detail: String(err?.message ?? err).slice(0, 400) });
   }
 
   // Dopóki DEMO_MODE nie jest ustawione na "live", mail trafia tylko do właściciela strony.
