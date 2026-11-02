@@ -1,0 +1,376 @@
+---
+import { SITE } from '../lib/site.js';
+import { COMPANY_SIZES } from '../lib/form.js';
+import { CHAT_GREETING, CHAT_TOPICS } from '../lib/chat.js';
+
+const field = 'mt-1 block w-full rounded-md border-2 border-ink/15 bg-white px-3 py-2 text-[0.95rem] text-ink focus:border-cobalt focus:outline-none aria-[invalid=true]:border-error';
+const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-ink uppercase';
+---
+<div id="chat" class="chat" data-mode={SITE.chatbot} data-email={SITE.email}>
+  <button id="chat-launcher" type="button" class="chat-launcher" aria-expanded="false" aria-controls="chat-panel" data-umami-event="chat-otwarty">
+    <span class="led" aria-hidden="true"></span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
+    <span class="launcher-label">Zapytaj asystenta</span>
+  </button>
+
+  <section id="chat-panel" class="chat-panel" role="dialog" aria-label="Asystent AI Kornela Dybalskiego" hidden>
+    <header class="chat-head">
+      <div class="flex items-center justify-between gap-3">
+        <div class="font-mono text-[0.7rem] tracking-[0.12em] text-paper/70 uppercase">Kasa nr 2 · Asystent AI</div>
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5 font-mono text-[0.68rem] tracking-[0.1em] text-paper/70 uppercase"><span class="led" aria-hidden="true"></span>online</span>
+          <button id="chat-close" type="button" class="chat-close" aria-label="Zamknij czat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
+      </div>
+      <div class="slot" aria-hidden="true"></div>
+    </header>
+
+    <div id="chat-log" class="chat-log" aria-live="polite">
+      <p class="disclosure">Odpowiada asystent AI. Może się pomylić, a wiążące ustalenia zapadają na rozmowie z Kornelem.</p>
+      <div class="msg bot"><span class="meta">Asystent</span><p>{CHAT_GREETING}</p></div>
+    </div>
+
+    <div id="chat-chips" class="chat-chips">
+      {CHAT_TOPICS.map((t) => <button type="button" class="chip" data-topic={t.id}>{t.label}</button>)}
+      <button type="button" class="chip chip-cta" data-topic="kontakt">Chcę porozmawiać z Kornelem</button>
+    </div>
+
+    <form id="chat-input" class="chat-input" autocomplete="off">
+      <label for="chat-text" class="sr-only">Twoje pytanie</label>
+      <textarea id="chat-text" rows="1" maxlength="500" placeholder="Napisz pytanie…"></textarea>
+      <button type="submit" class="send" aria-label="Wyślij">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+    </form>
+
+    <template id="chat-lead-template">
+      <form class="lead-slip" novalidate>
+        <div class="flex items-center justify-between font-mono text-[0.68rem] font-bold tracking-[0.12em] text-ink-soft uppercase"><span>Zgłoszenie</span><span>z czatu</span></div>
+        <div class="slip-rule"></div>
+        <div class="grid gap-2.5">
+          <div><label class={label} data-for="name">Imię</label><input name="name" autocomplete="given-name" class={field} /><p class="err" data-error-for="name"></p></div>
+          <div><label class={label} data-for="email">E-mail</label><input name="email" type="email" inputmode="email" autocomplete="email" class={field} /><p class="err" data-error-for="email"></p></div>
+          <div><label class={label} data-for="company">Nazwa firmy</label><input name="company" autocomplete="organization" class={field} /><p class="err" data-error-for="company"></p></div>
+          <div>
+            <label class={label} data-for="size">Wielkość firmy</label>
+            <select name="size" class={field}>
+              <option value="">Wybierz</option>
+              {COMPANY_SIZES.map((size) => <option value={size}>{size === 'ponad 50' ? 'ponad 50 osób' : `${size} osób`}</option>)}
+            </select>
+            <p class="err" data-error-for="size"></p>
+          </div>
+          <input name="website" type="text" tabindex="-1" autocomplete="off" class="trap" aria-hidden="true" />
+          <label class="flex cursor-pointer items-start gap-2 text-[0.8rem] leading-snug text-ink-soft">
+            <input name="consent" type="checkbox" class="mt-0.5 size-4 shrink-0 accent-cobalt" />
+            <span>Zgadzam się na przetwarzanie danych w celu odpowiedzi i umówienia rozmowy. <a class="link-ink text-ink" href="/polityka-prywatnosci" target="_blank">Polityka prywatności</a>.</span>
+          </label>
+          <p class="err" data-error-for="consent"></p>
+        </div>
+        <button type="submit" class="btn mt-3 min-h-11 w-full py-2 text-[0.95rem]">Wyślij kontakt</button>
+        <p class="slip-status err" role="status"></p>
+      </form>
+    </template>
+  </section>
+</div>
+
+<style is:global>
+  .chat {
+    --chat-gap: max(1rem, env(safe-area-inset-right, 0px));
+    position: fixed;
+    right: var(--chat-gap);
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    z-index: 60;
+    font-family: var(--font-sans);
+  }
+  .chat .led {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #3ddc84;
+    box-shadow: 0 0 8px #3ddc84;
+  }
+
+  /* Przycisk otwierający: bilet z kasy. */
+  .chat .chat-launcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.15rem;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 600;
+    box-shadow: 0 14px 30px -12px rgb(4 8 60 / 0.6), 0 0 0 2px rgb(243 243 238 / 0.9);
+    transition: transform 200ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo);
+  }
+  .chat .chat-launcher:hover { transform: translateY(-2px); }
+  .chat .chat-launcher .led { animation: pulse 2.6s infinite; }
+  @keyframes pulse { 50% { opacity: 0.35; } }
+  .chat[data-open='true'] .chat-launcher { display: none; }
+  @media (max-width: 639px) {
+    .chat .launcher-label { display: none; }
+    .chat .chat-launcher { width: 3.5rem; height: 3.5rem; padding: 0; justify-content: center; position: relative; }
+    .chat .chat-launcher .led { position: absolute; top: 0.7rem; right: 0.75rem; }
+  }
+
+  /* Panel: druga kasa. Głowica drukarki u góry, wydruki w środku. */
+  .chat .chat-panel {
+    width: min(24rem, calc(100vw - 2rem));
+    height: min(38rem, calc(100dvh - 2rem));
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    overflow: hidden;
+    box-shadow: 0 30px 60px -24px rgb(4 8 60 / 0.65), 0 0 0 1px rgb(16 19 43 / 0.12);
+    transform-origin: bottom right;
+    animation: open 380ms var(--ease-out-expo);
+  }
+  .chat .chat-panel[hidden] { display: none; }
+  @keyframes open { from { opacity: 0; transform: translateY(12px) scale(0.96); clip-path: inset(30% 0 0 0 round 1rem); } }
+  @media (max-width: 639px) {
+    .chat { right: 0; bottom: 0; }
+    .chat[data-open='true'] { inset: 0; }
+    .chat .chat-panel { width: 100vw; height: 100dvh; border-radius: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+    .chat:not([data-open='true']) { right: var(--chat-gap); bottom: max(1rem, env(safe-area-inset-bottom, 0px)); }
+  }
+
+  .chat .chat-head { background: var(--color-ink); color: var(--color-paper); padding: 0.85rem 1rem 0.9rem; padding-top: max(0.85rem, env(safe-area-inset-top, 0px)); }
+  .chat .slot { margin-top: 0.7rem; height: 0.4rem; border-radius: 999px; background: rgb(0 0 0 / 0.7); box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.8); }
+  .chat .chat-close { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; color: var(--color-paper); }
+  .chat .chat-close:hover { background: rgb(243 243 238 / 0.12); }
+
+  .chat .chat-log { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; overscroll-behavior: contain; }
+  .chat .disclosure {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-soft);
+    text-align: center;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px dashed var(--color-rule);
+    border-radius: 0.5rem;
+  }
+  .chat .msg { max-width: 88%; font-size: 0.95rem; line-height: 1.5; animation: print 360ms var(--ease-out-expo); }
+  @keyframes print { from { opacity: 0; transform: translateY(-6px); clip-path: inset(0 0 100% 0); } }
+  .chat .msg .meta { display: block; margin-bottom: 0.25rem; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-ink-soft); }
+  /* Odpowiedź asystenta: wydruk z ząbkowanym dołem. */
+  .chat .msg.bot {
+    align-self: flex-start;
+    background: #ffffff;
+    padding: 0.7rem 0.85rem 1.05rem;
+    --tooth: 6px;
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+    filter: drop-shadow(0 1px 1px rgb(16 19 43 / 0.08));
+  }
+  .chat .msg.user {
+    align-self: flex-end;
+    background: var(--color-cobalt);
+    color: var(--color-paper);
+    padding: 0.6rem 0.85rem;
+    border-radius: 0.9rem 0.9rem 0.25rem 0.9rem;
+  }
+  .chat .typing { align-self: flex-start; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; color: var(--color-ink-soft); }
+  .chat .typing span { animation: dot 1.2s infinite; }
+  .chat .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .chat .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot { 0%, 60%, 100% { opacity: 0.2; } 30% { opacity: 1; } }
+  .chat .stamp-small { align-self: flex-start; }
+
+  /* Pytania podpowiedzi: jeden pasek przewijany w bok, żeby nie zabierał miejsca rozmowie. */
+  .chat .chat-chips { display: flex; gap: 0.4rem; padding: 0.1rem 1rem 0.75rem; overflow-x: auto; scrollbar-width: none; mask: linear-gradient(90deg, #000 85%, #0000); }
+  .chat .chat-chips::-webkit-scrollbar { display: none; }
+  .chat .chip { flex-shrink: 0; white-space: nowrap; }
+  .chat .chip {
+    padding: 0.4rem 0.7rem;
+    border: 1.5px dashed rgb(16 19 43 / 0.3);
+    border-radius: 999px;
+    background: transparent;
+    font-size: 0.82rem;
+    color: var(--color-ink);
+    transition: background-color 150ms, border-color 150ms;
+  }
+  .chat .chip:hover { background: #ffffff; border-color: var(--color-cobalt); }
+  .chat .chip-cta { border-style: solid; border-color: var(--color-cobalt); color: var(--color-cobalt); font-weight: 600; }
+
+  .chat .chat-input { display: flex; align-items: flex-end; gap: 0.5rem; padding: 0.75rem; border-top: 1.5px dashed var(--color-rule); background: var(--color-paper); }
+  .chat .chat-input textarea {
+    flex: 1;
+    min-height: 2.75rem;
+    max-height: 7rem;
+    resize: none;
+    border: 2px solid rgb(16 19 43 / 0.15);
+    border-radius: 0.6rem;
+    background: #ffffff;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+  .chat .chat-input textarea:focus { outline: none; border-color: var(--color-cobalt); }
+  .chat .send { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; border-radius: 0.6rem; background: var(--color-cobalt); color: var(--color-paper); }
+  .chat .send:disabled { opacity: 0.5; }
+
+  .chat .lead-slip { align-self: stretch; background: #ffffff; padding: 0.9rem; border-radius: 0.5rem; border: 1px solid rgb(16 19 43 / 0.1); animation: print 420ms var(--ease-out-expo); }
+  .chat .slip-rule { border-top: 1.5px dashed rgb(16 19 43 / 0.25); margin: 0.6rem 0 0.75rem; }
+  .chat .err { margin-top: 0.2rem; font-size: 0.78rem; font-weight: 500; color: var(--color-error); }
+  .chat .err:empty { display: none; }
+  .chat .trap { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  @media (prefers-reduced-motion: reduce) {
+    .chat .chat-panel, .chat .msg, .chat .lead-slip { animation: none; }
+  }
+</style>
+
+<script>
+  import { CHAT_TOPICS, CHAT_PREVIEW_FALLBACK, summarizeChat } from '../lib/chat.js';
+  import { validate, isBot } from '../lib/form.js';
+
+  const root = document.getElementById('chat')!;
+  const launcher = document.getElementById('chat-launcher') as HTMLButtonElement;
+  const panel = document.getElementById('chat-panel')!;
+  const closeBtn = document.getElementById('chat-close') as HTMLButtonElement;
+  const log = document.getElementById('chat-log')!;
+  const chips = document.getElementById('chat-chips')!;
+  const input = document.getElementById('chat-input') as HTMLFormElement;
+  const text = document.getElementById('chat-text') as HTMLTextAreaElement;
+  const template = document.getElementById('chat-lead-template') as HTMLTemplateElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const userMessages: string[] = [];
+  let leadShown = false;
+
+  function setOpen(open: boolean) {
+    root.dataset.open = String(open);
+    panel.hidden = !open;
+    launcher.setAttribute('aria-expanded', String(open));
+    if (open) setTimeout(() => text.focus(), 50);
+    else launcher.focus();
+  }
+  launcher.addEventListener('click', () => setOpen(true));
+  closeBtn.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) setOpen(false); });
+
+  const scrollDown = () => log.scrollTo({ top: log.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
+
+  // Treść wiadomości zawsze przez textContent: tekst od użytkownika nigdy nie trafia do HTML.
+  function addMessage(who: 'bot' | 'user', body: string) {
+    const el = document.createElement('div');
+    el.className = `msg ${who}`;
+    if (who === 'bot') {
+      const meta = document.createElement('span');
+      meta.className = 'meta';
+      meta.textContent = 'Asystent';
+      el.append(meta);
+    }
+    const p = document.createElement('p');
+    p.textContent = body;
+    el.append(p);
+    log.append(el);
+    scrollDown();
+  }
+
+  async function botSays(body: string) {
+    const typing = document.createElement('div');
+    typing.className = 'typing';
+    typing.innerHTML = 'drukuję<span>.</span><span>.</span><span>.</span>';
+    log.append(typing);
+    scrollDown();
+    await new Promise((r) => setTimeout(r, reduce ? 0 : 650));
+    typing.remove();
+    addMessage('bot', body);
+  }
+
+  function showLeadSlip() {
+    if (leadShown) return;
+    leadShown = true;
+    const slip = template.content.firstElementChild!.cloneNode(true) as HTMLFormElement;
+    slip.querySelectorAll<HTMLLabelElement>('label[data-for]').forEach((l) => {
+      const id = `chat-${l.dataset.for}`;
+      l.htmlFor = id;
+      (slip.elements.namedItem(l.dataset.for!) as HTMLElement).id = id;
+    });
+    slip.addEventListener('submit', (e) => submitLead(e, slip));
+    log.append(slip);
+    scrollDown();
+    (slip.elements.namedItem('name') as HTMLInputElement).focus();
+  }
+
+  async function submitLead(event: SubmitEvent, slip: HTMLFormElement) {
+    event.preventDefault();
+    const fd = new FormData(slip);
+    const data = {
+      name: String(fd.get('name') ?? ''),
+      email: String(fd.get('email') ?? ''),
+      company: String(fd.get('company') ?? ''),
+      size: String(fd.get('size') ?? ''),
+      message: summarizeChat(userMessages),
+      consent: fd.get('consent') === 'on',
+      website: String(fd.get('website') ?? ''),
+    };
+    const errors = validate(data);
+    slip.querySelectorAll<HTMLElement>('[data-error-for]').forEach((el) => {
+      el.textContent = errors[el.dataset.errorFor!] ?? '';
+      (slip.elements.namedItem(el.dataset.errorFor!) as HTMLElement | null)?.setAttribute('aria-invalid', errors[el.dataset.errorFor!] ? 'true' : 'false');
+    });
+    if (Object.keys(errors).length) return;
+
+    const button = slip.querySelector('button[type=submit]') as HTMLButtonElement;
+    const status = slip.querySelector('.slip-status') as HTMLElement;
+    button.disabled = true;
+    button.textContent = 'Wysyłam…';
+    try {
+      if (!isBot(data)) {
+        const res = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (!res.ok) throw new Error(String(res.status));
+      }
+      (window as any).umami?.track('chat-kontakt');
+      slip.remove();
+      await botSays(`Gotowe, ${data.name.trim()}! Kornel dostał Twój kontakt. Sprawdź skrzynkę: za chwilę przyjdzie mail z linkiem do wyboru terminu rozmowy.`);
+      const stamp = document.createElement('div');
+      stamp.className = 'stamp-small';
+      stamp.innerHTML = '<span class="stamp" style="font-size:0.95rem">Przekazane</span>';
+      log.append(stamp);
+      scrollDown();
+    } catch {
+      button.disabled = false;
+      button.textContent = 'Wyślij kontakt';
+      status.textContent = `Nie udało się wysłać. Spróbuj ponownie albo napisz na ${root.dataset.email}.`;
+    }
+  }
+
+  chips.addEventListener('click', async (e) => {
+    const chip = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+    if (!chip) return;
+    const topic = chip.dataset.topic;
+    addMessage('user', chip.textContent!.trim());
+    userMessages.push(chip.textContent!.trim());
+    if (topic === 'kontakt') {
+      await botSays('Świetnie. Zostaw kilka danych, a Kornel odezwie się z linkiem do kalendarza. Zajmie to 20 sekund.');
+      showLeadSlip();
+      return;
+    }
+    const found = CHAT_TOPICS.find((t) => t.id === topic);
+    if (found) await botSays(found.answer);
+  });
+
+  input.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const value = text.value.trim();
+    if (!value) return;
+    text.value = '';
+    text.style.height = '';
+    addMessage('user', value);
+    userMessages.push(value);
+    // Tryb podglądu: bez AI. Tryb "ai" podłączy /api/chat w kolejnym kroku.
+    await botSays(CHAT_PREVIEW_FALLBACK);
+  });
+
+  text.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); input.requestSubmit(); }
+  });
+  text.addEventListener('input', () => { text.style.height = ''; text.style.height = `${Math.min(text.scrollHeight, 112)}px`; });
+</script>

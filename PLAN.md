@@ -193,6 +193,11 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 - Dostawca AI: Claude przez API Anthropic (decyzja Kornela), domyślnie Claude Opus 5.5 z automatyczną rezerwą przy odmowie. OpenAI zostaje jako opcja (`AI_PROVIDER=openai`).
 - Do zrobienia: sekrety w Cloudflare (ANTHROPIC_API_KEY, DEMO_SECRET), scenariusz w Make (wywołanie /api/demo po mailu z kalendarzem, wysyłka maila, limit 1 demo na adres na dobę), szablon Google Slides, 10 próbnych zgłoszeń.
 
+## Etap 14: stan budowy
+
+- Zrobione: okienko asystenta w stylu strony (`src/components/ChatWidget.astro`), tryb podglądu z odpowiedziami z treści strony (`src/lib/chat.js`), zbieranie kontaktu w czacie tym samym przepływem co formularz, oznaczenie AI. Przełącznik `chatbot` w `src/lib/site.js`.
+- Do zrobienia: serwer `/api/chat` z modelem AI (ten sam przełącznik dostawcy co demo), limity rozmowy, test jakości odpowiedzi.
+
 ## Prompt dla Claude Code
 
 Przed startem: wyeksportuj ten dokument jako Markdown i zapisz w pustym folderze projektu jako `PLAN.md`. Potem otwórz ten folder w Claude Code i wklej:

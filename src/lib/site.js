@@ -10,6 +10,8 @@ export const SITE = {
   aiDemo: true,
   // Dostawca modelu AI dla demo (pokazywany w klauzuli i polityce prywatności).
   aiVendor: 'Gemini od Google',
+  // Asystent na stronie (etap 14): 'preview' = odpowiedzi z treści strony, 'ai' = model AI, false = wyłączony.
+  chatbot: 'preview',
   // DO USTALENIA przed publikacją (PLAN.md, założenia do sprawdzenia).
   priceFrom: 'X zł',
 };

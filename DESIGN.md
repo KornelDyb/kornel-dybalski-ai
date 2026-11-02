@@ -37,6 +37,14 @@ Strategia: Committed. Kobalt niesie 40-50% powierzchni, papier resztę, pomarań
 - Bileciki przepływu w „Co robię”: po najechaniu zapalają się po kolei (pomarańcz), pokazując kroki automatu.
 - Taśma z kasy pod nagłówkiem (Ticker): przesuwa się, zatrzymuje pod kursorem, przy ograniczonym ruchu stoi.
 
+## Asystent na stronie (etap 14)
+
+- Przycisk w prawym dolnym rogu: czarny „bilet” z zieloną diodą („Zapytaj asystenta”), na telefonie okrągły.
+- Panel to druga kasa: głowica drukarki u góry („Kasa nr 2 · Asystent AI”, dioda online), odpowiedzi jako białe wydruki z ząbkowanym dołem, pytania użytkownika jako kobaltowe dymki, „drukuję…” zamiast kropek pisania.
+- Na górze stałe oznaczenie, że odpowiada AI (AI Act). Pytania podpowiedzi w jednym pasku przewijanym w bok.
+- „Chcę porozmawiać z Kornelem” wstawia do rozmowy blankiet zgłoszenia (ten sam przepływ co formularz, /api/lead), po wysłaniu pieczątka „Przekazane”.
+- Na telefonie panel na cały ekran. Style globalne, ale zawężone do `.chat` (wiadomości tworzy skrypt).
+
 ## Ruch
 
 - Jeden autorski moment: druk paragonu w nagłówku (papier wysuwa się skokowo, steps(12), linie pojawiają się po kolei, licznik dobiega do 00:42, pieczątka uderza). Przycisk „Wydrukuj jeszcze raz”.

@@ -12,6 +12,8 @@ import About from '../components/About.astro';
 import Faq from '../components/Faq.astro';
 import ContactForm from '../components/ContactForm.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import ChatWidget from '../components/ChatWidget.astro';
+import { SITE } from '../lib/site.js';
 ---
 <Layout structuredData>
   <SiteHeader />
@@ -28,4 +30,5 @@ import SiteFooter from '../components/SiteFooter.astro';
     <ContactForm />
   </main>
   <SiteFooter />
+  {SITE.chatbot && <ChatWidget />}
 </Layout>
