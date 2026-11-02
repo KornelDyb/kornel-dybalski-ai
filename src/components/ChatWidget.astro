@@ -243,6 +243,9 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
   const template = document.getElementById('chat-lead-template') as HTMLTemplateElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const userMessages: string[] = [];
+  const history: { role: 'user' | 'assistant'; content: string }[] = [];
+  const aiMode = root.dataset.mode === 'ai';
+  let busy = false; // czekamy na odpowiedź AI: kolejne pytanie poczeka
   let leadShown = false;
 
   function setOpen(open: boolean) {
@@ -275,15 +278,52 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
     scrollDown();
   }
 
-  async function botSays(body: string) {
+  function showTyping() {
     const typing = document.createElement('div');
     typing.className = 'typing';
     typing.innerHTML = 'drukuję<span>.</span><span>.</span><span>.</span>';
     log.append(typing);
     scrollDown();
+    return typing;
+  }
+
+  async function botSays(body: string) {
+    const typing = showTyping();
     await new Promise((r) => setTimeout(r, reduce ? 0 : 650));
     typing.remove();
     addMessage('bot', body);
+    history.push({ role: 'assistant', content: body });
+  }
+
+  // Tryb AI: pytanie idzie do /api/chat razem z historią rozmowy. Gdy AI nie odpowie,
+  // asystent używa gotowej odpowiedzi z treści strony, więc rozmowa się nie urywa.
+  async function askAI(question: string, fallback: string) {
+    busy = true;
+    const typing = showTyping();
+    let reply = fallback;
+    let offerContact = false;
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.reply) {
+        reply = data.reply;
+        offerContact = Boolean(data.offerContact);
+      } else if (res.status === 429) {
+        reply = 'Rozmawiamy już dłuższą chwilę. Resztę najlepiej omówić bezpośrednio z Kornelem: zostaw kontakt, a odezwie się z linkiem do kalendarza.';
+        offerContact = true;
+      }
+    } catch {
+      // Brak sieci albo błąd serwera: zostaje odpowiedź zapasowa.
+    }
+    typing.remove();
+    busy = false;
+    addMessage('bot', reply);
+    history.push({ role: 'assistant', content: reply });
+    if (offerContact) showLeadSlip();
   }
 
   function showLeadSlip() {
@@ -346,32 +386,40 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
 
   chips.addEventListener('click', async (e) => {
     const chip = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
-    if (!chip) return;
+    if (!chip || busy) return;
     const topic = chip.dataset.topic;
     // Użyte pytanie znika z podpowiedzi (prośba o kontakt zostaje, dopóki blankiet nie jest wysłany).
     if (topic !== 'kontakt') chip.remove();
-    addMessage('user', chip.textContent!.trim());
-    userMessages.push(chip.textContent!.trim());
+    const question = chip.textContent!.trim();
+    addMessage('user', question);
+    userMessages.push(question);
+    history.push({ role: 'user', content: question });
     if (topic === 'kontakt') {
       await botSays('Świetnie. Zostaw kilka danych, a Kornel odezwie się z linkiem do kalendarza. Zajmie to 20 sekund.');
       showLeadSlip();
       return;
     }
     const found = CHAT_TOPICS.find((t) => t.id === topic);
-    if (found) await botSays(found.answer);
+    if (!found) return;
+    if (aiMode) await askAI(question, found.answer);
+    else await botSays(found.answer);
   });
 
   input.addEventListener('submit', async (e) => {
     e.preventDefault();
     const value = text.value.trim();
-    if (!value) return;
+    if (!value || busy) return;
     text.value = '';
     text.style.height = '';
     addMessage('user', value);
     userMessages.push(value);
-    // Bez AI: pytanie dopasowane po słowach kluczowych do odpowiedzi z treści strony.
+    history.push({ role: 'user', content: value });
+    // Bez AI (albo jako zapas dla AI): pytanie dopasowane po słowach kluczowych do odpowiedzi z treści strony.
     const topic = matchTopic(value);
-    if (topic?.id === 'kontakt') {
+    if (aiMode) {
+      if (topic && topic.id !== 'kontakt') chips.querySelector(`[data-topic="${topic.id}"]`)?.remove();
+      await askAI(value, topic && 'answer' in topic ? topic.answer : CHAT_PREVIEW_FALLBACK);
+    } else if (topic?.id === 'kontakt') {
       await botSays('Jasne. Zostaw kilka danych, a Kornel odezwie się z linkiem do kalendarza.');
       showLeadSlip();
     } else if (topic) {

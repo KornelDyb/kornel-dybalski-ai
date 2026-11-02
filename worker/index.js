@@ -2,6 +2,7 @@
 // Adres webhooka Make jest w sekrecie MAKE_WEBHOOK_URL (Settings > Variables and Secrets).
 import { handleLead } from '../src/lib/lead-handler.js';
 import { handleDemo } from '../src/lib/demo.js';
+import { handleChat } from '../src/lib/chat-ai.js';
 
 export default {
   async fetch(request, env) {
@@ -11,6 +12,9 @@ export default {
     }
     if (url.pathname === '/api/demo') {
       return handleDemo(request, env);
+    }
+    if (url.pathname === '/api/chat') {
+      return handleChat(request, env);
     }
 
     const response = await env.ASSETS.fetch(request);

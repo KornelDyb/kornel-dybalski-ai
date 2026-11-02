@@ -96,7 +96,7 @@ const leadText = (lead) =>
 // Domyślny dostawca: Claude (Anthropic). Fallback "default" przekazuje zapytanie innemu
 // modelowi, gdyby ten odmówił odpowiedzi z powodów bezpieczeństwa.
 async function askAnthropic(lead, env, fetchImpl) {
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, fetch: fetchImpl, maxRetries: 1, timeout: 90_000 });
+  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, fetch: fetchImpl, maxRetries: 0, timeout: 100_000 });
   const message = await client.beta.messages.create({
     model: env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL,
     max_tokens: 16000,
@@ -176,8 +176,10 @@ async function askOpenAI(lead, env, fetchImpl) {
   return parseIdeas(data.choices?.[0]?.message?.content ?? '');
 }
 
+// Jeden mail do klienta: link do kalendarza na górze, pod nim wstępne pomysły od AI.
 export function renderEmail(lead, ai) {
   const e = escapeHtml;
+  const button = `<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><tr><td style="background:#1e2cc0;border-radius:8px"><a href="${e(SITE.calendarUrl)}" style="display:inline-block;padding:15px 26px;font-size:16px;font-weight:bold;color:#f3f3ee;text-decoration:none">Wybierz termin rozmowy &rarr;</a></td></tr></table>`;
   const ideas = ai.ideas
     .map(
       (idea, i) => `<tr><td style="padding:14px 0;border-top:1px dashed #c9c9c0;vertical-align:top;width:28px;color:#b8360e;font-weight:bold;font-size:16px">${i + 1}</td><td style="padding:14px 0;border-top:1px dashed #c9c9c0"><div style="font-size:16px;font-weight:bold;color:#10132b">${e(idea.title)}</div><div style="margin-top:4px;font-size:15px;line-height:1.55;color:#484d68"><b>Problem:</b> ${e(idea.problem)}</div><div style="margin-top:4px;font-size:15px;line-height:1.55;color:#484d68"><b>Jak to działa:</b> ${e(idea.how)}</div></td></tr>`,
@@ -185,7 +187,7 @@ export function renderEmail(lead, ai) {
     .join('');
   const questions = ai.questions.map((q) => `<li style="margin:4px 0">${e(q)}</li>`).join('');
 
-  return `<div style="margin:0;padding:24px 12px;background:#e4e4dc;font-family:Arial,Helvetica,sans-serif;color:#10132b"><div style="display:none;max-height:0;overflow:hidden">Wstępne pomysły na automatyzację dla ${e(lead.company)}.</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;border-collapse:collapse"><tr><td style="background:#1e2cc0;padding:22px 28px;border-radius:12px 12px 0 0"><div style="font-size:20px;font-weight:bold;color:#f3f3ee">Kornel Dybalski</div><div style="font-size:13px;color:#cdd1fa;margin-top:2px">AI consulting dla małych firm usługowych</div></td></tr><tr><td style="background:#f3f3ee;padding:32px 28px 28px;border-radius:0 0 12px 12px"><p style="margin:0 0 14px;font-size:22px;font-weight:bold;line-height:1.25">${e(lead.name)}, oto pierwsze pomysły dla ${e(lead.company)}</p><p style="margin:0 0 8px;font-size:16px;line-height:1.6;color:#484d68">${e(ai.intro)}</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:16px 0 8px">${ideas}</table><div style="margin:18px 0 0;padding:14px 16px;background:#ffffff;border:1px dashed #c9c9c0;border-radius:8px;font-size:14px;line-height:1.55;color:#484d68"><b style="color:#10132b">To wstępne pomysły przygotowane przez AI</b> na podstawie Twojego opisu, bez znajomości szczegółów Twojej firmy. Na rozmowie sprawdzimy, które z nich mają sens i od czego zacząć.</div>${questions ? `<p style="margin:24px 0 6px;font-size:15px;font-weight:bold">Na rozmowie zapytam o:</p><ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.55;color:#484d68">${questions}</ul>` : ''}<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:26px"><tr><td style="background:#1e2cc0;border-radius:8px"><a href="${e(SITE.calendarUrl)}" style="display:inline-block;padding:15px 26px;font-size:16px;font-weight:bold;color:#f3f3ee;text-decoration:none">Wybierz termin rozmowy &rarr;</a></td></tr></table><p style="margin:26px 0 0;font-size:15px;line-height:1.6">Do usłyszenia,<br><b>Kornel Dybalski</b></p></td></tr><tr><td style="padding:16px 8px 0;font-size:12px;line-height:1.5;color:#6b7086;text-align:center">Ten mail przygotowała automatycznie moja strona z pomocą AI, po wysłaniu formularza.<br>Jeśli to pomyłka, po prostu zignoruj tę wiadomość.</td></tr></table></div>`;
+  return `<div style="margin:0;padding:24px 12px;background:#e4e4dc;font-family:Arial,Helvetica,sans-serif;color:#10132b"><div style="display:none;max-height:0;overflow:hidden">Link do wyboru terminu rozmowy i pierwsze pomysły na automatyzację dla ${e(lead.company)}.</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;border-collapse:collapse"><tr><td style="background:#1e2cc0;padding:22px 28px;border-radius:12px 12px 0 0"><div style="font-size:20px;font-weight:bold;color:#f3f3ee">Kornel Dybalski</div><div style="font-size:13px;color:#cdd1fa;margin-top:2px">AI consulting dla małych firm usługowych</div></td></tr><tr><td style="background:#f3f3ee;padding:32px 28px 28px;border-radius:0 0 12px 12px"><p style="margin:0 0 14px;font-size:22px;font-weight:bold;line-height:1.25">Cześć ${e(lead.name)},</p><p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#484d68">dzięki za zgłoszenie. Wybierz termin 30-minutowej rozmowy online, który Ci pasuje. Kalendarz pokazuje tylko wolne godziny.</p>${button}<p style="margin:34px 0 4px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:1px;color:#b8360e">PIERWSZE POMYSŁY DLA ${e(lead.company).toUpperCase()}</p><p style="margin:0 0 8px;font-size:16px;line-height:1.6;color:#484d68">${e(ai.intro)}</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:16px 0 8px">${ideas}</table><div style="margin:18px 0 0;padding:14px 16px;background:#ffffff;border:1px dashed #c9c9c0;border-radius:8px;font-size:14px;line-height:1.55;color:#484d68"><b style="color:#10132b">To wstępne pomysły przygotowane przez AI</b> na podstawie Twojego opisu, bez znajomości szczegółów Twojej firmy. Na rozmowie sprawdzimy, które z nich mają sens i od czego zacząć.</div>${questions ? `<p style="margin:24px 0 6px;font-size:15px;font-weight:bold">Na rozmowie zapytam o:</p><ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.55;color:#484d68">${questions}</ul>` : ''}<p style="margin:26px 0 16px;font-size:15px;line-height:1.6;color:#484d68">Jeśli żaden termin nie pasuje, po prostu odpisz na tego maila.</p>${button}<p style="margin:26px 0 0;font-size:15px;line-height:1.6">Do usłyszenia,<br><b>Kornel Dybalski</b></p></td></tr><tr><td style="padding:16px 8px 0;font-size:12px;line-height:1.5;color:#6b7086;text-align:center">Ten mail przygotowała automatycznie moja strona z pomocą AI, chwilę po wysłaniu formularza.<br>Jeśli to pomyłka, po prostu zignoruj tę wiadomość.</td></tr></table></div>`;
 }
 
 export async function handleDemo(request, env, fetchImpl = fetch) {
@@ -229,10 +231,12 @@ export async function handleDemo(request, env, fetchImpl = fetch) {
     return json(502, { error: 'ai', provider, detail: String(err?.message ?? err).slice(0, 400) });
   }
 
-  // Dopóki DEMO_MODE nie jest ustawione na "live", mail trafia tylko do właściciela strony.
+  // Dopóki DEMO_MODE nie jest ustawione na "live", wspólny mail trafia tylko do właściciela strony,
+  // a klient dostaje zwykły mail z kalendarzem (Make sprawdza pole live).
   const live = env.DEMO_MODE === 'live';
-  const subject = `${lead.name.trim()}, wstępne pomysły dla ${lead.company.trim()}`;
+  const subject = `${lead.name.trim()}, wybierz termin rozmowy i zobacz pierwsze pomysły`;
   return json(200, {
+    live,
     to: live ? lead.email.trim() : env.OWNER_EMAIL || SITE.email,
     subject: live ? subject : `[TEST dla ${lead.email.trim()}] ${subject}`,
     html: renderEmail(lead, ai),

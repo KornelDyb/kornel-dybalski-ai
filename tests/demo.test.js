@@ -66,6 +66,7 @@ test('mail: dane klienta są zabezpieczone, jest oznaczenie AI i link do kalenda
   assert.ok(html.includes('przygotowane przez AI'));
   assert.ok(html.includes('https://calendar.app.google/'));
   assert.ok(html.includes('Automatyczna odpowiedź'));
+  assert.equal(html.split('https://calendar.app.google/').length - 1, 2, 'przycisk kalendarza na górze i na dole');
 });
 
 test('bez sekretu: 401, nic nie idzie do AI', async () => {
@@ -81,6 +82,7 @@ test('tryb testowy (Claude): mail idzie do właściciela z dopiskiem, dla kogo b
   assert.equal(res.status, 200);
   const body = await res.json();
   assert.equal(body.to, 'korneldybalski@gmail.com');
+  assert.equal(body.live, false);
   assert.ok(body.subject.startsWith('[TEST dla anna@firma.pl]'));
   assert.ok(body.html.includes('Automatyczna odpowiedź'));
   assert.equal(body.slides.length, 1);
