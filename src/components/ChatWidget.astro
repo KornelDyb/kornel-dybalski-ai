@@ -188,6 +188,7 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
   /* Pytania podpowiedzi zawijają się; użyte znikają, więc pasek z czasem się skraca. */
   .chat .chat-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.1rem 1rem 0.75rem; }
   .chat .chip { white-space: nowrap; }
+  .chat .chip:disabled, .chat .send:disabled, .chat textarea:disabled { opacity: 0.45; cursor: not-allowed; }
   @media (max-width: 639px) { .chat .chip { font-size: 0.78rem; padding: 0.35rem 0.6rem; } }
   .chat .chip {
     padding: 0.4rem 0.7rem;
@@ -246,6 +247,39 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
   const history: { role: 'user' | 'assistant'; content: string }[] = [];
   const aiMode = root.dataset.mode === 'ai';
   let busy = false; // czekamy na odpowiedź AI: kolejne pytanie poczeka
+  let blockedCount = 0; // zablokowane wiadomości w tej rozmowie
+  let ended = false;
+  const sendBtn = input.querySelector('button[type=submit]') as HTMLButtonElement;
+
+  // Przerwa po próbie manipulacji: pole i podpowiedzi są nieaktywne, licznik pokazuje, ile zostało.
+  function lockInput(seconds: number) {
+    let left = seconds;
+    const placeholder = text.placeholder;
+    const setState = (locked: boolean) => {
+      text.disabled = locked;
+      sendBtn.disabled = locked;
+      chips.querySelectorAll<HTMLButtonElement>('.chip:not(.chip-cta)').forEach((c) => (c.disabled = locked));
+    };
+    setState(true);
+    text.placeholder = `Przerwa: ${left} s`;
+    const timer = setInterval(() => {
+      left -= 1;
+      text.placeholder = `Przerwa: ${left} s`;
+      if (left <= 0) {
+        clearInterval(timer);
+        text.placeholder = placeholder;
+        if (!ended) setState(false);
+      }
+    }, 1000);
+  }
+
+  function endChat() {
+    ended = true;
+    text.disabled = true;
+    sendBtn.disabled = true;
+    text.placeholder = 'Rozmowa zakończona';
+    chips.querySelectorAll<HTMLButtonElement>('.chip:not(.chip-cta)').forEach((c) => c.remove());
+  }
   let leadShown = false;
 
   function setOpen(open: boolean) {
@@ -306,12 +340,20 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ messages: history, blocked: blockedCount }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.reply) {
         reply = data.reply;
         offerContact = Boolean(data.offerContact);
+        if (data.ended) endChat();
+        else if (data.blocked) {
+          blockedCount += 1;
+          lockInput(Number(data.cooldown) || 60);
+        }
+      } else if (data.error === 'cooldown') {
+        reply = 'Chwila przerwy. Za minutę możesz zadać kolejne pytanie o automatyzację.';
+        lockInput(Number(data.cooldown) || 60);
       } else if (res.status === 429) {
         reply = 'Rozmawiamy już dłuższą chwilę. Resztę najlepiej omówić bezpośrednio z Kornelem: zostaw kontakt, a odezwie się z linkiem do kalendarza.';
         offerContact = true;
@@ -386,7 +428,7 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
 
   chips.addEventListener('click', async (e) => {
     const chip = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
-    if (!chip || busy) return;
+    if (!chip || busy || chip.disabled) return;
     const topic = chip.dataset.topic;
     // Użyte pytanie znika z podpowiedzi (prośba o kontakt zostaje, dopóki blankiet nie jest wysłany).
     if (topic !== 'kontakt') chip.remove();
@@ -408,7 +450,7 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
   input.addEventListener('submit', async (e) => {
     e.preventDefault();
     const value = text.value.trim();
-    if (!value || busy) return;
+    if (!value || busy || ended || text.disabled) return;
     text.value = '';
     text.style.height = '';
     addMessage('user', value);
