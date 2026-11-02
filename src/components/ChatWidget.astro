@@ -110,8 +110,9 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
     transition: transform 200ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo);
   }
   .chat .chat-launcher:hover { transform: translateY(-2px); }
-  .chat .chat-launcher .led { animation: pulse 2.6s infinite; }
-  @keyframes pulse { 50% { opacity: 0.35; } }
+  .chat .chat-launcher { transition: transform 200ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo), opacity 250ms var(--ease-out-expo); }
+  /* Przycisk chowa się tam, gdzie zasłaniałby treść: pierwszy ekran na telefonie i formularz kontaktu. */
+  .chat[data-tucked='true'] .chat-launcher { opacity: 0; transform: translateY(1.25rem) scale(0.9); pointer-events: none; }
   .chat[data-open='true'] .chat-launcher { display: none; }
   @media (max-width: 639px) {
     .chat .launcher-label { display: none; }
@@ -290,6 +291,23 @@ const greeting = isAI ? CHAT_GREETING : CHAT_GREETING.replace('asystentem AI Kor
     else launcher.focus();
   }
   launcher.addEventListener('click', () => setOpen(true));
+
+  // Gdzie przycisk czatu się chowa: nad formularzem kontaktu (zawsze) i na pierwszym ekranie na telefonie.
+  const contact = document.getElementById('kontakt');
+  const phone = matchMedia('(max-width: 639px)');
+  let overContact = false;
+  function updateTucked() {
+    const tucked = overContact || (phone.matches && scrollY < innerHeight * 0.75);
+    root.dataset.tucked = String(tucked && panel.hidden);
+    launcher.tabIndex = tucked ? -1 : 0;
+    launcher.setAttribute('aria-hidden', String(tucked));
+  }
+  if (contact && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { overContact = e.isIntersecting; updateTucked(); }, { rootMargin: '0px 0px -35% 0px' }).observe(contact);
+  }
+  addEventListener('scroll', updateTucked, { passive: true });
+  phone.addEventListener('change', updateTucked);
+  updateTucked();
   closeBtn.addEventListener('click', () => setOpen(false));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) setOpen(false); });
 

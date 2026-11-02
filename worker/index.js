@@ -8,6 +8,13 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/lead') {
+      // Limit zgłoszeń z jednego IP. Bez powiązania w konfiguracji (np. lokalnie) krok jest pomijany.
+      if (request.method === 'POST' && env.LEAD_LIMITER) {
+        const { success } = await env.LEAD_LIMITER.limit({ key: request.headers.get('cf-connecting-ip') || 'brak' });
+        if (!success) {
+          return new Response(JSON.stringify({ ok: false, error: 'rate' }), { status: 429, headers: { 'content-type': 'application/json; charset=utf-8' } });
+        }
+      }
       return handleLead(request, { webhookUrl: env.MAKE_WEBHOOK_URL });
     }
     if (url.pathname === '/api/demo') {

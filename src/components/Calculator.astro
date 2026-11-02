@@ -16,7 +16,7 @@ const sliders = [
         Przesuń suwaki tak, jak wygląda Twój tydzień. Paragon policzy, ile czasu
         i pieniędzy zjada praca, którą może robić automat.
       </p>
-      <div class="sticky top-[4.75rem] z-10 mt-8 flex items-baseline justify-between gap-3 rounded-lg bg-paper px-4 py-3 text-ink shadow-[0_12px_24px_-12px_rgb(4_8_60/0.7)] lg:hidden" aria-hidden="true">
+      <div class="sticky top-[4.75rem] z-10 mt-8 flex items-baseline justify-between gap-3 rounded-lg bg-paper px-4 py-3 text-ink shadow-[0_12px_24px_-12px_rgb(4_8_60/0.7)] lg:hidden" aria-live="polite">
         <span class="font-mono text-[0.72rem] font-bold tracking-[0.08em] uppercase">Tracisz</span>
         <span class="font-display text-2xl font-bold tracking-tight tabular-nums"><span data-r2="hours">35</span> h / mies.</span>
         <span class="font-mono text-sm font-bold whitespace-nowrap" data-r2="money">4 160 zł</span>
@@ -42,9 +42,14 @@ const sliders = [
           </div>
         ))}
       </form>
+      {/* Na telefonie wynik pokazuje przyklejony pasek u góry, więc zamiast dużego paragonu jest sam przycisk. */}
+      <div class="mt-10 lg:hidden">
+        <a href="#kontakt" class="btn btn-paper text-base" data-umami-event="cta-kalkulator">Odzyskaj te godziny</a>
+        <p class="mt-4 text-[0.85rem] leading-snug text-cobalt-soft">Wynik to szacunek z Twoich danych, nie obietnica. Na rozmowie sprawdzimy, ile z tego realnie przejmie automat.</p>
+      </div>
     </div>
 
-    <div class="receipt-shadow min-w-0 lg:rotate-[1.5deg]">
+    <div class="receipt-shadow hidden min-w-0 lg:block lg:rotate-[1.5deg]">
       <div class="receipt relative text-[0.875rem] sm:p-8 sm:pb-12" aria-live="polite">
         <p class="caps text-center font-bold">Twój paragon grozy</p>
         <p class="caps text-center text-[0.72rem] text-ink-soft">wyliczony z Twoich danych</p>

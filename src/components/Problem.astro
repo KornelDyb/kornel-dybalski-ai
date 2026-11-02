@@ -41,10 +41,11 @@ const receipts = [
 <section class="section relative overflow-hidden">
   <div class="wrap">
     <h2 class="h-section text-ink">Firma rośnie, a&nbsp;Ty coraz częściej przepisujesz, przypominasz i&nbsp;gonisz</h2>
-    <p class="mt-6 max-w-[38rem] text-lg text-ink-soft">Trzy paragony grozy, które zna prawie każda mała firma usługowa.</p>
-    <ul class="mt-16 grid gap-14 md:grid-cols-3 md:gap-8 lg:gap-12">
+    <p class="mt-6 max-w-[38rem] text-lg text-ink-soft">Trzy paragony grozy, które zna prawie każda mała firma usługowa.<span class="md:hidden"> Przesuń w bok.</span></p>
+    {/* Na telefonie paragony leżą obok siebie w pasku do przesuwania, od tabletu w trzech kolumnach. */}
+    <ul class="strip mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pt-4 pb-6 md:mt-16 md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:pt-0 md:pb-0 lg:gap-12" tabindex="0" aria-label="Paragony grozy">
       {receipts.map((r) => (
-        <li class="flex min-w-0 flex-col">
+        <li class="flex w-[82%] min-w-0 shrink-0 snap-center flex-col md:w-auto">
           <div class="tilt receipt-shadow" style={`--tilt:${r.tilt}`}>
             <div class="receipt relative">
               <p class="caps text-center font-bold">Paragon grozy</p>
@@ -73,4 +74,10 @@ const receipts = [
     transition: transform 500ms var(--ease-out-expo);
   }
   .tilt:hover { transform: rotate(0deg) translateY(-6px); }
+  @media (max-width: 767px) {
+    /* Pasek sięga krawędzi ekranu, a pierwszy paragon zaczyna się w linii tekstu. */
+    .strip { margin-inline: calc(-1 * max(1.25rem, env(safe-area-inset-left, 0px))); padding-inline: max(1.25rem, env(safe-area-inset-left, 0px)); scroll-padding-inline: max(1.25rem, env(safe-area-inset-left, 0px)); scrollbar-width: none; }
+    .strip::-webkit-scrollbar { display: none; }
+    .strip:focus-visible { outline-offset: -3px; }
+  }
 </style>
