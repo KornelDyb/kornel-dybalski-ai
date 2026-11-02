@@ -167,3 +167,17 @@ test('Gemini: przy 503 ponawia i za drugim razem się udaje', async () => {
   assert.equal(res.status, 200);
   assert.equal(n, 2);
 });
+
+test('Gemini: gdy pierwszy model jest przeciążony, używa następnego z listy', async () => {
+  const urls = [];
+  const fn = async (url) => {
+    urls.push(url);
+    if (url.includes('/models/pierwszy:')) return new Response('{"error":{"code":503}}', { status: 503 });
+    return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify(ideas) }] } }] }), { status: 200 });
+  };
+  const geminiEnv = { ...env, AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g', GEMINI_MODEL: 'pierwszy, drugi', GEMINI_RETRY_DELAYS: [0] };
+  const res = await handleDemo(post(lead), geminiEnv, fn);
+  assert.equal(res.status, 200);
+  assert.equal(urls.filter((u) => u.includes('/models/pierwszy:')).length, 2);
+  assert.ok(urls.at(-1).includes('/models/drugi:'));
+});

@@ -116,19 +116,29 @@ async function askAnthropic(lead, env, fetchImpl) {
 const JSON_SHAPE = '{"intro": "...", "ideas": [{"title": "...", "problem": "...", "how": "..."}], "questions": ["..."], "slides": [{"title": "...", "bullets": ["..."]}]}';
 
 async function askGemini(lead, env, fetchImpl) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.GEMINI_MODEL)}:generateContent`;
-  // Darmowy plan bywa przeciążony (503) albo trafia na limit (429): ponów po 2 s i po 5 s.
+  // GEMINI_MODEL może zawierać kilka modeli po przecinku: gdy pierwszy jest przeciążony (503),
+  // trafia na limit (429) albo nie istnieje (404), serwer próbuje następnego.
+  const models = String(env.GEMINI_MODEL).split(',').map((m) => m.trim()).filter(Boolean);
+  // Darmowy plan bywa przeciążony: przy 503/429 ponów na tym samym modelu po 2 s i po 5 s.
   const delays = env.GEMINI_RETRY_DELAYS ?? [2000, 5000];
-  let res;
-  for (let attempt = 0; ; attempt++) {
-    res = await geminiRequest(url, lead, env, fetchImpl);
-    if (![429, 503].includes(res.status) || attempt >= delays.length) break;
-    await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
+  const failures = [];
+  for (const model of models) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+    let res;
+    for (let attempt = 0; ; attempt++) {
+      res = await geminiRequest(url, lead, env, fetchImpl);
+      if (![429, 503].includes(res.status) || attempt >= delays.length) break;
+      await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
+    }
+    if (res.ok) {
+      const data = await res.json();
+      const text = (data.candidates?.[0]?.content?.parts ?? []).map((part) => part.text ?? '').join('');
+      return parseIdeas(text);
+    }
+    failures.push(`${model} ${res.status}: ${(await res.text()).slice(0, 160)}`);
+    if (![404, 429, 503].includes(res.status)) break;
   }
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  const text = (data.candidates?.[0]?.content?.parts ?? []).map((part) => part.text ?? '').join('');
-  return parseIdeas(text);
+  throw new Error(`Gemini: ${failures.join(' | ')}`);
 }
 
 function geminiRequest(url, lead, env, fetchImpl) {
