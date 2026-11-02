@@ -183,10 +183,10 @@ const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-in
   @keyframes dot { 0%, 60%, 100% { opacity: 0.2; } 30% { opacity: 1; } }
   .chat .stamp-small { align-self: flex-start; }
 
-  /* Pytania podpowiedzi: jeden pasek przewijany w bok, żeby nie zabierał miejsca rozmowie. */
-  .chat .chat-chips { display: flex; gap: 0.4rem; padding: 0.1rem 1rem 0.75rem; overflow-x: auto; scrollbar-width: none; mask: linear-gradient(90deg, #000 85%, #0000); }
-  .chat .chat-chips::-webkit-scrollbar { display: none; }
-  .chat .chip { flex-shrink: 0; white-space: nowrap; }
+  /* Pytania podpowiedzi zawijają się; użyte znikają, więc pasek z czasem się skraca. */
+  .chat .chat-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.1rem 1rem 0.75rem; }
+  .chat .chip { white-space: nowrap; }
+  @media (max-width: 639px) { .chat .chip { font-size: 0.78rem; padding: 0.35rem 0.6rem; } }
   .chat .chip {
     padding: 0.4rem 0.7rem;
     border: 1.5px dashed rgb(16 19 43 / 0.3);
@@ -346,6 +346,8 @@ const label = 'block font-mono text-[0.68rem] font-bold tracking-[0.1em] text-in
     const chip = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
     if (!chip) return;
     const topic = chip.dataset.topic;
+    // Użyte pytanie znika z podpowiedzi (prośba o kontakt zostaje, dopóki blankiet nie jest wysłany).
+    if (topic !== 'kontakt') chip.remove();
     addMessage('user', chip.textContent!.trim());
     userMessages.push(chip.textContent!.trim());
     if (topic === 'kontakt') {
