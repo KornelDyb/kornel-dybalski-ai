@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maszyna automatów</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<style>
+  :root {
+    --ground: #e7e9ee;
+    --ink: #0f1222;
+    --ink-soft: #4b5068;
+    --cobalt: #2230d6;
+    --coral: #ff5a36;
+    --white: #ffffff;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; }
+  html { scrollbar-color: var(--cobalt) var(--ground); }
+  ::selection { background: var(--coral); color: #fff; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  :focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+  canvas#scene { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 18px clamp(16px, 4vw, 48px);
+  }
+  .brand { font-weight: 800; font-variation-settings: 'wdth' 110; letter-spacing: -0.02em; font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 0.85rem 1.3rem; border-radius: 999px;
+    background: var(--cobalt); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 0.98rem; white-space: nowrap;
+    box-shadow: 0 10px 24px -10px rgb(34 48 214 / 0.7);
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -12px rgb(34 48 214 / 0.8); }
+  .btn .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); }
+  .btn-small { padding: 0.6rem 1rem; font-size: 0.9rem; }
+
+  main { position: relative; z-index: 5; pointer-events: none; }
+  main a, main button { pointer-events: auto; }
+  .stage { min-height: 100vh; display: flex; align-items: center; padding: 0 clamp(16px, 5vw, 72px); }
+  .stage.right { justify-content: flex-end; }
+
+  .hero { align-items: flex-end; padding-bottom: clamp(48px, 10vh, 120px); }
+  h1 {
+    margin: 0; max-width: 11ch;
+    font-size: clamp(2.8rem, 7vw, 6rem); line-height: 0.92; letter-spacing: -0.04em;
+    font-weight: 800; font-variation-settings: 'wdth' 80;
+    text-wrap: balance;
+  }
+  .hero p { max-width: 40ch; margin: 1.2rem 0 1.6rem; font-size: 1.12rem; color: var(--ink-soft); }
+  .hero .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.4rem; }
+  .hint { font-size: 0.85rem; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 0.5rem; }
+  .hint svg { animation: nudge 1.6s var(--ease) infinite; }
+  @keyframes nudge { 50% { transform: translateY(4px); } }
+
+  /* Opis etapu: tablica przy stanowisku, pojawia się, gdy kamera dojedzie. */
+  .note {
+    width: min(26rem, 100%);
+    padding: 1.4rem 1.5rem 1.5rem;
+    background: var(--white);
+    border-radius: 18px;
+    box-shadow: 0 30px 60px -30px rgb(15 18 34 / 0.45), 0 0 0 1px rgb(15 18 34 / 0.06);
+    opacity: 0; transform: translateY(24px) scale(0.98);
+    transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+  }
+  .note.on { opacity: 1; transform: none; }
+  .time { display: inline-block; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--coral); font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; font-variation-settings: 'wdth' 75; }
+  .note h2 { margin: 0.5rem 0 0.4rem; font-size: 1.7rem; line-height: 1.08; letter-spacing: -0.025em; font-variation-settings: 'wdth' 88; }
+  .note p { margin: 0; color: var(--ink-soft); }
+
+  .final { min-height: 110vh; align-items: flex-end; justify-content: center; padding-bottom: 14vh; }
+  .final-box { text-align: center; max-width: 40rem; }
+  .final h2 { margin: 0 0 1rem; font-size: clamp(2.4rem, 5.5vw, 4.6rem); line-height: 0.95; letter-spacing: -0.04em; font-variation-settings: 'wdth' 80; text-wrap: balance; }
+  .final p { color: var(--ink-soft); margin: 0 auto 1.8rem; max-width: 38ch; }
+  .final .btn { font-size: 1.15rem; padding: 1.1rem 1.8rem; }
+
+  .progress { position: fixed; right: clamp(12px, 2vw, 28px); top: 50%; transform: translateY(-50%); z-index: 10; display: grid; gap: 10px; }
+  .progress i { display: block; width: 8px; height: 8px; border-radius: 50%; background: rgb(15 18 34 / 0.2); transition: background 300ms, transform 300ms var(--ease); }
+  .progress i.on { background: var(--coral); transform: scale(1.4); }
+  .label-synth { position: fixed; left: clamp(16px, 4vw, 48px); bottom: 14px; z-index: 10; font-size: 0.75rem; color: var(--ink-soft); }
+
+  .no-webgl canvas#scene { display: none; }
+  .no-webgl .note { opacity: 1; transform: none; }
+
+  @media (max-width: 760px) {
+    .stage, .stage.right { justify-content: center; align-items: flex-end; padding-bottom: 8vh; }
+    .hero { padding-bottom: 8vh; }
+    .progress { display: none; }
+    .note { padding: 1.1rem 1.2rem 1.2rem; }
+    .time { font-size: 2rem; }
+    .note h2 { font-size: 1.35rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<nav>
+  <a class="brand" href="#">Kornel Dybalski</a>
+  <a class="btn btn-small" href="#rozmowa"><span class="pulse" aria-hidden="true"></span>Umów rozmowę</a>
+</nav>
+
+<div class="progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<main>
+  <section class="stage hero" data-stage="0">
+    <div>
+      <h1>Twoja firma odpowiada w&nbsp;42 sekundy</h1>
+      <p>Automatyzuję sprzedaż i obsługę klienta w małych firmach usługowych. Przewiń i zobacz, jak jedno zapytanie przechodzi przez automat.</p>
+      <div class="row">
+        <a class="btn" href="#rozmowa"><span class="pulse" aria-hidden="true"></span>Umów bezpłatną rozmowę</a>
+        <span class="hint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>Przewiń</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage right" data-stage="1"><div class="note"><span class="time">00:00</span><h2>Klient wysyła zapytanie</h2><p>Wieczorem, w weekend, w trakcie Twojej wizyty u klienta. Formularz na stronie przyjmuje je od razu.</p></div></section>
+  <section class="stage" data-stage="2"><div class="note"><span class="time">00:01</span><h2>Automat sprawdza i&nbsp;sortuje</h2><p>Odsiewa spam, a AI czyta opis i zapisuje, czego klient potrzebuje.</p></div></section>
+  <section class="stage right" data-stage="3"><div class="note"><span class="time">00:04</span><h2>Kontakt ląduje w&nbsp;CRM</h2><p>Nic nie ginie w skrzynce. Każde zapytanie jest w jednym miejscu, z historią.</p></div></section>
+  <section class="stage" data-stage="4"><div class="note"><span class="time">00:41</span><h2>Klient dostaje termin</h2><p>Mail z linkiem do kalendarza. Klient sam wybiera godzinę, zanim zdąży napisać do konkurencji.</p></div></section>
+  <section class="stage right" data-stage="5"><div class="note"><span class="time">00:42</span><h2>Ty dostajesz powiadomienie</h2><p>Wiesz, kto napisał i o co chodzi. Twoja praca ręczna: zero minut.</p></div></section>
+
+  <section class="stage final" id="rozmowa" data-stage="6">
+    <div class="final-box">
+      <h2>Podłączmy taki automat w&nbsp;Twojej firmie</h2>
+      <p>30 minut rozmowy online, bez zobowiązań. Pokażę jedną lub dwie rzeczy, które da się zautomatyzować od razu.</p>
+      <a class="btn" href="#"><span class="pulse" aria-hidden="true"></span>Umów bezpłatną rozmowę</a>
+    </div>
+  </section>
+</main>
+<p class="label-synth">Przebieg przykładowy, tak działa formularz na tej stronie.</p>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const canvas = document.getElementById('scene');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+} catch {
+  document.documentElement.classList.add('no-webgl');
+  throw new Error('Brak WebGL');
+}
+const mobile = innerWidth < 760;
+renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const GROUND = new THREE.Color('#e7e9ee');
+scene.background = GROUND;
+scene.fog = new THREE.Fog(GROUND, 26, 60);
+
+const camera = new THREE.PerspectiveCamera(mobile ? 50 : 38, innerWidth / innerHeight, 0.1, 200);
+
+// Światło jak w studiu: miękkie z góry i jedno kierunkowe z cieniem.
+scene.add(new THREE.HemisphereLight('#ffffff', '#b9bfd0', 1.4));
+const sun = new THREE.DirectionalLight('#ffffff', 2.2);
+sun.position.set(-8, 18, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
+Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 50 });
+sun.shadow.radius = 6;
+sun.shadow.bias = -0.0008;
+scene.add(sun);
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.16 }));
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+const mat = {
+  white: new THREE.MeshStandardMaterial({ color: '#fbfbfd', roughness: 0.55, metalness: 0 }),
+  cobalt: new THREE.MeshStandardMaterial({ color: '#2230d6', roughness: 0.45, metalness: 0.05 }),
+  ink: new THREE.MeshStandardMaterial({ color: '#1a1e33', roughness: 0.4 }),
+  tube: new THREE.MeshStandardMaterial({ color: '#cfd3e0', roughness: 0.35, transparent: true, opacity: 0.9 }),
+  live: new THREE.MeshStandardMaterial({ color: '#ff5a36', emissive: '#ff5a36', emissiveIntensity: 0.6, roughness: 0.3 }),
+  screen: new THREE.MeshStandardMaterial({ color: '#1a1e33', emissive: '#ff5a36', emissiveIntensity: 0, roughness: 0.2 }),
+};
+const shadowed = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
+
+// Napis na górnej ściance stanowiska. Rysowany ponownie, gdy czcionka się wczyta.
+const labelDraws = [];
+function label(text, w, color = '#0f1222') {
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 128;
+  const g = c.getContext('2d');
+  const draw = () => {
+    g.clearRect(0, 0, 512, 128);
+    g.fillStyle = color;
+    g.font = '800 64px Archivo, system-ui, sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, 256, 68);
+    tex.needsUpdate = true;
+  };
+  const tex = new THREE.CanvasTexture(c);
+  labelDraws.push(draw);
+  draw();
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w / 4), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+  m.rotation.x = -Math.PI / 2;
+  return m;
+}
+
+const stations = [];
+function station(name, x, z, build, labelColor) {
+  const group = new THREE.Group();
+  group.position.set(x, 0, z);
+  const top = build(group);
+  const l = label(name, 2.6, labelColor);
+  l.position.set(0, top + 0.01, 0.15);
+  group.add(l);
+  scene.add(group);
+  stations.push({ group, top });
+  return group;
+}
+
+// 1. Formularz: pulpit z polami.
+station('Formularz', -10, 4, (g) => {
+  g.add(shadowed(new THREE.Mesh(new RoundedBoxGeometry(3, 0.9, 2.2, 6, 0.25), mat.white)).translateY(0.45));
+  for (let i = 0; i < 3; i++) {
+    const f = shadowed(new THREE.Mesh(new RoundedBoxGeometry(2.2, 0.08, 0.28, 2, 0.04), mat.tube));
+    f.position.set(0, 0.93, -0.75 + i * 0.36 - 0.05);
+    g.add(f);
+  }
+  return 0.92;
+});
+
+// 2. Automat: większa bryła w kobalcie z obracającym się pierścieniem.
+let ring;
+station('Automat', -3.5, -0.5, (g) => {
+  g.add(shadowed(new THREE.Mesh(new RoundedBoxGeometry(3.4, 1.8, 3.4, 8, 0.4), mat.cobalt)).translateY(0.9));
+  ring = shadowed(new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.12, 24, 96), mat.white));
+  ring.position.y = 2.6;
+  g.add(ring);
+  return 1.81;
+}, '#ffffff');
+
+// 3. CRM: stos dysków, jak baza danych.
+station('CRM', 3, -5, (g) => {
+  for (let i = 0; i < 3; i++) {
+    const d = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.35, 0.5, 64), i === 1 ? mat.ink : mat.white));
+    d.position.y = 0.25 + i * 0.56;
+    g.add(d);
+  }
+  return 1.62;
+});
+
+// 4. Mail: koperta.
+let flap;
+station('Mail', 6, 2.5, (g) => {
+  g.add(shadowed(new THREE.Mesh(new RoundedBoxGeometry(3, 0.6, 2.1, 6, 0.2), mat.white)).translateY(0.3));
+  flap = shadowed(new THREE.Mesh(new THREE.ConeGeometry(1.5, 0.5, 4, 1), mat.white));
+  flap.rotation.y = Math.PI / 4;
+  flap.scale.set(1, 1, 0.7);
+  flap.position.y = 0.85;
+  g.add(flap);
+  return 1.11;
+});
+
+// 5. Ty: telefon z ekranem, który się zapala.
+let phoneScreen;
+station('Ty', 11.5, -1.5, (g) => {
+  const body = shadowed(new THREE.Mesh(new RoundedBoxGeometry(1.5, 0.25, 2.8, 6, 0.12), mat.ink));
+  body.position.y = 0.125;
+  g.add(body);
+  phoneScreen = new THREE.Mesh(new RoundedBoxGeometry(1.3, 0.04, 2.5, 4, 0.08), mat.screen);
+  phoneScreen.position.y = 0.26;
+  g.add(phoneScreen);
+  return 0.29;
+}, '#ffffff');
+
+// Rurki między stanowiskami i wypełnienie, które rośnie razem z przewijaniem.
+const pts = [
+  [-10, 4], [-7.5, 4.2], [-5.5, 1.5], [-3.5, -0.5], [-0.5, -3.5], [3, -5], [5.5, -2], [6, 2.5], [8.5, 2], [11.5, -1.5],
+].map(([x, z]) => new THREE.Vector3(x, 0.35, z));
+const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.3);
+const SEG = 600;
+scene.add(shadowed(new THREE.Mesh(new THREE.TubeGeometry(curve, SEG, 0.16, 16), mat.tube)));
+const fillGeo = new THREE.TubeGeometry(curve, SEG, 0.19, 16);
+const fill = new THREE.Mesh(fillGeo, mat.live);
+scene.add(fill);
+const fillIndexCount = fillGeo.index.count;
+
+// Zgłoszenie: świecąca kulka.
+const packet = new THREE.Mesh(new THREE.SphereGeometry(0.42, 48, 32), mat.live);
+packet.castShadow = true;
+const glow = new THREE.PointLight('#ff5a36', 6, 6, 2);
+packet.add(glow);
+scene.add(packet);
+
+// Położenie każdego stanowiska na krzywej (0..1).
+const stationT = [0, 0.3, 0.58, 0.76, 1];
+
+// Ujęcia kamery: [pozycja, cel]. 0 = cały układ, 1..5 = stanowiska, 6 = zakończenie.
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const shots = [
+  [V(19, 18.5, 21), V(1.5, 0, -0.5)],
+  [V(-14, 5.5, 11), V(-9, 0.6, 3.5)],
+  [V(-0.5, 6.5, 7.5), V(-4, 1.2, -0.8)],
+  [V(7.5, 5.5, 2), V(2.6, 0.8, -5)],
+  [V(1.5, 4.8, 8.5), V(6.2, 0.6, 2.3)],
+  [V(15, 5, 4), V(11.2, 0.2, -1.6)],
+  [V(1, 30, 22), V(1, 0, -3)],
+];
+if (mobile) shots.forEach(([p, t]) => p.lerp(t, -0.25));
+// Przesunięcie kadru [poziomo, pionowo] jako ułamek ekranu: bryła ustępuje miejsca tekstowi.
+const offsets = mobile
+  ? [[0, 0.2], [0, 0.22], [0, 0.22], [0, 0.22], [0, 0.22], [0, 0.22], [0, 0.26]]
+  : [[-0.24, 0], [0.18, 0], [-0.18, 0], [0.2, 0], [-0.18, 0], [0.2, 0], [0, 0.24]];
+const off = new THREE.Vector2(...offsets[0]);
+
+const sections = [...document.querySelectorAll('[data-stage]')];
+const notes = sections.map((s) => s.querySelector('.note'));
+const dots = [...document.querySelectorAll('.progress i')];
+
+function scrollStage() {
+  // Pozycja przewijania jako liczba etapów, np. 2.4 = między stanowiskiem 2 a 3.
+  const mid = scrollY + innerHeight * 0.5;
+  for (let i = 0; i < sections.length - 1; i++) {
+    const a = sections[i].offsetTop + sections[i].offsetHeight * 0.5;
+    const b = sections[i + 1].offsetTop + sections[i + 1].offsetHeight * 0.5;
+    if (mid < b) return i + Math.max(0, Math.min(1, (mid - a) / (b - a)));
+  }
+  return sections.length - 1;
+}
+const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+
+const camPos = shots[0][0].clone();
+const camTarget = shots[0][1].clone();
+const mouse = new THREE.Vector2();
+addEventListener('pointermove', (e) => { mouse.set(e.clientX / innerWidth - 0.5, e.clientY / innerHeight - 0.5); });
+
+let shown = -1;
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+  const s = scrollStage();
+  const i = Math.min(Math.floor(s), shots.length - 2);
+  const f = ease(s - i);
+  const wantPos = shots[i][0].clone().lerp(shots[i + 1][0], f);
+  const wantTarget = shots[i][1].clone().lerp(shots[i + 1][1], f);
+  const k = reduce ? 1 : 1 - Math.exp(-dt * 4);
+  camPos.lerp(wantPos, k);
+  camTarget.lerp(wantTarget, k);
+  camera.position.copy(camPos).add(V(mouse.x * 0.8, -mouse.y * 0.5, 0));
+  camera.lookAt(camTarget);
+  const wantOff = new THREE.Vector2(...offsets[i]).lerp(new THREE.Vector2(...offsets[i + 1]), f);
+  off.lerp(wantOff, k);
+  camera.setViewOffset(innerWidth, innerHeight, off.x * innerWidth, off.y * innerHeight, innerWidth, innerHeight);
+
+  // Zgłoszenie płynie między stanowiskami w rytmie przewijania.
+  const seg = Math.max(0, Math.min(s - 1, 4));
+  const si = Math.min(Math.floor(seg), 3);
+  const sf = ease(Math.min(1, (seg - si) * 1.6));
+  const pt = s < 1 ? 0 : s >= 5 ? 1 : stationT[si] + (stationT[si + 1] - stationT[si]) * sf;
+  const p = curve.getPointAt(pt);
+  packet.position.set(p.x, p.y + 0.45 + Math.sin(t * 3) * 0.08, p.z);
+  packet.visible = s > 0.35;
+  fillGeo.setDrawRange(0, Math.floor((fillIndexCount * pt) / 6) * 6);
+
+  // Aktywne stanowisko lekko się unosi.
+  const active = Math.round(s) - 1;
+  stations.forEach((st, n) => {
+    const want = n === active ? 0.25 : 0;
+    st.group.position.y += (want - st.group.position.y) * (reduce ? 1 : 0.08);
+  });
+  ring.rotation.x = Math.PI / 2 + Math.sin(t * 0.8) * 0.25;
+  ring.rotation.z = t * (s > 1.5 && s < 2.5 ? 2.4 : 0.6);
+  flap.rotation.z = s > 3.6 ? Math.min(0.5, (s - 3.6) * 1.2) : 0;
+  mat.screen.emissiveIntensity = s > 4.6 ? 0.6 + Math.sin(t * 6) * 0.25 : 0;
+
+  // Opis etapu i kropki postępu.
+  const near = Math.round(s);
+  if (near !== shown) {
+    shown = near;
+    notes.forEach((n, idx) => n && n.classList.toggle('on', idx === near && Math.abs(s - near) < 0.35));
+    dots.forEach((d, idx) => d.classList.toggle('on', idx === Math.min(near, 5)));
+  }
+  if (notes[near]) notes[near].classList.toggle('on', Math.abs(s - near) < 0.35);
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+
+function resize() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+document.fonts.ready.then(() => {
+  // Napisy rysujemy ponownie, gdy czcionka już jest.
+  labelDraws.forEach((draw) => draw());
+});
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
