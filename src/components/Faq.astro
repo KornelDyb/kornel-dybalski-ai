@@ -14,6 +14,10 @@ const faq = [
     q: 'Czy muszę znać się na technologii?',
     a: 'Nie. Ty znasz swoją firmę i klientów, ja zajmuję się techniką. Wszystko tłumaczę po ludzku, a po wdrożeniu pokazuję zespołowi, jak z tego korzystać.',
   },
+  ...(SITE.aiDemo ? [{
+    q: 'Czy pomysły od AI to gotowa oferta?',
+    a: 'Nie. To wstępny szkic przygotowany przez AI wyłącznie na podstawie opisu z formularza, bez znajomości szczegółów Twojej firmy. Pokazuje kierunek. Na rozmowie sprawdzamy, co z tego ma sens, a co trzeba zrobić inaczej.',
+  }] : []),
   {
     q: 'Co dzieje się z danymi moich klientów?',
     a: 'Dane zostają w narzędziach, z których korzystasz, albo w takich, które razem wybierzemy. Korzystam tylko z usług zgodnych z RODO i niczego nie udostępniam dalej.',

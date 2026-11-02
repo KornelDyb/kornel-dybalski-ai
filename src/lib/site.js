@@ -5,6 +5,9 @@ export const SITE = {
   email: 'korneldybalski@gmail.com',
   linkedin: 'https://www.linkedin.com/in/kornel-dybalski-0342a8196/',
   cta: 'Umów bezpłatną rozmowę',
+  calendarUrl: 'https://calendar.app.google/FSSxbaFac2SyKJnNA',
+  // Demo na żywo (etap 13): po wysłaniu formularza AI przygotowuje wstępne pomysły.
+  aiDemo: true,
   // DO USTALENIA przed publikacją (PLAN.md, założenia do sprawdzenia).
   priceFrom: 'X zł',
 };

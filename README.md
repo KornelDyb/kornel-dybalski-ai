@@ -19,6 +19,11 @@ Adres testowy: https://kornel-dybalski.korneldybalski.workers.dev
 3. Scenariusz w Make „Formularz strony → HubSpot + maile”: filtr na boty → kontakt w HubSpot (utwórz lub zaktualizuj) → mail do klienta z linkiem do Google Calendar (`docs/email-do-klienta.html`) → powiadomienie „Nowy lead” do Kornela. 4 operacje na zgłoszenie, w testach ok. 3 s od wysłania do maila.
 4. Strona pokazuje paragon „Dzięki!” z czasem przyjęcia zgłoszenia.
 
+**Demo na żywo (etap 13, w budowie)**
+- `POST /api/demo` (`src/lib/demo.js`): Make wysyła zgłoszenie z nagłówkiem `X-Demo-Secret`, serwer pyta model OpenAI (`OPENAI_MODEL`) o 2-3 wstępne pomysły i odsyła gotowego maila (z oznaczeniem, że przygotowało go AI) oraz punkty do slajdów.
+- Bezpiecznik: dopóki `DEMO_MODE` nie jest `live`, mail z pomysłami trafia tylko do właściciela strony, z dopiskiem, dla kogo był.
+- Na stronie: sekcja „Opisz problem. Za kilka minut dostaniesz pierwsze pomysły”, podpowiedź przy opisie, informacja o AI w klauzuli i polityce prywatności, pytanie w FAQ. Wyłącza się przełącznikiem `aiDemo` w `src/lib/site.js`.
+
 **Bezpieczeństwo:** nagłówki CSP, HSTS, X-Frame-Options i inne (`public/_headers`), adresy testowe *.workers.dev z `noindex`.
 
 **Nie działa jeszcze:** transakcje w HubSpot (brak uprawnienia `crm.objects.deals.write` w połączeniu Make), statystyki Umami (czekają na konto), limit zgłoszeń z jednego IP (reguła w Cloudflare po podpięciu domeny), własna domena.

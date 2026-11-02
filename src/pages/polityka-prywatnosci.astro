@@ -5,7 +5,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import { SITE } from '../lib/site.js';
 
 // Data ostatniej zmiany. Zmieniaj ją przy każdej zmianie treści polityki.
-const updated = '30 października 2026';
+const updated = '2 listopada 2026';
 ---
 <Layout title={`Polityka prywatności | ${SITE.name}`} description="Jak przetwarzam dane z formularza kontaktowego.">
   <SiteHeader home={false} />
@@ -45,6 +45,7 @@ const updated = '30 października 2026';
           <li>Make (Celonis) do automatycznego przekazania zgłoszenia,</li>
           <li>HubSpot jako CRM, w którym zapisuję kontakt,</li>
           <li>Google (Gmail i Kalendarz) do wysłania odpowiedzi i umówienia rozmowy,</li>
+          {SITE.aiDemo && <li>OpenAI, którego model AI analizuje opis z formularza i przygotowuje wstępne pomysły na automatyzację. Według zasad OpenAI dane przesyłane przez API nie są domyślnie używane do trenowania modeli.</li>}
         </ul>
         <p>
           Część tych firm ma siedzibę w USA. Przekazanie danych odbywa się na

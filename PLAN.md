@@ -187,6 +187,12 @@ Filtr w Make (krok 2 przepływu): przepuszczaj tylko zgłoszenia, w których `ho
 - Czcionki Newsreader i Instrument Sans hostowane razem ze stroną (paczki Fontsource), a nie z Google Fonts: adres IP odwiedzających nie trafia do Google, więc polityka prywatności jest prostsza.
 - Walidacja formularza w osobnym pliku `src/lib/form.js` z testami (`npm test`).
 
+## Etap 13: stan budowy
+
+- Zrobione: serwer `/api/demo` z testami, prompt z zasadami (bez cen, bez obietnic wyników, formy neutralne, treść zgłoszenia traktowana jako dane), mail z pomysłami w barwach strony, zmiany na stronie i w polityce prywatności.
+- Dostawca AI na testy: OpenAI (decyzja Kornela, ma doładowane konto). Kod jest przygotowany tak, żeby dostawcę można było później zmienić.
+- Do zrobienia: sekrety w Cloudflare (OPENAI_API_KEY, OPENAI_MODEL, DEMO_SECRET), scenariusz w Make (wywołanie /api/demo po mailu z kalendarzem, wysyłka maila, limit 1 demo na adres na dobę), szablon Google Slides, 10 próbnych zgłoszeń.
+
 ## Prompt dla Claude Code
 
 Przed startem: wyeksportuj ten dokument jako Markdown i zapisz w pustym folderze projektu jako `PLAN.md`. Potem otwórz ten folder w Claude Code i wklej:

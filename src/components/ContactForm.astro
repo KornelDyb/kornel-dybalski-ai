@@ -21,7 +21,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
     </div>
 
     <div class="receipt-shadow min-w-0">
-      <form id="contact-form" class="receipt relative font-sans text-base sm:p-9 sm:pb-14" data-email={SITE.email} novalidate>
+      <form id="contact-form" class="receipt relative font-sans text-base sm:p-9 sm:pb-14" data-email={SITE.email} data-ai-demo={String(SITE.aiDemo)} novalidate>
         <div class="row font-mono text-[0.72rem] font-bold tracking-[0.12em] text-ink-soft uppercase">
           <span>Zgłoszenie</span><span>bezpłatna rozmowa</span>
         </div>
@@ -53,7 +53,12 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
           </div>
           <div class="sm:col-span-2">
             <label for="f-message" class={label}>Co chcesz usprawnić?</label>
-            <textarea id="f-message" name="message" rows="4" required class={field} aria-describedby="e-message" placeholder="Na przykład: odpisujemy na zapytania po kilku dniach, bo nikt nie pilnuje skrzynki."></textarea>
+            {SITE.aiDemo && (
+              <p id="h-message" class="mt-1.5 text-sm text-ink-soft">
+                Im konkretniej, tym lepsze pomysły dostaniesz: ile zapytań, jakich narzędzi używacie, co zabiera najwięcej czasu.
+              </p>
+            )}
+            <textarea id="f-message" name="message" rows="4" required class={field} aria-describedby={SITE.aiDemo ? 'h-message e-message' : 'e-message'} placeholder="Na przykład: dostajemy ok. 30 zapytań tygodniowo przez maila i telefon, odpisujemy po kilku dniach, klientów trzymamy w Excelu."></textarea>
             <p id="e-message" class={error} data-error-for="message"></p>
           </div>
 
@@ -75,6 +80,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
             <p class="mt-4 text-[0.8rem] leading-snug text-ink-soft">
               Administratorem danych jest {SITE.name}. Dane z formularza wykorzystam tylko do odpowiedzi
               na zgłoszenie i umówienia rozmowy, przechowuję je do 12 miesięcy od ostatniego kontaktu.
+              {SITE.aiDemo && ' Opis z formularza przeanalizuje model AI (OpenAI), żeby przygotować wstępne pomysły.'}{' '}
               Masz prawo do wglądu, poprawienia i usunięcia danych.
               Więcej w <a class="link-ink text-ink" href="/polityka-prywatnosci">polityce prywatności</a>.
             </p>
@@ -138,6 +144,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
   // Formularz wysyła dane do własnej funkcji na Cloudflare (/api/lead), a dopiero ona do Make.
   // Dzięki temu adresu webhooka nie widać w kodzie strony.
   const ENDPOINT = '/api/lead';
+  const AI_DEMO = form.dataset.aiDemo === 'true';
   const CONTACT_EMAIL = form.dataset.email!;
   const status = document.getElementById('form-status')!;
   const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
@@ -173,6 +180,7 @@ const error = 'mt-1.5 text-sm font-medium text-error empty:hidden';
         <div class="rule"></div>
         <div class="row"><span>Zgłoszenie przyjęte</span><span class="lead"></span><span class="font-bold">OK</span></div>
         <div class="row"><span>Mail z terminami</span><span class="lead"></span><span class="font-bold text-cobalt">wysłany automatycznie</span></div>
+        ${AI_DEMO ? '<div class="row"><span>Wstępne pomysły od AI</span><span class="lead"></span><span class="font-bold text-cobalt">w ciągu kilku minut</span></div>' : ''}
         <div class="rule-double"></div>
         <div class="row text-[1rem] font-bold"><span class="uppercase tracking-[0.06em]">Czas przyjęcia</span><span class="lead"></span><span>${seconds} s</span></div>
       </div>
